@@ -31,6 +31,13 @@ describe('acceptation des réponses', () => {
     expect(isAnswerAccepted('   ', accepted)).toBe(false);
   });
 
+  it('accepte une réponse qui ajoute des mots autour de la bonne réponse', () => {
+    expect(isAnswerAccepted('le petit chaperon rouge', ['chaperon rouge'])).toBe(true);
+    expect(isAnswerAccepted('petit chaperon rouge', ['chaperon rouge'])).toBe(true);
+    expect(isAnswerAccepted('chaperon rouge et sa mère', ['chaperon rouge'])).toBe(true);
+    expect(isAnswerAccepted('petit chaperon', ['chaperon rouge'])).toBe(false);
+  });
+
   it('n\'autorise aucune faute sur un mot très court', () => {
     expect(isAnswerAccepted('ble', ['ble'])).toBe(true);
     expect(isAnswerAccepted('bli', ['ble'])).toBe(false);

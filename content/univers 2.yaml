@@ -1,0 +1,19 @@
+# Univers de conte « Les Forges de Verre ».
+# Référence : les ids doivent être uniques et les liens doivent pointer vers des ids existants.
+
+id: tale-forges-de-verre
+name: "Univers 2345"
+kind: tale
+tagline: "Un univers hasardeux et chaotique, rien n'est prévisible, sauf le fait de ne pas savoir ce qui va arriver."
+
+nodes:
+
+  [ { id: u1-aniel-copie, kind: place, title: Centre de l'univers, position: { x: 240, y: 360 }, homologueKey: centre, intro: "", sections: [], revealedAtStart: true }, { id: u1-rouge-copie, kind: character, title: Le petit chaperon rouge, position: { x: 250, y: 550 }, homologueKey: rouge, intro: "", sections: [], central: { required: false } } ]
+
+relations: [ { id: link-u1-rouge-copie-u1-aniel-copie, from: u1-rouge-copie, to: u1-aniel-copie } ]
+
+echoes: []
+
+questions:
+
+  [ { id: q-u1-rouge-copie, targetNodeId: u1-rouge-copie, access: adjacent, requiresRevealed: [], context: "Dans toutes les version de ce conte il est question d'une enfant, de sa grand mère et d'un loup", prompt: De quel conte s'agit-il ?, answers: [ petit chaperon rouge ], wrongFeedback: "" } ]

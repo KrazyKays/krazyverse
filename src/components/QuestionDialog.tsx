@@ -28,7 +28,7 @@ export function QuestionDialog({ universe, question, onAnswer, onClose }: Questi
   };
 
   return (
-    <Dialog title="Enquête" onClose={onClose}>
+    <Dialog title="Question" onClose={onClose}>
       <div className="question">
         <p className="question-context">{question.context}</p>
         <p className="question-prompt">{question.prompt}</p>

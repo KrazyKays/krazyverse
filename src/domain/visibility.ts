@@ -5,6 +5,7 @@ export type VisibilityMap = Map<string, Visibility>;
 
 export function computeVisibility(universe: Universe, revealed: ReadonlySet<string>): VisibilityMap {
   const visibility: VisibilityMap = new Map();
+  const questioned = new Set(universe.questions.map((question) => question.targetNodeId));
 
   for (const node of universe.nodes) {
     if (revealed.has(node.id)) {
@@ -12,7 +13,7 @@ export function computeVisibility(universe: Universe, revealed: ReadonlySet<stri
       continue;
     }
     const adjacentToRevealed = neighbourIds(universe, node.id).some((id) => revealed.has(id));
-    visibility.set(node.id, node.startVisible || adjacentToRevealed ? 'censored' : 'hidden');
+    visibility.set(node.id, questioned.has(node.id) || adjacentToRevealed ? 'censored' : 'hidden');
   }
 
   return visibility;

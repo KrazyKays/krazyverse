@@ -150,7 +150,7 @@ export function UniverseGraph({
                     key={node.id}
                     className={question ? 'node node--censored node--investigable' : 'node node--censored'}
                     transform={`translate(${x} ${y})`}
-                    aria-label={question ? 'Nœud censuré, enquête disponible' : 'Nœud censuré'}
+                    aria-label={question ? 'Nœud censuré, question disponible' : 'Nœud censuré'}
                     role={question ? 'button' : 'img'}
                     tabIndex={question ? 0 : undefined}
                     onClick={openInvestigation && (() => activate(openInvestigation))}

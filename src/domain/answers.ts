@@ -34,10 +34,20 @@ function allowedTypos(reference: string): number {
 }
 
 export function isAnswerAccepted(input: string, acceptedAnswers: string[]): boolean {
-  const given = normalizeAnswer(input);
-  if (given === '') return false;
+  const words = normalizeAnswer(input).split(' ').filter((word) => word !== '');
+  if (words.length === 0) return false;
   return acceptedAnswers.some((accepted) => {
     const reference = normalizeAnswer(accepted);
-    return levenshtein(given, reference) <= allowedTypos(reference);
+    const tolerance = allowedTypos(reference);
+    return containsMatchingSpan(words, reference, tolerance);
   });
+}
+
+function containsMatchingSpan(words: string[], reference: string, tolerance: number): boolean {
+  for (let start = 0; start < words.length; start++) {
+    for (let end = start + 1; end <= words.length; end++) {
+      if (levenshtein(words.slice(start, end).join(' '), reference) <= tolerance) return true;
+    }
+  }
+  return false;
 }

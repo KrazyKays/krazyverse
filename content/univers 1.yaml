@@ -71,24 +71,15 @@ nodes:
     homologueKey: nuit
     intro: "Une nuit par an, les chemins de la forêt échangent leurs places. Ceux qui marchent alors sont censés rentrer avant l'aube."
     sections: []
-
-  - id: u1-serment
-    kind: event
-    title: "Le serment sous les ronces"
-    position: { x: 500, y: 620 }
-    homologueKey: serment
-    intro: "Sous un buisson de ronces, une pierre porte une inscription effacée. Gorm dit qu'elle a été gravée par celui qui a promis de protéger la lisière."
-    sections: []
   - id: u1-rouge
     kind: character
     title: Le petit chaperon rouge
     position:
       x: 250
       y: 550
-    homologueKey: u1-rouge
+    homologueKey: rouge
     intro: ""
     sections: []
-    revealedAtStart: true
     central:
       required: false
 
@@ -98,8 +89,6 @@ relations:
   - { id: r1-sentier-chaumiere, from: u1-sentier, to: u1-chaumiere }
   - { id: r1-chaumiere-ysolde, from: u1-chaumiere, to: u1-ysolde }
   - { id: r1-ysolde-nuit, from: u1-ysolde, to: u1-nuit }
-  - { id: r1-gorm-serment, from: u1-gorm, to: u1-serment }
-  - { id: r1-nuit-serment, from: u1-nuit, to: u1-serment }
   - id: link-u1-aniel-u1-sentier
     from: u1-aniel
     to: u1-sentier
@@ -107,10 +96,7 @@ relations:
     from: u1-rouge
     to: u1-aniel
 
-echoes:
-  - { id: e1-aniel, sourceNodeId: u1-aniel, targetNodeId: u2-aniel }
-  - { id: e1-gorm, sourceNodeId: u1-gorm, targetNodeId: u2-gorm }
-  - { id: e1-serment, sourceNodeId: u1-serment, targetNodeId: u2-serment }
+echoes: []
 
 questions:
   - id: q-u1-sentier
@@ -183,14 +169,12 @@ questions:
       - "une fois par an"
       - "la nuit du passage"
     wrongFeedback: "Pas tout à fait. Relis ce qu'on dit de la nuit du passage."
-
-  - id: q-u1-serment
-    targetNodeId: u1-serment
+  - id: q-u1-rouge
+    targetNodeId: u1-rouge
     access: adjacent
     requiresRevealed: []
-    context: "Une inscription effacée se trouve sous les ronces, près de Gorm."
-    prompt: "Quelle promesse est gravée sous les ronces, selon Gorm ?"
+    context: "Dans toutes les version de ce conte il est question d'une enfant, de sa grand mère et d'un loup"
+    prompt: De quel conte s'agit-il ?
     answers:
-      - "protéger la lisière"
-      - "la promesse de protéger la lisière"
-    wrongFeedback: "Ce n'est pas la réponse. Relis ce que dit Gorm sur la pierre."
+      - petit chaperon rouge
+    wrongFeedback: ""

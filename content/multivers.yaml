@@ -14,7 +14,6 @@ nodes:
     homologueKey: meta-origine
     intro: "Un personnage porte deux rôles opposés selon l'univers où on le regarde. Ce n'est pas un simple malentendu : il existe une cause, et elle n'a pas encore de nom."
     sections: []
-    startVisible: true
     central:
       required: true
 
@@ -88,7 +87,8 @@ questions:
   - id: q-meta-anomalie-1
     targetNodeId: meta-anomalie-1
     access: enquete
-    requiresRevealed: [ u1-sentier, u2-sentier ]
+    requiresRevealed:
+      - u1-sentier
     context: "Les deux sentiers que tu as parcourus ont la même largeur et la même pente."
     prompt: "Qu'est-ce qui distingue les deux sentiers ?"
     answers:
@@ -99,7 +99,8 @@ questions:
   - id: q-meta-anomalie-2
     targetNodeId: meta-anomalie-2
     access: enquete
-    requiresRevealed: [ u2-chaumiere, u1-nuit ]
+    requiresRevealed:
+      - u1-nuit
     context: "La forge et la chaumière semblent pourtant reliées au même chemin."
     prompt: "Quel lien unit la nuit du passage à la forge aux vitraux ?"
     answers:
@@ -112,7 +113,8 @@ questions:
   - id: q-meta-anomalie-3
     targetNodeId: meta-anomalie-3
     access: enquete
-    requiresRevealed: [ u2-nuit, u1-nuit ]
+    requiresRevealed:
+      - u1-nuit
     context: "Un fragment renvoie un reflet qui n'existe dans aucun univers."
     prompt: "Que reflète le fragment de verre ?"
     answers:
@@ -124,7 +126,8 @@ questions:
   - id: q-meta-finale
     targetNodeId: meta-finale
     access: enquete
-    requiresRevealed: [ meta-anomalie-2, u1-serment ]
+    requiresRevealed:
+      - meta-anomalie-2
     context: "Le serment brisé et la pierre déplacée doivent être reliés pour refermer l'anomalie."
     prompt: "Quel serment relie la pierre déplacée à l'anomalie ?"
     answers:

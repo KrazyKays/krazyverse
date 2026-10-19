@@ -2,8 +2,8 @@ import { parse } from 'yaml';
 import { buildUniverse } from '../domain/universe';
 import type { UniverseMap } from '../domain/progression';
 import type { UniverseData } from '../domain/types';
-import boisDeBrumeSource from '../../content/bois-de-brume.yaml?raw';
-import forgesDeVerreSource from '../../content/forges-de-verre.yaml?raw';
+import boisDeBrumeSource from '../../content/univers 1.yaml?raw';
+import forgesDeVerreSource from '../../content/univers 2.yaml?raw';
 import multiversSource from '../../content/multivers.yaml?raw';
 
 function loadUniverse(source: string): UniverseData {

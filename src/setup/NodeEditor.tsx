@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { NodeKind, Question, StoryNode, Universe } from '../domain/types';
 import type { Commit, CommitBatch, ContentPath } from './api';
 import { planNodeDeletion } from './nodeDeletion';
+import { findHomologue, planNodeCopy } from './nodeCopy';
 import { CheckboxField, SelectField, TextField } from './SetupFields';
 
 const KIND_LABELS: Record<NodeKind, string> = {
@@ -32,12 +33,33 @@ interface NodeEditorProps {
 
 export function NodeEditor({ universe, universes, node, commit, commitBatch, onSelect, onDeleted }: NodeEditorProps) {
   const at = (...rest: ContentPath): ContentPath => ['nodes', { id: node.id }, ...rest];
-  const setFlag = (key: 'revealedAtStart' | 'startVisible' | 'finale', checked: boolean) =>
+  const setFlag = (key: 'revealedAtStart' | 'finale', checked: boolean) =>
     commit(checked ? { op: 'set', path: at(key), value: true } : { op: 'delete', path: at(key) });
   const questions = universe.questions.filter((question) => question.targetNodeId === node.id);
   const relations = universe.relations.filter((relation) => relation.from === node.id || relation.to === node.id);
   const echoes = universe.echoes.filter((echo) => echo.sourceNodeId === node.id);
   const allNodes = universes.flatMap((candidate) => candidate.nodes);
+  const copyTargets = universes.filter((candidate) => candidate.id !== universe.id);
+  const [copyTargetId, setCopyTargetId] = useState(copyTargets[0]?.id ?? '');
+  const copyTarget = copyTargets.find((candidate) => candidate.id === copyTargetId);
+  const copyBlocked = copyTarget ? findHomologue(copyTarget, node) : undefined;
+
+  const copyNode = () => {
+    if (!copyTarget) return;
+    const plan = planNodeCopy(universes, universe.id, node.id, copyTarget.id);
+    const { questions: questionCount, relations: relationCount, echoes: echoCount, skippedLinks, lostUnlocks } = plan.counts;
+    const message = [
+      `Copier « ${node.title} » dans ${copyTarget.name} ?`,
+      `Nouvel identifiant : ${plan.newNodeId}`,
+      `Copie ${questionCount} question(s), ${relationCount} lien(s) et ${echoCount} écho(s).`,
+      skippedLinks > 0 ? `${skippedLinks} lien(s) ignoré(s) : pas d'homologue dans cet univers.` : '',
+      lostUnlocks > 0 ? `${lostUnlocks} section(s) ne seront plus débloquées par une question.` : '',
+    ]
+      .filter(Boolean)
+      .join('\n');
+    if (!window.confirm(message)) return;
+    commitBatch(plan.edits);
+  };
 
   const deleteNode = () => {
     const plan = planNodeDeletion(universes, universe.id, node.id);
@@ -56,9 +78,7 @@ export function NodeEditor({ universe, universes, node, commit, commitBatch, onS
 
   const startState = node.revealedAtStart
     ? 'révélé dès le départ'
-    : node.startVisible
-      ? 'visible (censuré) dès le départ'
-      : 'caché, apparaît quand un voisin est révélé';
+    : 'caché, apparaît quand un voisin est révélé, mais apparaît censuré si une question est renseignée';
 
   return (
     <section className="setup-card" aria-label={`Nœud ${node.title}`}>
@@ -107,14 +127,6 @@ export function NodeEditor({ universe, universes, node, commit, commitBatch, onS
         onChange={(checked) => setFlag('revealedAtStart', checked)}
       />
       <p className="hint">Le contenu est accessible et ses échos se déclenchent dès le début.</p>
-      <CheckboxField
-        label="Visible au départ"
-        checked={node.startVisible === true}
-        onChange={(checked) => setFlag('startVisible', checked)}
-      />
-      <p className="hint">
-        Apparaît censuré sur le graphe sans voisin révélé. Sans effet si « Révélé au départ » est coché.
-      </p>
       <CheckboxField label="Nœud final" checked={node.finale === true} onChange={(checked) => setFlag('finale', checked)} />
       <p className="hint">Le révéler termine l'enquête. Sans effet sur la fin de partie hors de l'univers central.</p>
       {universe.kind === 'meta' && (
@@ -248,6 +260,22 @@ export function NodeEditor({ universe, universes, node, commit, commitBatch, onS
         }
       >
         Ajouter une question
+      </button>
+
+      <h3>Copie</h3>
+      <SelectField
+        label="Copier vers l'univers"
+        value={copyTargetId}
+        options={copyTargets.map((candidate) => ({ value: candidate.id, label: candidate.name }))}
+        onChange={setCopyTargetId}
+      />
+      {copyBlocked && (
+        <p className="hint">
+          Un homologue existe déjà dans {copyTarget?.name} : « {copyBlocked.title} ».
+        </p>
+      )}
+      <button type="button" disabled={!copyTarget || copyBlocked !== undefined} onClick={copyNode}>
+        Copier le nœud
       </button>
 
       <h3>Danger</h3>

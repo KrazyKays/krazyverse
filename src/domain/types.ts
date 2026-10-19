@@ -23,7 +23,6 @@ export interface StoryNode {
   intro: string;
   sections: StorySection[];
   revealedAtStart?: boolean;
-  startVisible?: boolean;
   central?: { required: boolean };
   finale?: boolean;
 }

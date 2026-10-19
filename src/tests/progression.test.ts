@@ -39,10 +39,10 @@ describe('visibilité des nœuds', () => {
     expect(visibility.get('u1-sentier')).toBe('censored');
   });
 
-  it('garde caché un nœud situé derrière un nœud non révélé', () => {
-    const visibility = visibilityOf(freshState(), BOIS_ID);
-    expect(visibility.get('u1-gorm')).toBe('hidden');
-    expect(visibility.get('u1-chaumiere')).toBe('hidden');
+  it('garde caché un nœud sans question situé derrière un nœud non révélé', () => {
+    const visibility = visibilityOf(freshState(), FORGES_ID);
+    expect(visibility.get('u2-serment')).toBe('hidden');
+    expect(visibility.get('u2-gorm')).toBe('hidden');
   });
 
   it('ne révèle pas automatiquement les voisins d\'un nœud révélé', () => {
@@ -54,17 +54,16 @@ describe('visibilité des nœuds', () => {
 
   it('met à jour les relations visibles après une révélation', () => {
     const before = freshState();
-    const after = answerCorrect(before, 'q-u1-sentier');
-    const relationBefore = visibleRelationIds(boisUniverse(), visibilityOf(before, BOIS_ID));
-    const relationAfter = visibleRelationIds(boisUniverse(), visibilityOf(after, BOIS_ID));
-    expect(relationBefore).not.toContain('r1-sentier-gorm');
-    expect(relationAfter).toContain('r1-sentier-gorm');
+    const after = answerCorrect(before, 'q-u2-sentier');
+    const relationBefore = visibleRelationIds(forgesUniverse(), visibilityOf(before, FORGES_ID));
+    const relationAfter = visibleRelationIds(forgesUniverse(), visibilityOf(after, FORGES_ID));
+    expect(relationBefore).not.toContain('r2-sentier-gorm');
+    expect(relationAfter).toContain('r2-sentier-gorm');
   });
 
   it('n\'expose pas de relation vers un nœud caché', () => {
-    const visibility = visibilityOf(freshState(), BOIS_ID);
-    const relations = visibleRelationIds(boisUniverse(), visibility);
-    expect(relations).not.toContain('r1-sentier-gorm');
+    const relations = visibleRelationIds(forgesUniverse(), visibilityOf(freshState(), FORGES_ID));
+    expect(relations).not.toContain('r2-gorm-serment');
   });
 });
 
@@ -132,12 +131,13 @@ describe('données', () => {
     }
   });
 
-  it('démarre l\'univers méta avec un seul nœud censuré', () => {
+  it('censure dès le départ les nœuds ciblés par une question', () => {
     const meta = universes[META_ID];
     if (!meta) throw new Error('Univers méta manquant');
-    const censored = [...visibilityOf(freshState(), META_ID).values()].filter((value) => value === 'censored');
-    expect(censored).toHaveLength(1);
-    expect(meta.nodes.some((node) => node.startVisible)).toBe(true);
+    const visibility = visibilityOf(freshState(), META_ID);
+    for (const question of meta.questions) {
+      expect(visibility.get(question.targetNodeId)).toBe('censored');
+    }
   });
 });
 
@@ -234,8 +234,8 @@ describe('sauvegarde', () => {
   });
 });
 
-function boisUniverse() {
-  const universe = universes[BOIS_ID];
-  if (!universe) throw new Error('Univers manquant');
+function forgesUniverse() {
+  const universe = universes[FORGES_ID];
+  if (!universe) throw new Error('Univers forges manquant');
   return universe;
 }
