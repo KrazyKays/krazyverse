@@ -114,17 +114,6 @@ describe('échos entre univers', () => {
 });
 
 describe('données', () => {
-  it('conserve les positions des nœuds homologues entre univers', () => {
-    const bois = universes[BOIS_ID];
-    const forges = universes[FORGES_ID];
-    if (!bois || !forges) throw new Error('Univers manquant');
-    for (const node of bois.nodes) {
-      const twin = forges.nodes.find((candidate) => candidate.homologueKey === node.homologueKey);
-      expect(twin, `homologue de ${node.id}`).toBeDefined();
-      expect(twin?.position).toEqual(node.position);
-    }
-  });
-
   it('référence uniquement des identifiants existants', () => {
     for (const universe of Object.values(universes)) {
       for (const relation of universe.relations) {

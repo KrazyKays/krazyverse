@@ -2,22 +2,18 @@
 # Référence : les ids doivent être uniques et les liens doivent pointer vers des ids existants.
 
 id: tale-bois-de-brume
-name: "Les Bois de Brume"
+name: "Univers 42"
 kind: tale
-tagline: "Une forêt où chaque sentier garde la mémoire de ses promeneurs."
+tagline: "Un univers positif et joyeux où le mensonge n'existe pas."
 
 nodes:
   - id: u1-aniel
-    kind: character
-    title: "Aniel à la Cape écarlate"
+    kind: place
+    title: "Centre de l'univers"
     position: { x: 240, y: 360 }
-    homologueKey: aniel
-    intro: "Aniel porte une cape rouge qu'elle tient de sa grand-mère. Chaque matin, elle part vers la chaumière par le sentier des fougères, un panier au bras."
-    sections:
-      - id: u1-aniel-cape
-        title: "La cape"
-        body: "La cape n'a jamais été teinte : elle a pris sa couleur au contact d'une source qui coule sous les racines du chêne ancien."
-        unlockedByQuestionId: q-u1-sentier
+    homologueKey: centre
+    intro: "Dans cette univers tout est magnifique et innocent, le mensonge n'existe pas et tout le monde vit une existence parfaite, au premier abord ..."
+    sections: []
     revealedAtStart: true
 
   - id: u1-ysolde
@@ -83,9 +79,18 @@ nodes:
     homologueKey: serment
     intro: "Sous un buisson de ronces, une pierre porte une inscription effacée. Gorm dit qu'elle a été gravée par celui qui a promis de protéger la lisière."
     sections: []
+  - id: u1-rouge
+    kind: character
+    title: Le petit chaperon rouge
+    position:
+      x: 250
+      y: 550
+    homologueKey: u1-rouge
+    intro: ""
+    sections: []
+    revealedAtStart: true
 
 relations:
-  - { id: r1-aniel-sentier, from: u1-aniel, to: u1-sentier }
   - { id: r1-aniel-cueillette, from: u1-aniel, to: u1-cueillette }
   - { id: r1-sentier-gorm, from: u1-sentier, to: u1-gorm }
   - { id: r1-sentier-chaumiere, from: u1-sentier, to: u1-chaumiere }
@@ -93,6 +98,12 @@ relations:
   - { id: r1-ysolde-nuit, from: u1-ysolde, to: u1-nuit }
   - { id: r1-gorm-serment, from: u1-gorm, to: u1-serment }
   - { id: r1-nuit-serment, from: u1-nuit, to: u1-serment }
+  - id: link-u1-aniel-u1-sentier
+    from: u1-aniel
+    to: u1-sentier
+  - id: link-u1-rouge-u1-aniel
+    from: u1-rouge
+    to: u1-aniel
 
 echoes:
   - { id: e1-aniel, sourceNodeId: u1-aniel, targetNodeId: u2-aniel }

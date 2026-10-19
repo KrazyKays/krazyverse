@@ -7,18 +7,22 @@ import { UniverseGraph } from '../components/UniverseGraph';
 import { UniverseSelector } from '../components/UniverseSelector';
 import { META_ID, UNIVERSE_ORDER, universes } from '../data';
 import { availableQuestions, centralRemaining, isEnded } from '../domain/progression';
+import type { Universe } from '../domain/types';
 import { useGame } from '../hooks/useGame';
+import { SetupScreen } from '../setup/SetupScreen';
 
 export function App() {
   const game = useGame();
   const { state } = game;
   const currentUniverse = universes[state.currentUniverseId];
   const central = universes[META_ID];
+  const orderedUniverses = UNIVERSE_ORDER.map((id) => universes[id]).filter((u): u is Universe => u !== undefined);
 
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [activeQuestionId, setActiveQuestionId] = useState<string | null>(null);
   const [journalOpen, setJournalOpen] = useState(false);
   const [resetOpen, setResetOpen] = useState(false);
+  const [setupOpen, setSetupOpen] = useState(false);
   const [endingDismissed, setEndingDismissed] = useState(false);
 
   const questions = useMemo(
@@ -29,6 +33,16 @@ export function App() {
 
   if (!currentUniverse || !central) {
     return <p className="fatal">Données du jeu introuvables.</p>;
+  }
+
+  if (import.meta.env.DEV && setupOpen) {
+    return (
+      <SetupScreen
+        universes={orderedUniverses}
+        initialUniverseId={currentUniverse.id}
+        onClose={() => setSetupOpen(false)}
+      />
+    );
   }
 
   const remaining = centralRemaining(state, central);
@@ -58,6 +72,11 @@ export function App() {
           <button type="button" onClick={() => setResetOpen(true)}>
             Réinitialiser
           </button>
+          {import.meta.env.DEV && (
+            <button type="button" onClick={() => setSetupOpen(true)}>
+              Setup
+            </button>
+          )}
         </div>
       </header>
 
@@ -73,7 +92,7 @@ export function App() {
       )}
 
       <UniverseSelector
-        universes={UNIVERSE_ORDER.map((id) => universes[id]).filter((u) => u !== undefined)}
+        universes={orderedUniverses}
         currentId={currentUniverse.id}
         unseenIds={state.unseen}
         onSelect={switchUniverse}
@@ -96,7 +115,9 @@ export function App() {
             universe={currentUniverse}
             state={state}
             selectedId={selectedNodeId}
+            questions={questions}
             onSelect={setSelectedNodeId}
+            onOpenQuestion={setActiveQuestionId}
           />
         </section>
 
@@ -105,9 +126,7 @@ export function App() {
           universes={universes}
           state={state}
           selectedNodeId={selectedNodeId}
-          questions={questions}
           onSelect={setSelectedNodeId}
-          onStartQuestion={setActiveQuestionId}
         />
       </main>
 

@@ -3,7 +3,7 @@ import { isRevealed } from '../domain/progression';
 import type { UniverseMap } from '../domain/progression';
 import { neighbourIds } from '../domain/universe';
 import { computeVisibility } from '../domain/visibility';
-import type { GameState, NodeKind, Question, Universe } from '../domain/types';
+import type { GameState, NodeKind, Universe } from '../domain/types';
 
 const KIND_LABELS: Record<NodeKind, string> = {
   character: 'Personnage',
@@ -16,20 +16,10 @@ interface SidePanelProps {
   universes: UniverseMap;
   state: GameState;
   selectedNodeId: string | null;
-  questions: Question[];
   onSelect: (nodeId: string) => void;
-  onStartQuestion: (questionId: string) => void;
 }
 
-export function SidePanel({
-  universe,
-  universes,
-  state,
-  selectedNodeId,
-  questions,
-  onSelect,
-  onStartQuestion,
-}: SidePanelProps) {
+export function SidePanel({ universe, universes, state, selectedNodeId, onSelect }: SidePanelProps) {
   const visibility = useMemo(
     () => computeVisibility(universe, new Set(state.revealed[universe.id] ?? [])),
     [universe, state.revealed],
@@ -81,26 +71,6 @@ export function SidePanel({
           <p className="hint">Sélectionne un nœud révélé pour lire son récit.</p>
         </div>
       )}
-
-      <section className="investigations" aria-label="Enquêtes">
-        <h3>Enquêtes disponibles</h3>
-        {questions.length === 0 ? (
-          <p className="hint">Aucune enquête disponible pour l'instant. Explore les nœuds révélés.</p>
-        ) : (
-          <ul>
-            {questions.map((question) => (
-              <li key={question.id}>
-                <span className="investigation-label">
-                  {question.access === 'enquete' ? 'Enquête centrale' : 'Piste à élucider'}
-                </span>
-                <button type="button" onClick={() => onStartQuestion(question.id)}>
-                  Ouvrir l'enquête
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
     </aside>
   );
 }

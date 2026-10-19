@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { PointerEvent as ReactPointerEvent } from 'react';
+import type { KeyboardEvent as ReactKeyboardEvent, PointerEvent as ReactPointerEvent } from 'react';
 import { computeVisibility, visibleRelationIds } from '../domain/visibility';
-import type { GameState, NodeKind, Universe } from '../domain/types';
+import type { GameState, NodeKind, Question, Universe } from '../domain/types';
 
 const VIEW_WIDTH = 1000;
 const VIEW_HEIGHT = 720;
@@ -21,19 +21,32 @@ interface UniverseGraphProps {
   universe: Universe;
   state: GameState;
   selectedId: string | null;
+  questions: Question[];
   onSelect: (nodeId: string) => void;
+  onOpenQuestion: (questionId: string) => void;
 }
 
-export function UniverseGraph({ universe, state, selectedId, onSelect }: UniverseGraphProps) {
+export function UniverseGraph({
+  universe,
+  state,
+  selectedId,
+  questions,
+  onSelect,
+  onOpenQuestion,
+}: UniverseGraphProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [view, setView] = useState<View>(INITIAL_VIEW);
-  const dragRef = useRef<{ x: number; y: number; moved: boolean } | null>(null);
+  const dragRef = useRef<{ x: number; y: number; pointerId: number; moved: boolean } | null>(null);
 
   const visibility = useMemo(
     () => computeVisibility(universe, new Set(state.revealed[universe.id] ?? [])),
     [universe, state.revealed],
   );
   const relationIds = useMemo(() => new Set(visibleRelationIds(universe, visibility)), [universe, visibility]);
+  const investigationByNodeId = useMemo(
+    () => new Map(questions.map((question) => [question.targetNodeId, question])),
+    [questions],
+  );
 
   useEffect(() => {
     const svg = svgRef.current;
@@ -48,8 +61,7 @@ export function UniverseGraph({ universe, state, selectedId, onSelect }: Univers
   }, []);
 
   const onPointerDown = (event: ReactPointerEvent<SVGSVGElement>) => {
-    dragRef.current = { x: event.clientX, y: event.clientY, moved: false };
-    event.currentTarget.setPointerCapture(event.pointerId);
+    dragRef.current = { x: event.clientX, y: event.clientY, pointerId: event.pointerId, moved: false };
   };
 
   const onPointerMove = (event: ReactPointerEvent<SVGSVGElement>) => {
@@ -59,6 +71,10 @@ export function UniverseGraph({ universe, state, selectedId, onSelect }: Univers
     const dx = event.clientX - drag.x;
     const dy = event.clientY - drag.y;
     if (!drag.moved && Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
+    if (!drag.moved) {
+      // Capturing on pointerdown would redirect the click to the svg and swallow node clicks.
+      svg.setPointerCapture(drag.pointerId);
+    }
     drag.moved = true;
     drag.x = event.clientX;
     drag.y = event.clientY;
@@ -74,9 +90,16 @@ export function UniverseGraph({ universe, state, selectedId, onSelect }: Univers
     setView((current) => ({ ...current, scale: clampScale(current.scale * factor) }));
   };
 
-  const nodeClick = (nodeId: string) => {
+  const activate = (action: () => void) => {
     if (dragRef.current?.moved) return;
-    onSelect(nodeId);
+    action();
+  };
+
+  const onActivateKey = (event: ReactKeyboardEvent<SVGGElement>, action: () => void) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      action();
+    }
   };
 
   return (
@@ -120,13 +143,18 @@ export function UniverseGraph({ universe, state, selectedId, onSelect }: Univers
               const { x, y } = node.position;
 
               if (status === 'censored') {
+                const question = investigationByNodeId.get(node.id);
+                const openInvestigation = question ? () => onOpenQuestion(question.id) : undefined;
                 return (
                   <g
                     key={node.id}
-                    className="node node--censored"
+                    className={question ? 'node node--censored node--investigable' : 'node node--censored'}
                     transform={`translate(${x} ${y})`}
-                    aria-label="Nœud censuré"
-                    role="img"
+                    aria-label={question ? 'Nœud censuré, enquête disponible' : 'Nœud censuré'}
+                    role={question ? 'button' : 'img'}
+                    tabIndex={question ? 0 : undefined}
+                    onClick={openInvestigation && (() => activate(openInvestigation))}
+                    onKeyDown={openInvestigation && ((event) => onActivateKey(event, openInvestigation))}
                   >
                     <circle r={12} />
                     <text className="node-mark" textAnchor="middle" dominantBaseline="central">
@@ -137,6 +165,7 @@ export function UniverseGraph({ universe, state, selectedId, onSelect }: Univers
               }
 
               const selected = node.id === selectedId;
+              const select = () => onSelect(node.id);
               return (
                 <g
                   key={node.id}
@@ -146,13 +175,8 @@ export function UniverseGraph({ universe, state, selectedId, onSelect }: Univers
                   tabIndex={0}
                   aria-pressed={selected}
                   aria-label={node.title}
-                  onClick={() => nodeClick(node.id)}
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter' || event.key === ' ') {
-                      event.preventDefault();
-                      onSelect(node.id);
-                    }
-                  }}
+                  onClick={() => activate(select)}
+                  onKeyDown={(event) => onActivateKey(event, select)}
                 >
                   <NodeShape kind={node.kind} />
                   <text className="node-label" textAnchor="middle" y={30}>
@@ -184,7 +208,7 @@ function clampScale(value: number): number {
   return Math.min(MAX_SCALE, Math.max(MIN_SCALE, value));
 }
 
-function NodeShape({ kind }: { kind: NodeKind }) {
+export function NodeShape({ kind }: { kind: NodeKind }) {
   if (kind === 'character') {
     return <circle r={14} className="shape" />;
   }
