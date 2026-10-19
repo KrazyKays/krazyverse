@@ -1,0 +1,160 @@
+# Univers de conte « Les Forges de Verre ».
+# Référence : les ids doivent être uniques et les liens doivent pointer vers des ids existants.
+
+id: tale-forges-de-verre
+name: "Les Forges de Verre"
+kind: tale
+tagline: "Un monde de sable et de four, où la lumière se fige dans le verre."
+
+nodes:
+  - id: u2-aniel
+    kind: character
+    title: "Aniel l'apprentie verrière"
+    position: { x: 240, y: 360 }
+    homologueKey: aniel
+    intro: "Aniel travaille au four depuis l'hiver. Elle ne porte pas de cape : son tablier de cuir est couvert d'éclats de verre qui brillent quand elle marche."
+    sections:
+      - id: u2-aniel-tablier
+        title: "Le tablier"
+        body: "Les éclats du tablier ne tombent jamais. Aniel dit qu'ils retiennent les reflets de ceux qui ont traversé la forge avant elle."
+        unlockedByQuestionId: q-u2-chaumiere
+
+  - id: u2-ysolde
+    kind: character
+    title: "Ysolde la maîtresse-verrière"
+    position: { x: 690, y: 300 }
+    homologueKey: ysolde
+    intro: "Ysolde dirige la forge aux vitraux clairs. Elle parle peu, mais chaque pièce qu'elle souffle porte un motif que personne ne reconnaît."
+    sections:
+      - id: u2-ysolde-motif
+        title: "Le motif"
+        body: "Le motif qu'Ysolde grave sur ses pièces est celui d'un fil coupé. Elle en fabrique depuis le jour où un voyageur est entré sans jamais ressortir."
+        unlockedByQuestionId: q-u2-ysolde
+
+  - id: u2-gorm
+    kind: character
+    title: "Gorm le chasseur de verre"
+    position: { x: 600, y: 520 }
+    homologueKey: gorm
+    intro: "Gorm rôde autour des fours avec un filet d'acier. Sa démarche rappelle celle d'un loup, et il sourit toujours quand quelqu'un s'approche trop près du sable."
+    sections: []
+
+  - id: u2-sentier
+    kind: place
+    title: "Le chemin de sable"
+    position: { x: 420, y: 420 }
+    homologueKey: sentier
+    intro: "Une allée blanche et fine, où chaque pas laisse une empreinte qui se remplit de lumière. Les ouvriers disent qu'elle se referme derrière ceux qui n'ont pas de nom."
+    sections: []
+
+  - id: u2-chaumiere
+    kind: place
+    title: "La forge aux vitraux clairs"
+    position: { x: 520, y: 170 }
+    homologueKey: chaumiere
+    intro: "Un atelier aux murs de verre, chauffé jour et nuit. Un four y reste allumé, et sa lueur verte dessine des silhouettes sur le sable."
+    sections: []
+
+  - id: u2-cueillette
+    kind: event
+    title: "La récolte de cendres"
+    position: { x: 330, y: 230 }
+    homologueKey: cueillette
+    intro: "Au lieu des baies, les ouvriers ramassent la cendre tombée des fours. Une année, la cendre n'est pas retombée, et le sable a gardé une forme de corps."
+    sections: []
+
+  - id: u2-nuit
+    kind: event
+    title: "La nuit des vitraux"
+    position: { x: 780, y: 470 }
+    homologueKey: nuit
+    intro: "Une nuit par an, les vitraux de la forge se mettent à refléter des scènes qui ne sont pas dans la pièce. Ceux qui les regardent trop longtemps oublient leur chemin de retour."
+    sections: []
+
+  - id: u2-serment
+    kind: event
+    title: "Le serment brisé"
+    position: { x: 500, y: 620 }
+    homologueKey: serment
+    intro: "Un pacte scellé dans le verre, dont l'un des fragments a été volé. Gorm affirme que c'est lui qui a fait la promesse, avant de la trahir."
+    sections: []
+
+relations:
+  - { id: r2-aniel-sentier, from: u2-aniel, to: u2-sentier }
+  - { id: r2-aniel-cueillette, from: u2-aniel, to: u2-cueillette }
+  - { id: r2-sentier-gorm, from: u2-sentier, to: u2-gorm }
+  - { id: r2-sentier-chaumiere, from: u2-sentier, to: u2-chaumiere }
+  - { id: r2-chaumiere-ysolde, from: u2-chaumiere, to: u2-ysolde }
+  - { id: r2-ysolde-nuit, from: u2-ysolde, to: u2-nuit }
+  - { id: r2-gorm-serment, from: u2-gorm, to: u2-serment }
+  - { id: r2-nuit-serment, from: u2-nuit, to: u2-serment }
+
+echoes:
+  - { id: e2-ysolde, sourceNodeId: u2-ysolde, targetNodeId: u1-ysolde }
+  - { id: e2-nuit, sourceNodeId: u2-nuit, targetNodeId: u1-nuit }
+
+questions:
+  - id: q-u2-sentier
+    targetNodeId: u2-sentier
+    access: adjacent
+    requiresRevealed: []
+    context: "Aniel regarde l'allée blanche qui s'étire devant le four."
+    prompt: "Que se passe-t-il avec les empreintes laissées sur le chemin de sable ?"
+    choices:
+      - { id: a, label: "Elles disparaissent aussitôt" }
+      - { id: b, label: "Elles se remplissent de lumière" }
+      - { id: c, label: "Elles durcissent en verre bleu" }
+    correctChoiceId: b
+    wrongFeedback: "Pas encore. Relis ce que disent les ouvriers sur l'allée."
+
+  - id: q-u2-cueillette
+    targetNodeId: u2-cueillette
+    access: adjacent
+    requiresRevealed: []
+    context: "Les ouvriers ramassent la cendre tombée des fours."
+    prompt: "Que s'est-il passé une année où la cendre n'est pas retombée ?"
+    choices:
+      - { id: a, label: "Le sable a gardé une forme de corps" }
+      - { id: b, label: "Les fours se sont éteints" }
+      - { id: c, label: "Les ouvriers ont tout balayé" }
+    correctChoiceId: a
+    wrongFeedback: "Ce n'est pas la bonne réponse. Relis le récit de la récolte."
+
+  - id: q-u2-chaumiere
+    targetNodeId: u2-chaumiere
+    access: adjacent
+    requiresRevealed: []
+    context: "Le chemin de sable mène à un atelier chauffé jour et nuit."
+    prompt: "Pourquoi le four de la forge reste-t-il allumé en permanence ?"
+    choices:
+      - { id: a, label: "Il réchauffe les vitraux pour la nuit" }
+      - { id: b, label: "Il est alimenté par des cendres" }
+      - { id: c, label: "Ysolde y dort chaque nuit" }
+    correctChoiceId: b
+    wrongFeedback: "Ce n'est pas ce que le récit laisse entendre. Relis la description de la forge."
+
+  - id: q-u2-ysolde
+    targetNodeId: u2-ysolde
+    access: adjacent
+    requiresRevealed: []
+    context: "Une maîtresse-verrière souffle une pièce couverte d'un motif inconnu."
+    prompt: "Quel motif Ysolde grave-t-elle sur ses pièces ?"
+    choices:
+      - { id: a, label: "Un cercle parfait" }
+      - { id: b, label: "Un fil coupé" }
+      - { id: c, label: "Une cape rouge" }
+    correctChoiceId: b
+    wrongFeedback: "Pas tout à fait. Relis ce qu'Ysolde grave sur ses pièces."
+
+  - id: q-u2-nuit
+    targetNodeId: u2-nuit
+    access: adjacent
+    requiresRevealed: []
+    context: "Une ouvrière décrit des vitraux qui reflètent des scènes absentes."
+    prompt: "Qu'oublient ceux qui regardent trop longtemps les vitraux pendant la nuit ?"
+    choices:
+      - { id: a, label: "Leur nom" }
+      - { id: b, label: "Leur chemin de retour" }
+      - { id: c, label: "Le goût de la cendre" }
+    correctChoiceId: b
+    wrongFeedback: "Ce n'est pas cela. Relis ce qu'on dit de la nuit des vitraux."

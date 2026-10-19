@@ -1,0 +1,144 @@
+# Univers central. Chaque nœud, relation, écho et question est lu par l'application.
+# Référence : les ids doivent être uniques et les liens doivent pointer vers des ids existants.
+
+id: meta-enquete
+name: "Le multivers"
+kind: meta
+tagline: "Hors des contes, une anomalie tire sur les lois du multivers."
+
+nodes:
+  - id: meta-origine
+    kind: event
+    title: "Le premier fil"
+    position: { x: 500, y: 120 }
+    homologueKey: meta-origine
+    intro: "Un personnage porte deux rôles opposés selon l'univers où on le regarde. Ce n'est pas un simple malentendu : il existe une cause, et elle n'a pas encore de nom."
+    sections: []
+    startVisible: true
+    central:
+      required: true
+
+  - id: meta-anomalie-1
+    kind: event
+    title: "Les pas qui reviennent"
+    position: { x: 300, y: 300 }
+    homologueKey: meta-anomalie-1
+    intro: "Les mêmes chemins apparaissent dans deux récits sans jamais se croiser. Un sentier plus long au retour qu'à l'aller n'est pas une coïncidence : il appartient à deux mondes à la fois."
+    sections:
+      - id: meta-anomalie-1-trace
+        title: "La trace"
+        body: "Les sentiers qui se répètent ont la même largeur, la même pente et les mêmes fougères. Seul le nombre de pas diffère."
+        unlockedByQuestionId: q-meta-anomalie-1
+    central:
+      required: true
+
+  - id: meta-anomalie-2
+    kind: event
+    title: "Deux aubes pour une nuit"
+    position: { x: 700, y: 300 }
+    homologueKey: meta-anomalie-2
+    intro: "La nuit du passage et la nuit des vitraux ont lieu le même soir, et les chemins échangent leurs places dans les deux univers à la fois."
+    sections: []
+    central:
+      required: true
+
+  - id: meta-anomalie-3
+    kind: event
+    title: "Le miroir sans reflet"
+    position: { x: 500, y: 470 }
+    homologueKey: meta-anomalie-3
+    intro: "Un fragment de verre renvoie une image qui n'existe dans aucun des deux univers. La lecture de ce fragment est facultative, mais elle éclaire la suite de l'enquête."
+    sections: []
+    central:
+      required: false
+
+  - id: meta-finale
+    kind: event
+    title: "Le fil rétabli"
+    position: { x: 500, y: 640 }
+    homologueKey: meta-finale
+    intro: "Les deux univers convergent vers une même source. Pour rétablir l'ordre du multivers, il faut relier le serment brisé à la pierre qui a été déplacée."
+    sections: []
+    central:
+      required: true
+    finale: true
+
+relations:
+  - { id: rm-origine-anomalie-1, from: meta-origine, to: meta-anomalie-1 }
+  - { id: rm-origine-anomalie-2, from: meta-origine, to: meta-anomalie-2 }
+  - { id: rm-anomalie-1-anomalie-3, from: meta-anomalie-1, to: meta-anomalie-3 }
+  - { id: rm-anomalie-2-anomalie-3, from: meta-anomalie-2, to: meta-anomalie-3 }
+  - { id: rm-anomalie-3-finale, from: meta-anomalie-3, to: meta-finale }
+  - { id: rm-anomalie-2-finale, from: meta-anomalie-2, to: meta-finale }
+
+echoes: []
+
+questions:
+  - id: q-meta-origine
+    targetNodeId: meta-origine
+    access: enquete
+    requiresRevealed: []
+    context: "Un personnage au même visage tient deux rôles opposés dans deux récits différents."
+    prompt: "Comment nommer une divergence qui ne devrait pas pouvoir exister ?"
+    choices:
+      - { id: a, label: "Une erreur de copie entre deux manuscrits" }
+      - { id: b, label: "Une fissure du multivers" }
+      - { id: c, label: "Un simple rêve partagé" }
+    correctChoiceId: b
+    wrongFeedback: "Ce n'est pas cela. Demande-toi ce qui permet à deux univers de diverger sans raison."
+
+  - id: q-meta-anomalie-1
+    targetNodeId: meta-anomalie-1
+    access: enquete
+    requiresRevealed: [u1-sentier, u2-sentier]
+    context: "Les deux sentiers que tu as parcourus ont la même largeur et la même pente."
+    prompt: "Qu'est-ce qui distingue les deux sentiers ?"
+    choices:
+      - { id: a, label: "Le nombre de pas qu'il faut pour les traverser" }
+      - { id: b, label: "La couleur des fougères" }
+      - { id: c, label: "Les personnages qui y vivent" }
+    correctChoiceId: a
+    wrongFeedback: "Pas tout à fait. Relis ce qui change entre l'aller et le retour."
+
+  - id: q-meta-anomalie-2
+    targetNodeId: meta-anomalie-2
+    access: enquete
+    requiresRevealed: [u2-chaumiere, u1-nuit]
+    context: "La forge et la chaumière semblent pourtant reliées au même chemin."
+    prompt: "Quel lien unit la nuit du passage à la forge aux vitraux ?"
+    choices:
+      - { id: a, label: "Les deux se déroulent la même nuit de l'année" }
+      - { id: b, label: "Elles se produisent dans des univers différents, sans lien" }
+      - { id: c, label: "L'une est la copie de l'autre" }
+    correctChoiceId: a
+    wrongFeedback: "Ce n'est pas la bonne réponse. Regarde à quel moment ces nuits surviennent."
+
+  - id: q-meta-anomalie-3
+    targetNodeId: meta-anomalie-3
+    access: enquete
+    requiresRevealed: [u2-nuit, u1-nuit]
+    context: "Un fragment renvoie un reflet qui n'existe dans aucun univers."
+    prompt: "Que reflète le fragment de verre ?"
+    choices:
+      - { id: a, label: "Une scène de l'autre monde, une nuit sur deux" }
+      - { id: b, label: "Un chemin qui n'existe dans aucun des deux univers" }
+      - { id: c, label: "Le visage de Gorm" }
+    correctChoiceId: b
+    wrongFeedback: "Pas encore. Pense à ce qui n'appartient à aucun univers connu."
+
+  - id: q-meta-finale
+    targetNodeId: meta-finale
+    access: enquete
+    requiresRevealed: [meta-anomalie-2, u1-serment]
+    context: "Le serment brisé et la pierre déplacée doivent être reliés pour refermer l'anomalie."
+    prompt: "Quel serment relie la pierre déplacée à l'anomalie ?"
+    choices:
+      - { id: a, label: "Celui de protéger la lisière" }
+      - { id: b, label: "Celui d'enterrer les cendres" }
+      - { id: c, label: "Celui de ne jamais franchir le sentier" }
+    correctChoiceId: a
+    wrongFeedback: "Ce n'est pas ce serment. Relis la promesse gravée sous les ronces."
+
+ending:
+  title: "Le fil est rétabli"
+  body: "La pierre est remise à sa place, et le sentier retrouve sa longueur ordinaire. Les deux univers se détachent l'un de l'autre sans perdre leurs souvenirs. Les univers restent consultables, et ta progression est conservée."
