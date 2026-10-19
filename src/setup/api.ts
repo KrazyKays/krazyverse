@@ -7,11 +7,15 @@ export type ContentEdit =
 
 export type Commit = (edit: ContentEdit) => void;
 
-export async function sendContentEdit(universeId: string, edit: ContentEdit): Promise<void> {
+export type ScopedEdit = ContentEdit & { universeId: string };
+
+export type CommitBatch = (edits: ScopedEdit[]) => void;
+
+export async function sendContentEdits(edits: ScopedEdit[]): Promise<void> {
   const response = await fetch('/__setup/edit', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ universeId, ...edit }),
+    body: JSON.stringify({ edits }),
   });
   if (!response.ok) throw new Error(await response.text());
 }

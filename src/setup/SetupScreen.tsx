@@ -1,7 +1,7 @@
 import { useRef, useState, type FormEvent } from 'react';
 import { NodeShape } from '../components/UniverseGraph';
 import type { NodeKind, Universe } from '../domain/types';
-import { sendContentEdit, type Commit, type ContentEdit } from './api';
+import { sendContentEdits, type Commit, type CommitBatch, type ContentEdit } from './api';
 import { KIND_OPTIONS, NodeEditor } from './NodeEditor';
 import { SelectField, TextField } from './SetupFields';
 
@@ -24,18 +24,19 @@ export function SetupScreen({ universes, initialUniverseId, onClose }: SetupScre
   const universe = universes.find((candidate) => candidate.id === universeId) ?? universes[0];
   if (!universe) return <p className="fatal">Aucun univers à éditer.</p>;
 
-  const commit: Commit = (edit: ContentEdit) => {
-    const targetId = universe.id;
+  const commitBatch: CommitBatch = (edits) => {
     queue.current = queue.current
       .then(() => {
         setStatus('Enregistrement…');
-        return sendContentEdit(targetId, edit);
+        return sendContentEdits(edits);
       })
       .then(() => setStatus('Enregistré dans content/*.yaml.'))
       .catch((error: unknown) => {
         setStatus(`Échec de l'enregistrement : ${error instanceof Error ? error.message : String(error)}`);
       });
   };
+
+  const commit: Commit = (edit: ContentEdit) => commitBatch([{ ...edit, universeId: universe.id }]);
 
   const selectedNode = universe.nodes.find((node) => node.id === selectedNodeId);
 
@@ -108,7 +109,9 @@ export function SetupScreen({ universes, initialUniverseId, onClose }: SetupScre
               universes={universes}
               node={selectedNode}
               commit={commit}
+              commitBatch={commitBatch}
               onSelect={setSelectedNodeId}
+              onDeleted={() => setSelectedNodeId(null)}
             />
           ) : (
             <p className="hint">Sélectionne un nœud dans le graphe pour éditer son lore, ses liens et ses questions.</p>

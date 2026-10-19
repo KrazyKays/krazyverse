@@ -89,6 +89,8 @@ nodes:
     intro: ""
     sections: []
     revealedAtStart: true
+    central:
+      required: false
 
 relations:
   - { id: r1-aniel-cueillette, from: u1-aniel, to: u1-cueillette }

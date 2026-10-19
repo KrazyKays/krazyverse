@@ -33,7 +33,7 @@ function contentEditor(): Plugin {
         });
         req.on('end', () => {
           try {
-            applyContentEdit(contentDir, JSON.parse(body) as ContentEdit);
+            applyContentEdits(contentDir, (JSON.parse(body) as { edits: ContentEdit[] }).edits);
             res.setHeader('Content-Type', 'application/json');
             res.end('{"ok":true}');
           } catch (error) {
@@ -46,16 +46,26 @@ function contentEditor(): Plugin {
   };
 }
 
-function applyContentEdit(contentDir: string, edit: ContentEdit): void {
-  if (edit.path.length === 0) throw new Error('Chemin vide');
-  const { file, doc } = loadUniverseDocument(contentDir, edit.universeId);
-  const path = resolvePath(doc, edit.path);
+function applyContentEdits(contentDir: string, edits: ContentEdit[]): void {
+  const documents = new Map<string, { file: string; doc: Document }>();
 
-  if (edit.op === 'set') doc.setIn(path, edit.value);
-  else if (edit.op === 'push') doc.addIn(path, edit.value);
-  else doc.deleteIn(path);
+  for (const edit of edits) {
+    if (edit.path.length === 0) throw new Error('Chemin vide');
+    let loaded = documents.get(edit.universeId);
+    if (!loaded) {
+      loaded = loadUniverseDocument(contentDir, edit.universeId);
+      documents.set(edit.universeId, loaded);
+    }
+    const path = resolvePath(loaded.doc, edit.path);
 
-  writeFileSync(file, doc.toString({ lineWidth: 0 }));
+    if (edit.op === 'set') loaded.doc.setIn(path, edit.value);
+    else if (edit.op === 'push') loaded.doc.addIn(path, edit.value);
+    else loaded.doc.deleteIn(path);
+  }
+
+  for (const { file, doc } of documents.values()) {
+    writeFileSync(file, doc.toString({ lineWidth: 0 }));
+  }
 }
 
 function resolvePath(doc: Document, segments: PathSegment[]): (string | number)[] {

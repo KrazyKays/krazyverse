@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { NodeKind, Question, StoryNode, Universe } from '../domain/types';
-import type { Commit, ContentPath } from './api';
+import type { Commit, CommitBatch, ContentPath } from './api';
+import { planNodeDeletion } from './nodeDeletion';
 import { CheckboxField, SelectField, TextField } from './SetupFields';
 
 const KIND_LABELS: Record<NodeKind, string> = {
@@ -24,10 +25,12 @@ interface NodeEditorProps {
   universes: Universe[];
   node: StoryNode;
   commit: Commit;
+  commitBatch: CommitBatch;
   onSelect: (nodeId: string) => void;
+  onDeleted: () => void;
 }
 
-export function NodeEditor({ universe, universes, node, commit, onSelect }: NodeEditorProps) {
+export function NodeEditor({ universe, universes, node, commit, commitBatch, onSelect, onDeleted }: NodeEditorProps) {
   const at = (...rest: ContentPath): ContentPath => ['nodes', { id: node.id }, ...rest];
   const setFlag = (key: 'revealedAtStart' | 'startVisible' | 'finale', checked: boolean) =>
     commit(checked ? { op: 'set', path: at(key), value: true } : { op: 'delete', path: at(key) });
@@ -35,6 +38,27 @@ export function NodeEditor({ universe, universes, node, commit, onSelect }: Node
   const relations = universe.relations.filter((relation) => relation.from === node.id || relation.to === node.id);
   const echoes = universe.echoes.filter((echo) => echo.sourceNodeId === node.id);
   const allNodes = universes.flatMap((candidate) => candidate.nodes);
+
+  const deleteNode = () => {
+    const plan = planNodeDeletion(universes, universe.id, node.id);
+    const { relations: relationCount, echoes: echoCount, questions: questionCount, requirements } = plan.counts;
+    const message = [
+      `Supprimer « ${node.title} » ?`,
+      `Supprime ${relationCount} lien(s), ${echoCount} écho(s) et ${questionCount} question(s).`,
+      requirements > 0 ? `Retire ce nœud des prérequis de ${requirements} question(s).` : '',
+    ]
+      .filter(Boolean)
+      .join('\n');
+    if (!window.confirm(message)) return;
+    commitBatch(plan.edits);
+    onDeleted();
+  };
+
+  const startState = node.revealedAtStart
+    ? 'révélé dès le départ'
+    : node.startVisible
+      ? 'visible (censuré) dès le départ'
+      : 'caché, apparaît quand un voisin est révélé';
 
   return (
     <section className="setup-card" aria-label={`Nœud ${node.title}`}>
@@ -73,22 +97,36 @@ export function NodeEditor({ universe, universes, node, commit, onSelect }: Node
         value={node.intro}
         onCommit={(value) => commit({ op: 'set', path: at('intro'), value })}
       />
+      <h3>États</h3>
+      <p className="hint">
+        État au départ : <strong>{startState}</strong>
+      </p>
       <CheckboxField
         label="Révélé au départ"
         checked={node.revealedAtStart === true}
         onChange={(checked) => setFlag('revealedAtStart', checked)}
       />
+      <p className="hint">Le contenu est accessible et ses échos se déclenchent dès le début.</p>
       <CheckboxField
         label="Visible au départ"
         checked={node.startVisible === true}
         onChange={(checked) => setFlag('startVisible', checked)}
       />
+      <p className="hint">
+        Apparaît censuré sur le graphe sans voisin révélé. Sans effet si « Révélé au départ » est coché.
+      </p>
       <CheckboxField label="Nœud final" checked={node.finale === true} onChange={(checked) => setFlag('finale', checked)} />
-      <CheckboxField
-        label="Requis pour l'enquête centrale"
-        checked={node.central?.required === true}
-        onChange={(checked) => commit({ op: 'set', path: at('central', 'required'), value: checked })}
-      />
+      <p className="hint">Le révéler termine l'enquête. Sans effet sur la fin de partie hors de l'univers central.</p>
+      {universe.kind === 'meta' && (
+        <>
+          <CheckboxField
+            label="Requis pour l'enquête centrale"
+            checked={node.central?.required === true}
+            onChange={(checked) => commit({ op: 'set', path: at('central', 'required'), value: checked })}
+          />
+          <p className="hint">Compte dans le décompte « nœuds restants » de l'enquête. Ne bloque pas la conclusion.</p>
+        </>
+      )}
 
       <h3>Lore</h3>
       {node.sections.map((section) => (
@@ -190,6 +228,32 @@ export function NodeEditor({ universe, universes, node, commit, onSelect }: Node
           commit={commit}
         />
       ))}
+      <button
+        type="button"
+        onClick={() =>
+          commit({
+            op: 'push',
+            path: ['questions'],
+            value: {
+              id: newQuestionId(universes, node),
+              targetNodeId: node.id,
+              access: 'adjacent',
+              requiresRevealed: [],
+              context: '',
+              prompt: 'Nouvelle question',
+              answers: ['Nouvelle réponse'],
+              wrongFeedback: '',
+            },
+          })
+        }
+      >
+        Ajouter une question
+      </button>
+
+      <h3>Danger</h3>
+      <button type="button" className="danger" onClick={deleteNode}>
+        Supprimer le nœud
+      </button>
     </section>
   );
 }
@@ -339,6 +403,18 @@ function newSectionId(universe: Universe, node: StoryNode): string {
   let index = node.sections.length + 1;
   while (taken.has(`${node.id}-section-${index}`)) index += 1;
   return `${node.id}-section-${index}`;
+}
+
+function newQuestionId(universes: Universe[], node: StoryNode): string {
+  const taken = new Set(universes.flatMap((candidate) => candidate.questions.map((question) => question.id)));
+  const base = `q-${node.id}`;
+  let id = base;
+  let index = 2;
+  while (taken.has(id)) {
+    id = `${base}-${index}`;
+    index += 1;
+  }
+  return id;
 }
 
 function newRelationId(universe: Universe, from: string, to: string): string {
