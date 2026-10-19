@@ -23,7 +23,7 @@ function answerCorrect(state: GameState, questionId: string): GameState {
   );
   const question = universe?.questions.find((candidate) => candidate.id === questionId);
   if (!universe || !question) throw new Error(`Question inconnue : ${questionId}`);
-  return answerQuestion(state, universes, universe.id, questionId, question.correctChoiceId).state;
+  return answerQuestion(state, universes, universe.id, questionId, question.answers[0] ?? '').state;
 }
 
 function visibilityOf(state: GameState, universeId: string) {
@@ -71,13 +71,13 @@ describe('visibilité des nœuds', () => {
 describe('questions', () => {
   it('ne modifie pas la progression après une mauvaise réponse', () => {
     const state = freshState();
-    const result = answerQuestion(state, universes, BOIS_ID, 'q-u1-sentier', 'a');
+    const result = answerQuestion(state, universes, BOIS_ID, 'q-u1-sentier', 'les fougères poussent');
     expect(result.correct).toBe(false);
     expect(result.state).toBe(state);
   });
 
   it('révèle immédiatement le nœud attendu après une bonne réponse', () => {
-    const result = answerQuestion(freshState(), universes, BOIS_ID, 'q-u1-sentier', 'b');
+    const result = answerQuestion(freshState(), universes, BOIS_ID, 'q-u1-sentier', 'Le chemin change de longueur');
     expect(result.correct).toBe(true);
     expect(isRevealed(result.state, BOIS_ID, 'u1-sentier')).toBe(true);
   });
@@ -138,7 +138,7 @@ describe('données', () => {
       }
       for (const question of universe.questions) {
         expect(universe.nodeById.has(question.targetNodeId)).toBe(true);
-        expect(question.choices.some((choice) => choice.id === question.correctChoiceId)).toBe(true);
+        expect(question.answers.length).toBeGreaterThan(0);
       }
     }
   });

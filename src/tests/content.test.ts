@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { universes } from '../data';
+import { normalizeAnswer } from '../domain/answers';
 
 const allNodeIds = new Set(Object.values(universes).flatMap((universe) => universe.nodes.map((node) => node.id)));
 
@@ -25,12 +26,13 @@ describe('contenu éditable', () => {
         }
       });
 
-      it('a des questions cohérentes avec leurs nœuds et leurs choix', () => {
+      it('a des questions cohérentes avec leurs nœuds et leurs réponses', () => {
         for (const question of universe.questions) {
           expect(nodeIds).toContain(question.targetNodeId);
-          const choiceIds = question.choices.map((choice) => choice.id);
-          expect(new Set(choiceIds).size).toBe(choiceIds.length);
-          expect(choiceIds).toContain(question.correctChoiceId);
+          expect(question.answers.length).toBeGreaterThan(0);
+          for (const answer of question.answers) {
+            expect(normalizeAnswer(answer)).not.toBe('');
+          }
           for (const revealedId of question.requiresRevealed) {
             expect(allNodeIds.has(revealedId)).toBe(true);
           }

@@ -100,11 +100,10 @@ questions:
     requiresRevealed: []
     context: "Aniel regarde l'allée blanche qui s'étire devant le four."
     prompt: "Que se passe-t-il avec les empreintes laissées sur le chemin de sable ?"
-    choices:
-      - { id: a, label: "Elles disparaissent aussitôt" }
-      - { id: b, label: "Elles se remplissent de lumière" }
-      - { id: c, label: "Elles durcissent en verre bleu" }
-    correctChoiceId: b
+    answers:
+      - "elles se remplissent de lumière"
+      - "se remplissent de lumière"
+      - "elles sont remplies de lumière"
     wrongFeedback: "Pas encore. Relis ce que disent les ouvriers sur l'allée."
 
   - id: q-u2-cueillette
@@ -113,11 +112,10 @@ questions:
     requiresRevealed: []
     context: "Les ouvriers ramassent la cendre tombée des fours."
     prompt: "Que s'est-il passé une année où la cendre n'est pas retombée ?"
-    choices:
-      - { id: a, label: "Le sable a gardé une forme de corps" }
-      - { id: b, label: "Les fours se sont éteints" }
-      - { id: c, label: "Les ouvriers ont tout balayé" }
-    correctChoiceId: a
+    answers:
+      - "le sable a gardé une forme de corps"
+      - "une forme de corps"
+      - "la forme d'un corps"
     wrongFeedback: "Ce n'est pas la bonne réponse. Relis le récit de la récolte."
 
   - id: q-u2-chaumiere
@@ -126,11 +124,10 @@ questions:
     requiresRevealed: []
     context: "Le chemin de sable mène à un atelier chauffé jour et nuit."
     prompt: "Pourquoi le four de la forge reste-t-il allumé en permanence ?"
-    choices:
-      - { id: a, label: "Il réchauffe les vitraux pour la nuit" }
-      - { id: b, label: "Il est alimenté par des cendres" }
-      - { id: c, label: "Ysolde y dort chaque nuit" }
-    correctChoiceId: b
+    answers:
+      - "il est alimenté par des cendres"
+      - "alimenté par des cendres"
+      - "des cendres"
     wrongFeedback: "Ce n'est pas ce que le récit laisse entendre. Relis la description de la forge."
 
   - id: q-u2-ysolde
@@ -139,11 +136,8 @@ questions:
     requiresRevealed: []
     context: "Une maîtresse-verrière souffle une pièce couverte d'un motif inconnu."
     prompt: "Quel motif Ysolde grave-t-elle sur ses pièces ?"
-    choices:
-      - { id: a, label: "Un cercle parfait" }
-      - { id: b, label: "Un fil coupé" }
-      - { id: c, label: "Une cape rouge" }
-    correctChoiceId: b
+    answers:
+      - "un fil coupé"
     wrongFeedback: "Pas tout à fait. Relis ce qu'Ysolde grave sur ses pièces."
 
   - id: q-u2-nuit
@@ -152,9 +146,8 @@ questions:
     requiresRevealed: []
     context: "Une ouvrière décrit des vitraux qui reflètent des scènes absentes."
     prompt: "Qu'oublient ceux qui regardent trop longtemps les vitraux pendant la nuit ?"
-    choices:
-      - { id: a, label: "Leur nom" }
-      - { id: b, label: "Leur chemin de retour" }
-      - { id: c, label: "Le goût de la cendre" }
-    correctChoiceId: b
+    answers:
+      - "leur chemin de retour"
+      - "le chemin de retour"
+      - "chemin de retour"
     wrongFeedback: "Ce n'est pas cela. Relis ce qu'on dit de la nuit des vitraux."

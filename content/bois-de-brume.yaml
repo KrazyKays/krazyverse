@@ -106,11 +106,10 @@ questions:
     requiresRevealed: []
     context: "Aniel s'apprête à prendre le chemin habituel vers la chaumière."
     prompt: "Pourquoi le sentier des fougères semble-t-il toujours plus long au retour ?"
-    choices:
-      - { id: a, label: "Les fougères poussent pendant la marche" }
-      - { id: b, label: "Le chemin change de longueur selon les promeneurs" }
-      - { id: c, label: "Les promeneurs se perdent toujours" }
-    correctChoiceId: b
+    answers:
+      - "le chemin change de longueur selon les promeneurs"
+      - "le chemin change de longueur"
+      - "il change de longueur selon les promeneurs"
     wrongFeedback: "Ce n'est pas la bonne piste. Relis ce que disent les promeneurs sur le chemin."
 
   - id: q-u1-cueillette
@@ -118,12 +117,10 @@ questions:
     access: adjacent
     requiresRevealed: []
     context: "Les baies rouges n'ont pas poussé cette année, et Aniel cherche pourquoi."
-    prompt: "Qu'est-ce qui a empêché les baies de pousser ?"
-    choices:
-      - { id: a, label: "Un hiver trop long" }
-      - { id: b, label: "Une année où le bois a laissé les feuilles grises seules" }
-      - { id: c, label: "Les enfants les ont toutes cueillies plus tôt" }
-    correctChoiceId: b
+    prompt: "Qu'a laissé le bois à la place des baies ?"
+    answers:
+      - "des feuilles grises"
+      - "feuilles grises"
     wrongFeedback: "Ce n'est pas cela. Relis le récit de la cueillette."
 
   - id: q-u1-gorm
@@ -131,12 +128,11 @@ questions:
     access: adjacent
     requiresRevealed: []
     context: "Un être massif se tient à la lisière, près du sentier."
-    prompt: "Quel rôle Gorm tient-il à la lisière ?"
-    choices:
-      - { id: a, label: "Il chasse les voyageurs" }
-      - { id: b, label: "Il veille sur les pierres qui délimitent le bois" }
-      - { id: c, label: "Il attend la nuit du passage" }
-    correctChoiceId: b
+    prompt: "Que surveille Gorm à la lisière ?"
+    answers:
+      - "les pierres"
+      - "les pierres dressées"
+      - "les pierres qui délimitent le bois"
     wrongFeedback: "Pas encore. Observe ce que fait Gorm près des pierres."
 
   - id: q-u1-chaumiere
@@ -145,11 +141,10 @@ questions:
     requiresRevealed: []
     context: "Le sentier mène à une maison dont la lampe brille en plein jour."
     prompt: "Pourquoi la lampe de la chaumière reste-t-elle allumée ?"
-    choices:
-      - { id: a, label: "Ysolde a peur du noir" }
-      - { id: b, label: "Elle attend le retour de quelqu'un" }
-      - { id: c, label: "La lampe ne s'éteint jamais" }
-    correctChoiceId: b
+    answers:
+      - "elle attend le retour de quelqu'un"
+      - "elle attend quelqu'un"
+      - "le retour de quelqu'un"
     wrongFeedback: "Ce n'est pas ce que suggère le récit. Pense à qui attend Ysolde."
 
   - id: q-u1-ysolde
@@ -158,11 +153,10 @@ questions:
     requiresRevealed: []
     context: "Une vieille femme vit seule dans la chaumière aux volets verts."
     prompt: "Que garde Ysolde dans son coffre ?"
-    choices:
-      - { id: a, label: "Des pièces d'or" }
-      - { id: b, label: "Une fiole de sève de fougère" }
-      - { id: c, label: "La cape d'Aniel" }
-    correctChoiceId: b
+    answers:
+      - "une fiole de sève de fougère"
+      - "fiole de sève de fougère"
+      - "sève de fougère"
     wrongFeedback: "Ce n'est pas cela. Relis ce qu'on dit d'Ysolde."
 
   - id: q-u1-nuit
@@ -171,11 +165,10 @@ questions:
     requiresRevealed: []
     context: "Ysolde évoque une nuit où les chemins changent de place."
     prompt: "Quand les chemins de la forêt échangent-ils leurs places ?"
-    choices:
-      - { id: a, label: "Chaque matin à l'aube" }
-      - { id: b, label: "Une nuit par an" }
-      - { id: c, label: "Lorsque la cueillette échoue" }
-    correctChoiceId: b
+    answers:
+      - "une nuit par an"
+      - "une fois par an"
+      - "la nuit du passage"
     wrongFeedback: "Pas tout à fait. Relis ce qu'on dit de la nuit du passage."
 
   - id: q-u1-serment
@@ -183,10 +176,8 @@ questions:
     access: adjacent
     requiresRevealed: []
     context: "Une inscription effacée se trouve sous les ronces, près de Gorm."
-    prompt: "Qui a gravé l'inscription sous les ronces, selon Gorm ?"
-    choices:
-      - { id: a, label: "Celui qui a promis de protéger la lisière" }
-      - { id: b, label: "La vieille Ysolde" }
-      - { id: c, label: "Aniel, pour se souvenir de son chemin" }
-    correctChoiceId: a
+    prompt: "Quelle promesse est gravée sous les ronces, selon Gorm ?"
+    answers:
+      - "protéger la lisière"
+      - "la promesse de protéger la lisière"
     wrongFeedback: "Ce n'est pas la réponse. Relis ce que dit Gorm sur la pierre."

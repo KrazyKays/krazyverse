@@ -80,11 +80,9 @@ questions:
     requiresRevealed: []
     context: "Un personnage au même visage tient deux rôles opposés dans deux récits différents."
     prompt: "Comment nommer une divergence qui ne devrait pas pouvoir exister ?"
-    choices:
-      - { id: a, label: "Une erreur de copie entre deux manuscrits" }
-      - { id: b, label: "Une fissure du multivers" }
-      - { id: c, label: "Un simple rêve partagé" }
-    correctChoiceId: b
+    answers:
+      - "une fissure du multivers"
+      - "une fissure"
     wrongFeedback: "Ce n'est pas cela. Demande-toi ce qui permet à deux univers de diverger sans raison."
 
   - id: q-meta-anomalie-1
@@ -93,11 +91,9 @@ questions:
     requiresRevealed: [u1-sentier, u2-sentier]
     context: "Les deux sentiers que tu as parcourus ont la même largeur et la même pente."
     prompt: "Qu'est-ce qui distingue les deux sentiers ?"
-    choices:
-      - { id: a, label: "Le nombre de pas qu'il faut pour les traverser" }
-      - { id: b, label: "La couleur des fougères" }
-      - { id: c, label: "Les personnages qui y vivent" }
-    correctChoiceId: a
+    answers:
+      - "le nombre de pas"
+      - "nombre de pas"
     wrongFeedback: "Pas tout à fait. Relis ce qui change entre l'aller et le retour."
 
   - id: q-meta-anomalie-2
@@ -106,11 +102,11 @@ questions:
     requiresRevealed: [u2-chaumiere, u1-nuit]
     context: "La forge et la chaumière semblent pourtant reliées au même chemin."
     prompt: "Quel lien unit la nuit du passage à la forge aux vitraux ?"
-    choices:
-      - { id: a, label: "Les deux se déroulent la même nuit de l'année" }
-      - { id: b, label: "Elles se produisent dans des univers différents, sans lien" }
-      - { id: c, label: "L'une est la copie de l'autre" }
-    correctChoiceId: a
+    answers:
+      - "elles ont lieu la même nuit"
+      - "la même nuit"
+      - "elles se déroulent la même nuit"
+      - "la même nuit de l'année"
     wrongFeedback: "Ce n'est pas la bonne réponse. Regarde à quel moment ces nuits surviennent."
 
   - id: q-meta-anomalie-3
@@ -119,11 +115,10 @@ questions:
     requiresRevealed: [u2-nuit, u1-nuit]
     context: "Un fragment renvoie un reflet qui n'existe dans aucun univers."
     prompt: "Que reflète le fragment de verre ?"
-    choices:
-      - { id: a, label: "Une scène de l'autre monde, une nuit sur deux" }
-      - { id: b, label: "Un chemin qui n'existe dans aucun des deux univers" }
-      - { id: c, label: "Le visage de Gorm" }
-    correctChoiceId: b
+    answers:
+      - "un chemin inexistant"
+      - "un chemin inconnu"
+      - "un chemin qui n'existe dans aucun univers"
     wrongFeedback: "Pas encore. Pense à ce qui n'appartient à aucun univers connu."
 
   - id: q-meta-finale
@@ -132,11 +127,9 @@ questions:
     requiresRevealed: [meta-anomalie-2, u1-serment]
     context: "Le serment brisé et la pierre déplacée doivent être reliés pour refermer l'anomalie."
     prompt: "Quel serment relie la pierre déplacée à l'anomalie ?"
-    choices:
-      - { id: a, label: "Celui de protéger la lisière" }
-      - { id: b, label: "Celui d'enterrer les cendres" }
-      - { id: c, label: "Celui de ne jamais franchir le sentier" }
-    correctChoiceId: a
+    answers:
+      - "protéger la lisière"
+      - "le serment de protéger la lisière"
     wrongFeedback: "Ce n'est pas ce serment. Relis la promesse gravée sous les ronces."
 
 ending:

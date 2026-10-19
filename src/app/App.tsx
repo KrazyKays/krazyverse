@@ -115,7 +115,7 @@ export function App() {
         <QuestionDialog
           universe={currentUniverse}
           question={activeQuestion}
-          onAnswer={(choiceId) => game.answer(currentUniverse.id, activeQuestion.id, choiceId)}
+          onAnswer={(answer) => game.answer(currentUniverse.id, activeQuestion.id, answer)}
           onClose={() => setActiveQuestionId(null)}
         />
       )}

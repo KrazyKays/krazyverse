@@ -394,21 +394,35 @@ button.link {
   font-size: 1.1rem;
 }
 
-.choices {
-  list-style: none;
-  padding: 0;
-  margin: 0.5rem 0;
+.answer-form {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 0.5rem;
+  margin: 0.5rem 0;
 }
 
-.choice {
-  width: 100%;
-  text-align: left;
+.answer-form label {
+  flex-basis: 100%;
+  color: var(--ink-soft);
 }
 
-.choice--wrong {
+.answer-input {
+  flex: 1 1 12rem;
+  font: inherit;
+  color: var(--ink);
+  background: var(--bg);
+  border: 1px solid var(--edge);
+  border-radius: 6px;
+  padding: 0.5rem 0.6rem;
+}
+
+.answer-input:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.answer-input[aria-invalid='true'] {
   border-color: var(--danger);
 }
 

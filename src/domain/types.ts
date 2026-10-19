@@ -40,11 +40,6 @@ export interface Echo {
   targetNodeId: string;
 }
 
-export interface Choice {
-  id: string;
-  label: string;
-}
-
 export type QuestionAccess = 'adjacent' | 'enquete';
 
 export interface Question {
@@ -54,8 +49,7 @@ export interface Question {
   requiresRevealed: string[];
   context: string;
   prompt: string;
-  choices: Choice[];
-  correctChoiceId: string;
+  answers: string[];
   wrongFeedback: string;
 }
 

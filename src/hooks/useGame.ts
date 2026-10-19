@@ -11,7 +11,7 @@ export interface GameController {
   persistent: boolean;
   saveFailed: boolean;
   selectUniverse: (universeId: string) => void;
-  answer: (universeId: string, questionId: string, choiceId: string) => boolean;
+  answer: (universeId: string, questionId: string, answer: string) => boolean;
   reset: () => void;
 }
 
@@ -34,8 +34,8 @@ export function useGame(): GameController {
   );
 
   const answer = useCallback(
-    (universeId: string, questionId: string, choiceId: string) => {
-      const result = answerQuestion(state, universes, universeId, questionId, choiceId);
+    (universeId: string, questionId: string, answer: string) => {
+      const result = answerQuestion(state, universes, universeId, questionId, answer);
       if (result.correct) commit(result.state);
       return result.correct;
     },

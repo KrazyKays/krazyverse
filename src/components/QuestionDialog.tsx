@@ -1,26 +1,29 @@
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import type { Question, Universe } from '../domain/types';
 import { Dialog } from './Dialog';
 
 interface QuestionDialogProps {
   universe: Universe;
   question: Question;
-  onAnswer: (choiceId: string) => boolean;
+  onAnswer: (answer: string) => boolean;
   onClose: () => void;
 }
 
 export function QuestionDialog({ universe, question, onAnswer, onClose }: QuestionDialogProps) {
-  const [wrongChoiceId, setWrongChoiceId] = useState<string | null>(null);
+  const [text, setText] = useState('');
+  const [wrong, setWrong] = useState(false);
   const [solved, setSolved] = useState(false);
   const targetTitle = universe.nodeById.get(question.targetNodeId)?.title ?? '';
+  const inputId = `answer-${question.id}`;
 
-  const choose = (choiceId: string) => {
+  const submit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     if (solved) return;
-    if (onAnswer(choiceId)) {
-      setWrongChoiceId(null);
+    if (onAnswer(text)) {
+      setWrong(false);
       setSolved(true);
     } else {
-      setWrongChoiceId(choiceId);
+      setWrong(true);
     }
   };
 
@@ -39,20 +42,23 @@ export function QuestionDialog({ universe, question, onAnswer, onClose }: Questi
           </div>
         ) : (
           <>
-            <ul className="choices">
-              {question.choices.map((choice) => (
-                <li key={choice.id}>
-                  <button
-                    type="button"
-                    className={`choice${wrongChoiceId === choice.id ? ' choice--wrong' : ''}`}
-                    onClick={() => choose(choice.id)}
-                  >
-                    {choice.label}
-                  </button>
-                </li>
-              ))}
-            </ul>
-            {wrongChoiceId && (
+            <form className="answer-form" onSubmit={submit}>
+              <label htmlFor={inputId}>Ta réponse</label>
+              <input
+                id={inputId}
+                className="answer-input"
+                type="text"
+                autoComplete="off"
+                autoFocus
+                value={text}
+                aria-invalid={wrong}
+                onChange={(event) => setText(event.target.value)}
+              />
+              <button type="submit" className="primary">
+                Valider
+              </button>
+            </form>
+            {wrong && (
               <p className="question-feedback" role="alert">
                 {question.wrongFeedback}
               </p>

@@ -1,3 +1,4 @@
+import { isAnswerAccepted } from './answers';
 import { computeVisibility } from './visibility';
 import type { GameState, JournalEntry, Question, Universe } from './types';
 
@@ -105,14 +106,14 @@ export function answerQuestion(
   universes: UniverseMap,
   universeId: string,
   questionId: string,
-  choiceId: string,
+  answer: string,
 ): { state: GameState; correct: boolean } {
   const universe = universes[universeId];
   const question = universe?.questions.find((candidate) => candidate.id === questionId);
   if (!universe || !question || !isQuestionAvailable(state, universe, question)) {
     return { state, correct: false };
   }
-  if (choiceId !== question.correctChoiceId) {
+  if (!isAnswerAccepted(answer, question.answers)) {
     return { state, correct: false };
   }
 
