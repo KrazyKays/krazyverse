@@ -202,6 +202,30 @@ button.link {
   gap: 0.35rem;
 }
 
+.graph-legend {
+  list-style: none;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.1rem;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+.graph-legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.legend-icon {
+  width: 1.6rem;
+  height: 1.6rem;
+  flex: none;
+  overflow: visible;
+}
+
 .edge {
   stroke: var(--edge);
   stroke-width: 1.5;

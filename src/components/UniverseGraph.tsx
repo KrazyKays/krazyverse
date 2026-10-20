@@ -1,7 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { KeyboardEvent as ReactKeyboardEvent, PointerEvent as ReactPointerEvent } from 'react';
+import type {
+  KeyboardEvent as ReactKeyboardEvent,
+  MouseEvent as ReactMouseEvent,
+  PointerEvent as ReactPointerEvent,
+} from 'react';
 import { computeVisibility, visibleRelationIds } from '../domain/visibility';
 import type { GameState, NodeKind, Question, Universe } from '../domain/types';
+import { KIND_LABELS } from './SidePanel';
 
 const VIEW_WIDTH = 1000;
 const VIEW_HEIGHT = 720;
@@ -23,6 +28,7 @@ interface UniverseGraphProps {
   selectedId: string | null;
   questions: Question[];
   onSelect: (nodeId: string) => void;
+  onDeselect: () => void;
   onOpenQuestion: (questionId: string) => void;
 }
 
@@ -32,11 +38,13 @@ export function UniverseGraph({
   selectedId,
   questions,
   onSelect,
+  onDeselect,
   onOpenQuestion,
 }: UniverseGraphProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [view, setView] = useState<View>(INITIAL_VIEW);
-  const dragRef = useRef<{ x: number; y: number; pointerId: number; moved: boolean } | null>(null);
+  const dragRef = useRef<{ x: number; y: number; pointerId: number } | null>(null);
+  const movedRef = useRef(false);
 
   const visibility = useMemo(
     () => computeVisibility(universe, new Set(state.revealed[universe.id] ?? [])),
@@ -61,7 +69,8 @@ export function UniverseGraph({
   }, []);
 
   const onPointerDown = (event: ReactPointerEvent<SVGSVGElement>) => {
-    dragRef.current = { x: event.clientX, y: event.clientY, pointerId: event.pointerId, moved: false };
+    dragRef.current = { x: event.clientX, y: event.clientY, pointerId: event.pointerId };
+    movedRef.current = false;
   };
 
   const onPointerMove = (event: ReactPointerEvent<SVGSVGElement>) => {
@@ -70,12 +79,12 @@ export function UniverseGraph({
     if (!drag || !svg) return;
     const dx = event.clientX - drag.x;
     const dy = event.clientY - drag.y;
-    if (!drag.moved && Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
-    if (!drag.moved) {
+    if (!movedRef.current && Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
+    if (!movedRef.current) {
       // Capturing on pointerdown would redirect the click to the svg and swallow node clicks.
       svg.setPointerCapture(drag.pointerId);
     }
-    drag.moved = true;
+    movedRef.current = true;
     drag.x = event.clientX;
     drag.y = event.clientY;
     const unit = VIEW_WIDTH / svg.clientWidth;
@@ -86,12 +95,18 @@ export function UniverseGraph({
     dragRef.current = null;
   };
 
+  const onBackgroundClick = (event: ReactMouseEvent<SVGSVGElement>) => {
+    if (movedRef.current) return;
+    if ((event.target as Element).closest('.node')) return;
+    onDeselect();
+  };
+
   const zoomBy = (factor: number) => {
     setView((current) => ({ ...current, scale: clampScale(current.scale * factor) }));
   };
 
   const activate = (action: () => void) => {
-    if (dragRef.current?.moved) return;
+    if (movedRef.current) return;
     action();
   };
 
@@ -114,6 +129,7 @@ export function UniverseGraph({
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
+        onClick={onBackgroundClick}
       >
         <g transform={`translate(${view.tx} ${view.ty}) scale(${view.scale})`}>
           <g className="graph-edges">
@@ -216,4 +232,34 @@ export function NodeShape({ kind }: { kind: NodeKind }) {
     return <rect x={-12} y={-12} width={24} height={24} rx={3} className="shape" />;
   }
   return <polygon points="0,-16 16,0 0,16 -16,0" className="shape" />;
+}
+
+const NODE_KINDS: NodeKind[] = ['character', 'place', 'event'];
+
+export function GraphLegend() {
+  return (
+    <ul className="graph-legend" aria-label="Légende de la toile">
+      {NODE_KINDS.map((kind) => (
+        <li key={kind}>
+          <svg className="legend-icon" viewBox="-16 -16 32 32" aria-hidden="true">
+            <g className="node">
+              <NodeShape kind={kind} />
+            </g>
+          </svg>
+          {KIND_LABELS[kind]}
+        </li>
+      ))}
+      <li>
+        <svg className="legend-icon" viewBox="-16 -16 32 32" aria-hidden="true">
+          <g className="node node--censored">
+            <circle r={12} />
+            <text className="node-mark" textAnchor="middle" dominantBaseline="central">
+              ?
+            </text>
+          </g>
+        </svg>
+        Nœud censuré : une enquête le révèle
+      </li>
+    </ul>
+  );
 }

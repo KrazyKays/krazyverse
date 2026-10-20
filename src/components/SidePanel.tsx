@@ -1,11 +1,11 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { isRevealed } from '../domain/progression';
 import type { UniverseMap } from '../domain/progression';
 import { neighbourIds } from '../domain/universe';
 import { computeVisibility } from '../domain/visibility';
 import type { GameState, NodeKind, Universe } from '../domain/types';
 
-const KIND_LABELS: Record<NodeKind, string> = {
+export const KIND_LABELS: Record<NodeKind, string> = {
   character: 'Personnage',
   place: 'Lieu',
   event: 'Événement',
@@ -20,6 +20,7 @@ interface SidePanelProps {
 }
 
 export function SidePanel({ universe, universes, state, selectedNodeId, onSelect }: SidePanelProps) {
+  const panelRef = useRef<HTMLElement>(null);
   const visibility = useMemo(
     () => computeVisibility(universe, new Set(state.revealed[universe.id] ?? [])),
     [universe, state.revealed],
@@ -27,8 +28,14 @@ export function SidePanel({ universe, universes, state, selectedNodeId, onSelect
   const selected = selectedNodeId ? universe.nodeById.get(selectedNodeId) : undefined;
   const readable = selected && visibility.get(selected.id) === 'revealed' ? selected : undefined;
 
+  useEffect(() => {
+    if (selectedNodeId === null || !window.matchMedia('(max-width: 860px)').matches) return;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    panelRef.current?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+  }, [selectedNodeId]);
+
   return (
-    <aside className="side-panel" aria-label="Panneau de lecture">
+    <aside ref={panelRef} className="side-panel" aria-label="Panneau de lecture">
       {readable ? (
         <article className="reading">
           <p className="kind">{KIND_LABELS[readable.kind]}</p>

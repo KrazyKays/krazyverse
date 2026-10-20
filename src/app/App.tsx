@@ -1,9 +1,9 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { JournalDialog } from '../components/JournalDialog';
 import { QuestionDialog } from '../components/QuestionDialog';
 import { ResetDialog } from '../components/ResetDialog';
 import { SidePanel } from '../components/SidePanel';
-import { UniverseGraph } from '../components/UniverseGraph';
+import { GraphLegend, UniverseGraph } from '../components/UniverseGraph';
 import { UniverseSelector } from '../components/UniverseSelector';
 import { META_ID, UNIVERSE_ORDER, universes } from '../data';
 import { availableQuestions, centralRemaining, isEnded } from '../domain/progression';
@@ -30,6 +30,16 @@ export function App() {
     [state, currentUniverse],
   );
   const activeQuestion = currentUniverse?.questions.find((question) => question.id === activeQuestionId);
+  const dialogOpen = activeQuestion !== undefined || journalOpen || resetOpen;
+
+  useEffect(() => {
+    if (selectedNodeId === null || dialogOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setSelectedNodeId(null);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [selectedNodeId, dialogOpen]);
 
   if (!currentUniverse || !central) {
     return <p className="fatal">Données du jeu introuvables.</p>;
@@ -117,8 +127,10 @@ export function App() {
             selectedId={selectedNodeId}
             questions={questions}
             onSelect={setSelectedNodeId}
+            onDeselect={() => setSelectedNodeId(null)}
             onOpenQuestion={setActiveQuestionId}
           />
+          <GraphLegend />
         </section>
 
         <SidePanel
