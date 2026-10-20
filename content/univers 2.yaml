@@ -1,7 +1,6 @@
-# Univers de conte « Les Forges de Verre ».
 # Référence : les ids doivent être uniques et les liens doivent pointer vers des ids existants.
 
-id: tale-forges-de-verre
+id: universe2
 name: "Univers 2345"
 kind: tale
 tagline: "Un univers hasardeux et chaotique, rien n'est prévisible, sauf le fait de ne pas savoir ce qui va arriver."

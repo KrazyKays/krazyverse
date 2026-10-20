@@ -1,7 +1,6 @@
-# Univers de conte « Les Bois de Brume ».
 # Référence : les ids doivent être uniques et les liens doivent pointer vers des ids existants.
 
-id: tale-bois-de-brume
+id: universe1
 name: "Univers 42"
 kind: tale
 tagline: "Un univers positif et joyeux où le mensonge n'existe pas."

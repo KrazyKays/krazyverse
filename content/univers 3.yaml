@@ -1,0 +1,16 @@
+# Référence : les ids doivent être uniques et les liens doivent pointer vers des ids existants.
+
+id: universe3
+name: "Univers 12345"
+kind: tale
+tagline: "Un univers hasardeux et chaotique, rien n'est prévisible, sauf le fait de ne pas savoir ce qui va arriver."
+
+nodes:
+
+  [ { id: u3-centre, kind: place, title: Centre de l'univers, position: { x: 240, y: 360 }, homologueKey: centre, intro: "Dans cette univers tout est magnifique et innocent, le mensonge n'existe pas et tout le monde vit une existence parfaite, au premier abord ...", revealedAtStart: true } ]
+
+relations: []
+
+questions:
+
+  []

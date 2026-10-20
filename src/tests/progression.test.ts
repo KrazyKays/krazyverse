@@ -13,7 +13,7 @@ import { buildUniverse } from '../domain/universe';
 import { computeVisibility, visibleRelationIds } from '../domain/visibility';
 import { loadGame, sanitizeState, saveGame, SAVE_KEY } from '../storage/save';
 
-const BOIS = 'tale-bois-de-brume';
+const BOIS = 'universe1';
 const FORGES = 'tale-forges-de-verre';
 const META = 'meta-enquete';
 

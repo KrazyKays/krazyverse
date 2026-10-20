@@ -4,7 +4,7 @@ import type { GameState, Question, Universe } from './types';
 
 export type UniverseMap = Record<string, Universe>;
 
-export const START_UNIVERSE_ID = 'tale-bois-de-brume';
+export const START_UNIVERSE_ID = 'universe1';
 
 export function createInitialState(universes: UniverseMap): GameState {
   let state: GameState = {
