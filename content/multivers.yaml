@@ -4,25 +4,25 @@
 id: meta-enquete
 name: "Le multivers"
 kind: meta
-tagline: "Hors des contes, une anomalie modifie les lois du multivers."
+tagline: "Chaque univers a ses propres règles, mais à partir de quel moment peut-on qualifier un univers de défaillant ? La mission qui vous a été confiée est de parcourir ces univers, dans un premier temps pour assimiler leurs spécificités, et cela vous conduira peut-être à faire des découvertes qui vous permettrons de répondre aux questions qui régissent le monde entier."
 
 nodes:
   - id: meta-origine
     kind: event
-    title: "Le premier fil"
+    title: "Les univers et leurs règles"
     position: { x: 500, y: 120 }
     homologueKey: meta-origine
-    intro: "Un personnage porte deux rôles opposés selon l'univers où on le regarde. Ce n'est pas un simple malentendu : il existe une cause, et elle n'a pas encore de nom."
+    intro: "Pourquoi les règles sont elles créées ? Il semblerait que chaque univers naisse avec une règle qui lui est propre, qui nous permet de les distinguer les uns des autres, mais à quoi cela sert-il concrètement ? Il semblerait qu'une force cosmique cherche à ce que les évènements qui se déroulent dans chaque univers diffèrent à tout prix."
     central:
       required: true
     revealedAtStart: true
 
   - id: meta-anomalie-1
     kind: event
-    title: "Les pas qui reviennent"
+    title: "La parasyndèse"
     position: { x: 300, y: 300 }
-    homologueKey: meta-anomalie-1
-    intro: "Les mêmes chemins apparaissent dans deux récits sans jamais se croiser. Un sentier plus long au retour qu'à l'aller n'est pas une coïncidence : il appartient à deux mondes à la fois."
+    homologueKey: ""
+    intro: "On nomme parasyndèse, un évènement qui se déroule de façon similaire dans deux univers différents, il a pour conséquence de"
     central:
       required: true
 
@@ -63,18 +63,16 @@ relations:
   - { id: rm-anomalie-2-finale, from: meta-anomalie-2, to: meta-finale }
 
 questions:
-  
+
   - id: q-meta-anomalie-1
     targetNodeId: meta-anomalie-1
     access: enquete
-    requiresRevealed:
-      - u1-sentier
-    context: "Les deux sentiers que tu as parcourus ont la même largeur et la même pente."
-    prompt: "Qu'est-ce qui distingue les deux sentiers ?"
+    requiresRevealed: []
+    context: "Personne ne sais ce qui pourrait se passer si deux évènements, dans deux univers distincts se déroulaient de façon totalement identique."
+    prompt: "Quel est le nom de ce phénomène ?"
     answers:
-      - "le nombre de pas"
-      - "nombre de pas"
-    wrongFeedback: "Pas tout à fait. Relis ce qui change entre l'aller et le retour."
+      - "parasyndèse"
+    wrongFeedback: "Mauvaise réponse, il existe un terme spécifique."
 
   - id: q-meta-anomalie-2
     targetNodeId: meta-anomalie-2
@@ -116,5 +114,5 @@ questions:
     wrongFeedback: "Ce n'est pas ce serment. Relis la promesse gravée sous les ronces."
 
 ending:
-  title: "Le fil est rétabli"
-  body: "La pierre est remise à sa place, et le sentier retrouve sa longueur ordinaire. Les deux univers se détachent l'un de l'autre sans perdre leurs souvenirs. Les univers restent consultables, et ta progression est conservée."
+  title: "Votre mission est terminée !"
+  body: "Fin du jeu."

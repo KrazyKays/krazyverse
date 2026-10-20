@@ -1,13 +1,11 @@
 import { useRef, useState, type FormEvent } from 'react';
-import { NodeShape } from '../components/UniverseGraph';
+import { GraphEdges, RevealedNode, VIEW_HEIGHT, VIEW_WIDTH } from '../components/graph';
+import { KIND_OPTIONS } from '../components/labels';
 import type { NodeKind, Universe } from '../domain/types';
 import { sendContentEdits, type Commit, type CommitBatch, type ContentEdit } from './api';
 import { nodeIdError } from './nodeRename';
-import { KIND_OPTIONS, NodeEditor } from './NodeEditor';
+import { NodeEditor } from './NodeEditor';
 import { SelectField, TextField } from './SetupFields';
-
-const VIEW_WIDTH = 1000;
-const VIEW_HEIGHT = 720;
 
 interface SetupScreenProps {
   universes: Universe[];
@@ -198,52 +196,16 @@ function SetupGraph({ universe, selectedId, onSelect }: SetupGraphProps) {
   return (
     <div className="graph-wrapper">
       <svg className="graph" viewBox={`0 0 ${VIEW_WIDTH} ${VIEW_HEIGHT}`} role="group" aria-label={`Graphe de ${universe.name}`}>
-        <g className="graph-edges">
-          {universe.relations.map((relation) => {
-            const from = universe.nodeById.get(relation.from)?.position;
-            const to = universe.nodeById.get(relation.to)?.position;
-            if (!from || !to) return null;
-            const active = relation.from === selectedId || relation.to === selectedId;
-            return (
-              <line
-                key={relation.id}
-                x1={from.x}
-                y1={from.y}
-                x2={to.x}
-                y2={to.y}
-                className={active ? 'edge edge--active' : 'edge'}
-              />
-            );
-          })}
-        </g>
+        <GraphEdges universe={universe} relations={universe.relations} selectedId={selectedId} />
         <g className="graph-nodes">
-          {universe.nodes.map((node) => {
-            const selected = node.id === selectedId;
-            const select = () => onSelect(node.id);
-            return (
-              <g
-                key={node.id}
-                className={`node node--revealed${selected ? ' node--selected' : ''}`}
-                transform={`translate(${node.position.x} ${node.position.y})`}
-                role="button"
-                tabIndex={0}
-                aria-pressed={selected}
-                aria-label={node.title}
-                onClick={select}
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault();
-                    select();
-                  }
-                }}
-              >
-                <NodeShape kind={node.kind} />
-                <text className="node-label" textAnchor="middle" y={30}>
-                  {node.title}
-                </text>
-              </g>
-            );
-          })}
+          {universe.nodes.map((node) => (
+            <RevealedNode
+              key={node.id}
+              node={node}
+              selected={node.id === selectedId}
+              onSelect={() => onSelect(node.id)}
+            />
+          ))}
         </g>
       </svg>
     </div>

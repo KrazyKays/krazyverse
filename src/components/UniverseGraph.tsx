@@ -1,15 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type {
-  KeyboardEvent as ReactKeyboardEvent,
-  MouseEvent as ReactMouseEvent,
-  PointerEvent as ReactPointerEvent,
-} from 'react';
-import { computeVisibility, visibleRelationIds } from '../domain/visibility';
-import type { GameState, NodeKind, Question, Universe } from '../domain/types';
-import { KIND_LABELS } from './SidePanel';
+import type { MouseEvent as ReactMouseEvent, PointerEvent as ReactPointerEvent } from 'react';
+import { visibilityFor, visibleRelationIds } from '../domain/visibility';
+import type { GameState, Question, Universe } from '../domain/types';
+import { GraphEdges, GraphLegend, onActivateKey, RevealedNode, VIEW_HEIGHT, VIEW_WIDTH } from './graph';
 
-const VIEW_WIDTH = 1000;
-const VIEW_HEIGHT = 720;
 const MIN_SCALE = 0.5;
 const MAX_SCALE = 2.5;
 const DRAG_THRESHOLD = 4;
@@ -46,11 +40,8 @@ export function UniverseGraph({
   const dragRef = useRef<{ x: number; y: number; pointerId: number } | null>(null);
   const movedRef = useRef(false);
 
-  const visibility = useMemo(
-    () => computeVisibility(universe, new Set(state.revealed[universe.id] ?? [])),
-    [universe, state.revealed],
-  );
-  const relationIds = useMemo(() => new Set(visibleRelationIds(universe, visibility)), [universe, visibility]);
+  const visibility = useMemo(() => visibilityFor(state, universe), [state, universe]);
+  const relationIds = useMemo(() => visibleRelationIds(universe, visibility), [universe, visibility]);
   const investigationByNodeId = useMemo(
     () => new Map(questions.map((question) => [question.targetNodeId, question])),
     [questions],
@@ -110,13 +101,6 @@ export function UniverseGraph({
     action();
   };
 
-  const onActivateKey = (event: ReactKeyboardEvent<SVGGElement>, action: () => void) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      action();
-    }
-  };
-
   return (
     <div className="graph-wrapper">
       <svg
@@ -132,26 +116,11 @@ export function UniverseGraph({
         onClick={onBackgroundClick}
       >
         <g transform={`translate(${view.tx} ${view.ty}) scale(${view.scale})`}>
-          <g className="graph-edges">
-            {universe.relations
-              .filter((relation) => relationIds.has(relation.id))
-              .map((relation) => {
-                const from = universe.nodeById.get(relation.from)?.position;
-                const to = universe.nodeById.get(relation.to)?.position;
-                if (!from || !to) return null;
-                const active = relation.from === selectedId || relation.to === selectedId;
-                return (
-                  <line
-                    key={relation.id}
-                    x1={from.x}
-                    y1={from.y}
-                    x2={to.x}
-                    y2={to.y}
-                    className={active ? 'edge edge--active' : 'edge'}
-                  />
-                );
-              })}
-          </g>
+          <GraphEdges
+            universe={universe}
+            relations={universe.relations.filter((relation) => relationIds.has(relation.id))}
+            selectedId={selectedId}
+          />
           <g className="graph-nodes">
             {universe.nodes.map((node) => {
               const status = visibility.get(node.id) ?? 'hidden';
@@ -180,25 +149,15 @@ export function UniverseGraph({
                 );
               }
 
-              const selected = node.id === selectedId;
               const select = () => onSelect(node.id);
               return (
-                <g
+                <RevealedNode
                   key={node.id}
-                  className={`node node--revealed${selected ? ' node--selected' : ''}`}
-                  transform={`translate(${x} ${y})`}
-                  role="button"
-                  tabIndex={0}
-                  aria-pressed={selected}
-                  aria-label={node.title}
+                  node={node}
+                  selected={node.id === selectedId}
+                  onSelect={select}
                   onClick={() => activate(select)}
-                  onKeyDown={(event) => onActivateKey(event, select)}
-                >
-                  <NodeShape kind={node.kind} />
-                  <text className="node-label" textAnchor="middle" y={30}>
-                    {node.title}
-                  </text>
-                </g>
+                />
               );
             })}
           </g>
@@ -224,44 +183,4 @@ export function UniverseGraph({
 
 function clampScale(value: number): number {
   return Math.min(MAX_SCALE, Math.max(MIN_SCALE, value));
-}
-
-export function NodeShape({ kind }: { kind: NodeKind }) {
-  if (kind === 'character') {
-    return <circle r={14} className="shape" />;
-  }
-  if (kind === 'place') {
-    return <rect x={-12} y={-12} width={24} height={24} rx={3} className="shape" />;
-  }
-  return <polygon points="0,-16 16,0 0,16 -16,0" className="shape" />;
-}
-
-const NODE_KINDS: NodeKind[] = ['character', 'place', 'event'];
-
-export function GraphLegend() {
-  return (
-    <ul className="graph-legend" aria-label="Légende de la toile">
-      {NODE_KINDS.map((kind) => (
-        <li key={kind}>
-          <svg className="legend-icon" viewBox="-16 -16 32 32" aria-hidden="true">
-            <g className="node">
-              <NodeShape kind={kind} />
-            </g>
-          </svg>
-          {KIND_LABELS[kind]}
-        </li>
-      ))}
-      <li>
-        <svg className="legend-icon" viewBox="-16 -16 32 32" aria-hidden="true">
-          <g className="node node--censored">
-            <circle r={12} />
-            <text className="node-mark" textAnchor="middle" dominantBaseline="central">
-              ?
-            </text>
-          </g>
-        </svg>
-        Nœud censuré : une question le révèle
-      </li>
-    </ul>
-  );
 }

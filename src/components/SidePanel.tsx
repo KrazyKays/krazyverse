@@ -1,12 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { computeVisibility } from '../domain/visibility';
-import type { GameState, NodeKind, Universe } from '../domain/types';
-
-export const KIND_LABELS: Record<NodeKind, string> = {
-  character: 'Personnage',
-  place: 'Lieu',
-  event: 'Événement',
-};
+import { visibilityFor } from '../domain/visibility';
+import type { GameState, Universe } from '../domain/types';
+import { KIND_LABELS } from './labels';
 
 interface SidePanelProps {
   universe: Universe;
@@ -16,10 +11,7 @@ interface SidePanelProps {
 
 export function SidePanel({ universe, state, selectedNodeId }: SidePanelProps) {
   const panelRef = useRef<HTMLElement>(null);
-  const visibility = useMemo(
-    () => computeVisibility(universe, new Set(state.revealed[universe.id] ?? [])),
-    [universe, state.revealed],
-  );
+  const visibility = useMemo(() => visibilityFor(state, universe), [state, universe]);
   const selected = selectedNodeId ? universe.nodeById.get(selectedNodeId) : undefined;
   const readable = selected && visibility.get(selected.id) === 'revealed' ? selected : undefined;
 
@@ -48,4 +40,3 @@ export function SidePanel({ universe, state, selectedNodeId }: SidePanelProps) {
     </aside>
   );
 }
-

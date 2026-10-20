@@ -1,0 +1,44 @@
+id: fixture-meta
+name: Fixture centrale
+kind: meta
+tagline: Univers central de test.
+ending:
+  title: Fin de test
+  body: Fin.
+nodes:
+  - id: m-origine
+    kind: event
+    title: Origine
+    position: { x: 500, y: 360 }
+    homologueKey: origine
+    intro: ''
+    central:
+      required: true
+  - id: m-finale
+    kind: event
+    title: Finale
+    position: { x: 500, y: 200 }
+    homologueKey: finale
+    intro: ''
+    central:
+      required: true
+    finale: true
+relations:
+  - { id: r-m-origine-finale, from: m-origine, to: m-finale }
+questions:
+  - id: qm-origine
+    targetNodeId: m-origine
+    access: enquete
+    requiresRevealed: [a-centre]
+    context: ''
+    prompt: Où ça commence ?
+    answers: ["origine"]
+    wrongFeedback: Non.
+  - id: qm-finale
+    targetNodeId: m-finale
+    access: enquete
+    requiresRevealed: [m-origine]
+    context: ''
+    prompt: Et la fin ?
+    answers: ["fin"]
+    wrongFeedback: Non.

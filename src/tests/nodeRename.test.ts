@@ -1,15 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { buildUniverse } from '../domain/universe';
-import type { Question, StoryNode } from '../domain/types';
 import { nodeIdError, planNodeRename } from '../setup/nodeRename';
-
-function node(id: string): StoryNode {
-  return { id, kind: 'place', title: id, position: { x: 0, y: 0 }, homologueKey: id, intro: '' };
-}
-
-function question(id: string, targetNodeId: string, requiresRevealed: string[] = [], alsoRevealed: string[] = []): Question {
-  return { id, targetNodeId, access: 'adjacent', requiresRevealed, alsoRevealed, context: '', prompt: '', answers: ['x'], wrongFeedback: '' };
-}
+import { node, question } from './fixtures/builders';
 
 const universes = [
   buildUniverse({
@@ -19,7 +11,10 @@ const universes = [
     tagline: '',
     nodes: [node('n1'), node('n2')],
     relations: [{ id: 'r1', from: 'n1', to: 'n2' }],
-    questions: [question('q1', 'n1', [], ['b1']), question('q2', 'n2', ['n1'], ['n1'])],
+    questions: [
+      question('q1', 'n1', { alsoRevealed: ['b1'] }),
+      question('q2', 'n2', { requiresRevealed: ['n1'], alsoRevealed: ['n1'] }),
+    ],
   }),
   buildUniverse({
     id: 'b',
@@ -28,7 +23,7 @@ const universes = [
     tagline: '',
     nodes: [node('b1')],
     relations: [],
-    questions: [question('qb', 'b1', ['n1', 'b1'], ['n1'])],
+    questions: [question('qb', 'b1', { requiresRevealed: ['n1', 'b1'], alsoRevealed: ['n1'] })],
   }),
 ];
 

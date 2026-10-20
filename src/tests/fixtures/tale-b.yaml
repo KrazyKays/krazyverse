@@ -1,0 +1,37 @@
+id: fixture-tale-b
+name: Fixture B
+kind: tale
+tagline: Univers de test.
+nodes:
+  - id: b-centre
+    kind: place
+    title: Centre B
+    position: { x: 500, y: 360 }
+    homologueKey: centre
+    intro: ''
+    revealedAtStart: true
+  - id: b-foret
+    kind: place
+    title: Forêt
+    position: { x: 300, y: 360 }
+    homologueKey: foret
+    intro: ''
+  - id: b-sentier
+    kind: place
+    title: Sentier B
+    position: { x: 300, y: 200 }
+    homologueKey: sentier
+    intro: ''
+relations:
+  - { id: r-b-centre-foret, from: b-centre, to: b-foret }
+  - { id: r-b-foret-sentier, from: b-foret, to: b-sentier }
+questions:
+  - id: qb-foret
+    targetNodeId: b-foret
+    access: adjacent
+    requiresRevealed: [a-centre]
+    alsoRevealed: [a-gorm]
+    context: ''
+    prompt: Qui marche ici ?
+    answers: ["Gorm"]
+    wrongFeedback: Non.

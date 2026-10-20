@@ -1,21 +1,12 @@
 import { useState } from 'react';
-import type { NodeKind, Question, StoryNode, Universe } from '../domain/types';
+import type { Question, StoryNode, Universe } from '../domain/types';
+import { KIND_LABELS, KIND_OPTIONS } from '../components/labels';
 import type { Commit, CommitBatch, ContentPath } from './api';
+import { uniqueId } from './ids';
 import { planNodeDeletion } from './nodeDeletion';
 import { findHomologue, planNodeCopy } from './nodeCopy';
 import { nodeIdError, planNodeRename } from './nodeRename';
 import { CheckboxField, SelectField, TextField } from './SetupFields';
-
-const KIND_LABELS: Record<NodeKind, string> = {
-  character: 'Personnage',
-  place: 'Lieu',
-  event: 'Événement',
-};
-
-export const KIND_OPTIONS = (Object.keys(KIND_LABELS) as NodeKind[]).map((kind) => ({
-  value: kind,
-  label: KIND_LABELS[kind],
-}));
 
 const ACCESS_OPTIONS = [
   { value: 'adjacent', label: 'Adjacente' },
@@ -437,24 +428,10 @@ function QuestionEditor({ universe, universes, question, commit }: QuestionEdito
 
 function newQuestionId(universes: Universe[], node: StoryNode): string {
   const taken = new Set(universes.flatMap((candidate) => candidate.questions.map((question) => question.id)));
-  const base = `q-${node.id}`;
-  let id = base;
-  let index = 2;
-  while (taken.has(id)) {
-    id = `${base}-${index}`;
-    index += 1;
-  }
-  return id;
+  return uniqueId(`q-${node.id}`, taken);
 }
 
 function newRelationId(universe: Universe, from: string, to: string): string {
   const taken = new Set(universe.relations.map((relation) => relation.id));
-  const base = `link-${from}-${to}`;
-  let id = base;
-  let index = 2;
-  while (taken.has(id)) {
-    id = `${base}-${index}`;
-    index += 1;
-  }
-  return id;
+  return uniqueId(`link-${from}-${to}`, taken);
 }

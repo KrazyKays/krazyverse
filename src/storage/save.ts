@@ -73,12 +73,12 @@ export function sanitizeState(raw: unknown, universes: UniverseMap): GameState |
   if (typeof raw !== 'object' || raw === null) return null;
   const data = raw as Record<string, unknown>;
 
-  const knownUniverseIds = Object.keys(universes);
-  const knownQuestionIds = new Set(knownUniverseIds.flatMap((id) => universes[id]?.questions.map((q) => q.id) ?? []));
+  const knownUniverses = new Set(Object.keys(universes));
+  const knownQuestionIds = new Set([...knownUniverses].flatMap((id) => universes[id]?.questions.map((q) => q.id) ?? []));
 
   if (typeof data.revealed !== 'object' || data.revealed === null) return null;
   const revealed: Record<string, string[]> = {};
-  for (const universeId of knownUniverseIds) {
+  for (const universeId of knownUniverses) {
     const ids = (data.revealed as Record<string, unknown>)[universeId];
     if (!isStringArray(ids)) continue;
     const universe = universes[universeId];
@@ -86,14 +86,13 @@ export function sanitizeState(raw: unknown, universes: UniverseMap): GameState |
   }
 
   const currentUniverseId =
-    typeof data.currentUniverseId === 'string' && knownUniverseIds.includes(data.currentUniverseId)
+    typeof data.currentUniverseId === 'string' && knownUniverses.has(data.currentUniverseId)
       ? data.currentUniverseId
       : START_UNIVERSE_ID;
 
   const pickKnown = (value: unknown, known: Set<string>): string[] =>
     isStringArray(value) ? [...new Set(value.filter((id) => known.has(id)))] : [];
 
-  const knownUniverses = new Set(knownUniverseIds);
   const visited = pickKnown(data.visited, knownUniverses);
   if (!visited.includes(START_UNIVERSE_ID)) visited.push(START_UNIVERSE_ID);
 

@@ -26,7 +26,6 @@ export function levenshtein(a: string, b: string): number {
   return previous[b.length] ?? 0;
 }
 
-
 function allowedTypos(reference: string): number {
   if (reference.length < 5) return 0;
   if (reference.length < 10) return 1;

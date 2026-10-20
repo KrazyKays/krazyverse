@@ -1,14 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { universes } from '../data';
 import { buildUniverse } from '../domain/universe';
-import type { Question, StoryNode, Universe, UniverseData } from '../domain/types';
+import type { Universe, UniverseData } from '../domain/types';
 import type { ContentPath, ScopedEdit } from '../setup/api';
 import { planNodeDeletion } from '../setup/nodeDeletion';
+import { node, question } from './fixtures/builders';
+import { fixtureUniverses } from './fixtures/universes';
 
 type Container = Record<string | number, unknown>;
 type DataSet = Record<string, UniverseData>;
-
-const allUniverses = Object.values(universes);
 
 function snapshotOf(list: Universe[]): DataSet {
   return Object.fromEntries(
@@ -64,14 +63,6 @@ function expectConsistent(data: DataSet): void {
   }
 }
 
-function node(id: string): StoryNode {
-  return { id, kind: 'place', title: id, position: { x: 0, y: 0 }, homologueKey: id, intro: '' };
-}
-
-function question(id: string, targetNodeId: string, requiresRevealed: string[] = [], alsoRevealed: string[] = []): Question {
-  return { id, targetNodeId, access: 'adjacent', requiresRevealed, alsoRevealed, context: '', prompt: '', answers: ['x'], wrongFeedback: '' };
-}
-
 const ORIGINE = 'origine';
 const AUTRE = 'autre';
 
@@ -93,19 +84,19 @@ const exampleUniverses = [
     nodes: [node('a-1')],
     relations: [],
     questions: [
-      question('q-req', 'a-1', ['n-cible']),
-      question('q-rev', 'a-1', [], ['n-cible']),
-      question('q-mixte', 'a-1', ['n-garde'], ['n-cible']),
+      question('q-req', 'a-1', { requiresRevealed: ['n-cible'] }),
+      question('q-rev', 'a-1', { alsoRevealed: ['n-cible'] }),
+      question('q-mixte', 'a-1', { requiresRevealed: ['n-garde'], alsoRevealed: ['n-cible'] }),
     ],
   }),
 ];
 
 describe('suppression de nœud', () => {
-  for (const universe of allUniverses) {
+  for (const universe of fixtureUniverses) {
     for (const node of universe.nodes) {
       it(`supprime ${node.id} sans laisser de référence cassée`, () => {
-        const data = snapshotOf(allUniverses);
-        const plan = planNodeDeletion(allUniverses, universe.id, node.id);
+        const data = snapshotOf(fixtureUniverses);
+        const plan = planNodeDeletion(fixtureUniverses, universe.id, node.id);
 
         for (const edit of plan.edits) applyEdit(data, edit);
 

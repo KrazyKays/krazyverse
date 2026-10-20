@@ -12,17 +12,17 @@ export function planNodeDeletion(universes: Universe[], universeId: string, node
 
   const edits: ScopedEdit[] = [];
   const counts = { relations: 0, questions: 0, requirements: 0, reveals: 0 };
-  const remove = (targetUniverseId: string, path: ContentPath) => edits.push({ universeId: targetUniverseId, op: 'delete', path });
+  const remove = (path: ContentPath) => edits.push({ universeId: universe.id, op: 'delete', path });
 
   const removedQuestionIds = new Set(
     universe.questions.filter((question) => question.targetNodeId === nodeId).map((question) => question.id),
   );
-  for (const questionId of removedQuestionIds) remove(universe.id, ['questions', { id: questionId }]);
+  for (const questionId of removedQuestionIds) remove(['questions', { id: questionId }]);
   counts.questions = removedQuestionIds.size;
 
   for (const relation of universe.relations) {
     if (relation.from !== nodeId && relation.to !== nodeId) continue;
-    remove(universe.id, ['relations', { id: relation.id }]);
+    remove(['relations', { id: relation.id }]);
     counts.relations += 1;
   }
 
@@ -50,6 +50,6 @@ export function planNodeDeletion(universes: Universe[], universeId: string, node
     }
   }
 
-  remove(universe.id, ['nodes', { id: nodeId }]);
+  remove(['nodes', { id: nodeId }]);
   return { edits, counts };
 }

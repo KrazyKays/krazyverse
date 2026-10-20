@@ -54,7 +54,6 @@ export interface UniverseData {
 
 export interface Universe extends UniverseData {
   nodeById: Map<string, StoryNode>;
-  relationIdsByNode: Map<string, string[]>;
 }
 
 export type JournalEntry =

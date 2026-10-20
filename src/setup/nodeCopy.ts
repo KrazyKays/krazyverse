@@ -1,5 +1,6 @@
 import type { Question, Relation, StoryNode, Universe } from '../domain/types';
 import type { ScopedEdit } from './api';
+import { uniqueId } from './ids';
 
 export interface NodeCopyPlan {
   edits: ScopedEdit[];
@@ -24,7 +25,7 @@ export function planNodeCopy(universes: Universe[], sourceId: string, nodeId: st
   const takenRelationIds = new Set(universes.flatMap((universe) => universe.relations.map((relation) => relation.id)));
 
   const newNodeId = uniqueId(`${node.id}-copie`, takenNodeIds);
-  const counts = { questions: 0, relations: 0, skippedLinks: 0 };
+  let skippedLinks = 0;
 
   const mapLinked = (linkedId: string): string | undefined => {
     if (linkedId === node.id) return newNodeId;
@@ -33,7 +34,7 @@ export function planNodeCopy(universes: Universe[], sourceId: string, nodeId: st
   };
   const keep = (linkedId: string): string | undefined => {
     const mapped = mapLinked(linkedId);
-    if (mapped === undefined) counts.skippedLinks += 1;
+    if (mapped === undefined) skippedLinks += 1;
     return mapped;
   };
   const keepAll = (linkedIds: string[] | undefined): string[] =>
@@ -76,20 +77,9 @@ export function planNodeCopy(universes: Universe[], sourceId: string, nodeId: st
     ],
     newNodeId,
     counts: {
-      ...counts,
       questions: questions.length,
       relations: relations.length,
+      skippedLinks,
     },
   };
-}
-
-function uniqueId(base: string, taken: Set<string>): string {
-  let id = base;
-  let index = 2;
-  while (taken.has(id)) {
-    id = `${base}-${index}`;
-    index += 1;
-  }
-  taken.add(id);
-  return id;
 }

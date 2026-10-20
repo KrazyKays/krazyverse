@@ -1,24 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { universes } from '../data';
 import { buildUniverse } from '../domain/universe';
-import type { Question, StoryNode } from '../domain/types';
 import type { ScopedEdit } from '../setup/api';
 import { findHomologue, planNodeCopy } from '../setup/nodeCopy';
+import { node, question } from './fixtures/builders';
+import { fixtureUniverses } from './fixtures/universes';
 
-const allUniverses = Object.values(universes);
-const allNodeIds = new Set(allUniverses.flatMap((universe) => universe.nodes.map((node) => node.id)));
-const allQuestionIds = new Set(allUniverses.flatMap((universe) => universe.questions.map((question) => question.id)));
+const allNodeIds = new Set(fixtureUniverses.flatMap((universe) => universe.nodes.map((node) => node.id)));
+const allQuestionIds = new Set(fixtureUniverses.flatMap((universe) => universe.questions.map((question) => question.id)));
 
 function pushed(edits: ScopedEdit[], key: string): Record<string, unknown>[] {
   return edits.flatMap((edit) => (edit.op === 'push' && edit.path[0] === key ? [edit.value as Record<string, unknown>] : []));
-}
-
-function node(id: string, homologueKey: string, extra: Partial<StoryNode> = {}): StoryNode {
-  return { id, kind: 'place', title: id, position: { x: 0, y: 0 }, homologueKey, intro: '', ...extra };
-}
-
-function question(id: string, targetNodeId: string, requiresRevealed: string[] = [], alsoRevealed: string[] = []): Question {
-  return { id, targetNodeId, access: 'adjacent', requiresRevealed, alsoRevealed, context: '', prompt: '', answers: ['x'], wrongFeedback: '' };
 }
 
 const bois = buildUniverse({
@@ -26,12 +17,16 @@ const bois = buildUniverse({
   name: 'Bois',
   kind: 'tale',
   tagline: '',
-  nodes: [node('a-centre', 'centre', { revealedAtStart: true }), node('a-sentier', 'sentier'), node('a-gorm', 'gorm')],
+  nodes: [
+    node('a-centre', { homologueKey: 'centre', revealedAtStart: true }),
+    node('a-sentier', { homologueKey: 'sentier' }),
+    node('a-gorm', { homologueKey: 'gorm' }),
+  ],
   relations: [
     { id: 'r-centre-sentier', from: 'a-centre', to: 'a-sentier' },
     { id: 'r-sentier-gorm', from: 'a-sentier', to: 'a-gorm' },
   ],
-  questions: [question('qa-sentier', 'a-sentier', ['a-gorm'], ['b-foret'])],
+  questions: [question('qa-sentier', 'a-sentier', { requiresRevealed: ['a-gorm'], alsoRevealed: ['b-foret'] })],
 });
 
 const forges = buildUniverse({
@@ -39,7 +34,7 @@ const forges = buildUniverse({
   name: 'Forges',
   kind: 'tale',
   tagline: '',
-  nodes: [node('b-centre', 'centre', { revealedAtStart: true }), node('b-foret', 'foret')],
+  nodes: [node('b-centre', { homologueKey: 'centre', revealedAtStart: true }), node('b-foret', { homologueKey: 'foret' })],
   relations: [],
   questions: [],
 });
@@ -70,12 +65,12 @@ describe('copie de nœud (exemple)', () => {
 });
 
 describe('copie de nœud (contenu)', () => {
-  for (const source of allUniverses) {
+  for (const source of fixtureUniverses) {
     for (const node of source.nodes) {
-      for (const target of allUniverses) {
+      for (const target of fixtureUniverses) {
         if (target.id === source.id || findHomologue(target, node)) continue;
         it(`copie ${node.id} vers ${target.id} sans référence cassée`, () => {
-          const plan = planNodeCopy(allUniverses, source.id, node.id, target.id);
+          const plan = planNodeCopy(fixtureUniverses, source.id, node.id, target.id);
           const nodeIds = new Set([...allNodeIds, plan.newNodeId]);
           const questionIds = new Set([...allQuestionIds, ...pushed(plan.edits, 'questions').map((question) => question.id as string)]);
 

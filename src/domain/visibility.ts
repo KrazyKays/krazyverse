@@ -1,5 +1,5 @@
 import { neighbourIds } from './universe';
-import type { Universe, Visibility } from './types';
+import type { GameState, Universe, Visibility } from './types';
 
 export type VisibilityMap = Map<string, Visibility>;
 
@@ -18,8 +18,14 @@ export function computeVisibility(universe: Universe, revealed: ReadonlySet<stri
   return visibility;
 }
 
-export function visibleRelationIds(universe: Universe, visibility: VisibilityMap): string[] {
-  return universe.relations
-    .filter((relation) => visibility.get(relation.from) !== 'hidden' && visibility.get(relation.to) !== 'hidden')
-    .map((relation) => relation.id);
+export function visibilityFor(state: GameState, universe: Universe): VisibilityMap {
+  return computeVisibility(universe, new Set(state.revealed[universe.id] ?? []));
+}
+
+export function visibleRelationIds(universe: Universe, visibility: VisibilityMap): Set<string> {
+  return new Set(
+    universe.relations
+      .filter((relation) => visibility.get(relation.from) !== 'hidden' && visibility.get(relation.to) !== 'hidden')
+      .map((relation) => relation.id),
+  );
 }

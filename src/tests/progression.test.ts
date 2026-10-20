@@ -8,32 +8,15 @@ import {
   visitUniverse,
 } from '../domain/progression';
 import type { UniverseMap } from '../domain/progression';
-import type { GameState, Question, StoryNode, Universe } from '../domain/types';
+import type { GameState, Universe } from '../domain/types';
 import { buildUniverse } from '../domain/universe';
-import { computeVisibility, visibleRelationIds } from '../domain/visibility';
+import { computeVisibility, visibilityFor, visibleRelationIds } from '../domain/visibility';
+import { node, question } from './fixtures/builders';
 import { loadGame, sanitizeState, saveGame, SAVE_KEY } from '../storage/save';
 
 const BOIS = 'universe1';
 const FORGES = 'tale-forges-de-verre';
 const META = 'meta-enquete';
-
-function node(id: string, extra: Partial<StoryNode> = {}): StoryNode {
-  return { id, kind: 'place', title: id, position: { x: 0, y: 0 }, homologueKey: id, intro: '', ...extra };
-}
-
-function question(id: string, targetNodeId: string, extra: Partial<Question> = {}): Question {
-  return {
-    id,
-    targetNodeId,
-    access: 'adjacent',
-    requiresRevealed: [],
-    context: '',
-    prompt: '',
-    answers: ['réponse'],
-    wrongFeedback: '',
-    ...extra,
-  };
-}
 
 const fixtureUniverses = [
   buildUniverse({
@@ -95,7 +78,7 @@ function answer(state: GameState, universeId: string, questionId: string, text: 
 }
 
 function visibilityOf(state: GameState, universeId: string) {
-  return computeVisibility(universeOf(universeId), new Set(state.revealed[universeId] ?? []));
+  return visibilityFor(state, universeOf(universeId));
 }
 
 describe('visibilité des nœuds', () => {
@@ -140,8 +123,8 @@ describe('visibilité des nœuds', () => {
       universe,
       visibilityOf(answer(freshState(), BOIS, 'qa-sentier', 'le chemin change de longueur'), BOIS),
     );
-    expect(before).not.toContain('r-sentier-gorm');
-    expect(after).toContain('r-sentier-gorm');
+    expect(before.has('r-sentier-gorm')).toBe(false);
+    expect(after.has('r-sentier-gorm')).toBe(true);
   });
 });
 

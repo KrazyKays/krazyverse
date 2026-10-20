@@ -1,5 +1,5 @@
 import { isAnswerAccepted } from './answers';
-import { computeVisibility } from './visibility';
+import { visibilityFor } from './visibility';
 import type { GameState, Question, Universe } from './types';
 
 export type UniverseMap = Record<string, Universe>;
@@ -75,7 +75,7 @@ export function isQuestionAvailable(state: GameState, universe: Universe, questi
 
   if (question.access === 'enquete') return true;
 
-  const visibility = computeVisibility(universe, new Set(state.revealed[universe.id] ?? []));
+  const visibility = visibilityFor(state, universe);
   return visibility.get(question.targetNodeId) === 'censored';
 }
 

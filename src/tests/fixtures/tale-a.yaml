@@ -1,0 +1,53 @@
+id: fixture-tale-a
+name: Fixture A
+kind: tale
+tagline: Univers de test.
+nodes:
+  - id: a-centre
+    kind: place
+    title: Centre
+    position: { x: 500, y: 360 }
+    homologueKey: centre
+    intro: Le point de départ.
+    revealedAtStart: true
+  - id: a-sentier
+    kind: place
+    title: Sentier
+    position: { x: 300, y: 200 }
+    homologueKey: sentier
+    intro: Un chemin.
+  - id: a-gorm
+    kind: character
+    title: Gorm
+    position: { x: 120, y: 200 }
+    homologueKey: gorm
+    intro: Un personnage.
+  - id: a-pierres
+    kind: event
+    title: Pierres
+    position: { x: 700, y: 200 }
+    homologueKey: pierres
+    intro: Un événement.
+relations:
+  - { id: r-a-centre-sentier, from: a-centre, to: a-sentier }
+  - { id: r-a-sentier-gorm, from: a-sentier, to: a-gorm }
+  - { id: r-a-centre-pierres, from: a-centre, to: a-pierres }
+questions:
+  - id: qa-sentier
+    targetNodeId: a-sentier
+    access: adjacent
+    requiresRevealed: []
+    alsoRevealed: [b-foret]
+    context: ''
+    prompt: Où mène le chemin ?
+    answers: ["forêt"]
+    wrongFeedback: Non.
+  - id: qa-pierres
+    targetNodeId: a-pierres
+    access: enquete
+    requiresRevealed: [b-centre]
+    alsoRevealed: [b-foret, m-origine]
+    context: ''
+    prompt: Que cache-t-on ici ?
+    answers: ["pierres"]
+    wrongFeedback: Non.
