@@ -15,6 +15,7 @@ nodes:
     intro: "Un personnage porte deux rôles opposés selon l'univers où on le regarde. Ce n'est pas un simple malentendu : il existe une cause, et elle n'a pas encore de nom."
     central:
       required: true
+    revealedAtStart: true
 
   - id: meta-anomalie-1
     kind: event
@@ -62,17 +63,7 @@ relations:
   - { id: rm-anomalie-2-finale, from: meta-anomalie-2, to: meta-finale }
 
 questions:
-  - id: q-meta-origine
-    targetNodeId: meta-origine
-    access: enquete
-    requiresRevealed: []
-    context: "Un personnage au même visage tient deux rôles opposés dans deux récits différents."
-    prompt: "Comment nommer une divergence qui ne devrait pas pouvoir exister ?"
-    answers:
-      - "une fissure du multivers"
-      - "une fissure"
-    wrongFeedback: "Ce n'est pas cela. Demande-toi ce qui permet à deux univers de diverger sans raison."
-
+  
   - id: q-meta-anomalie-1
     targetNodeId: meta-anomalie-1
     access: enquete

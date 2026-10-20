@@ -109,8 +109,8 @@ describe('visibilité des nœuds', () => {
     expect(visibilityOf(freshState(), BOIS).get('a-gorm')).toBe('hidden');
   });
 
-  it('censure dès le départ les nœuds ciblés par une enquête', () => {
-    expect(visibilityOf(freshState(), META).get('m-origine')).toBe('censored');
+  it("ne censure pas une cible d'enquête si elle n'est pas liée à un nœud révélé", () => {
+    expect(visibilityOf(freshState(), META).get('m-origine')).toBe('hidden');
   });
 
   it("ne censure pas la cible d'une question accessible par adjacence si elle n'est pas liée à un nœud révélé", () => {

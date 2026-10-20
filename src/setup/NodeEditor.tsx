@@ -353,6 +353,11 @@ function QuestionEditor({ universe, universes, question, commit }: QuestionEdito
   );
   const nodeOptions = universe.nodes.map((node) => ({ value: node.id, label: node.title }));
 
+  const deleteQuestion = () => {
+    if (!window.confirm(`Supprimer la question « ${question.id} » ?`)) return;
+    commit({ op: 'delete', path: ['questions', { id: question.id }] });
+  };
+
   return (
     <article className="setup-subcard" aria-label={`Question ${question.id}`}>
       <p className="hint">
@@ -422,6 +427,10 @@ function QuestionEditor({ universe, universes, question, commit }: QuestionEdito
         value={question.wrongFeedback}
         onCommit={(value) => commit({ op: 'set', path: at('wrongFeedback'), value })}
       />
+
+      <button type="button" className="danger" onClick={deleteQuestion}>
+        Supprimer la question
+      </button>
     </article>
   );
 }

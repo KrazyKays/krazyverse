@@ -158,4 +158,4 @@ questions:
     prompt: De quel conte s'agit-il ?
     answers:
       - petit chaperon rouge
-    wrongFeedback: ""
+    wrongFeedback: "Mauvaise réponse"
