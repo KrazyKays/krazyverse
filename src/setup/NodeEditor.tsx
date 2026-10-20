@@ -18,7 +18,7 @@ export const KIND_OPTIONS = (Object.keys(KIND_LABELS) as NodeKind[]).map((kind) 
 
 const ACCESS_OPTIONS = [
   { value: 'adjacent', label: 'Adjacente' },
-  { value: 'enquete', label: 'Enquête centrale' },
+  { value: 'enquete', label: 'Question centrale' },
 ];
 
 interface NodeEditorProps {
@@ -128,15 +128,15 @@ export function NodeEditor({ universe, universes, node, commit, commitBatch, onS
       />
       <p className="hint">Le contenu est accessible et ses échos se déclenchent dès le début.</p>
       <CheckboxField label="Nœud final" checked={node.finale === true} onChange={(checked) => setFlag('finale', checked)} />
-      <p className="hint">Le révéler termine l'enquête. Sans effet sur la fin de partie hors de l'univers central.</p>
+      <p className="hint">Le révéler termine la question centrale. Sans effet sur la fin de partie hors de l'univers central.</p>
       {universe.kind === 'meta' && (
         <>
           <CheckboxField
-            label="Requis pour l'enquête centrale"
+            label="Requis pour la question centrale"
             checked={node.central?.required === true}
             onChange={(checked) => commit({ op: 'set', path: at('central', 'required'), value: checked })}
           />
-          <p className="hint">Compte dans le décompte « nœuds restants » de l'enquête. Ne bloque pas la conclusion.</p>
+          <p className="hint">Compte dans le décompte « nœuds restants » de la question centrale. Ne bloque pas la conclusion.</p>
         </>
       )}
 

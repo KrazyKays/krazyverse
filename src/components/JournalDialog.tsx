@@ -43,7 +43,7 @@ export function JournalDialog({ state, universes, onClose }: JournalDialogProps)
   return (
     <Dialog title="Journal de découvertes" onClose={onClose}>
       <p className="hint">
-        Univers visités : {state.visited.length} sur {Object.keys(universes).length}. Enquêtes résolues :{' '}
+        Univers visités : {state.visited.length} sur {Object.keys(universes).length}. Questions résolues :{' '}
         {state.answeredQuestions.length}.
       </p>
       {entries.length === 0 ? (

@@ -1,6 +1,6 @@
 # Krazyverse
 
-Jeu narratif d'exploration multiverselle : une toile de personnages, de lieux et d'événements à révéler à travers plusieurs univers parallèles, jusqu'à la résolution d'une enquête centrale sur une anomalie du multivers.
+Jeu narratif d'exploration multiverselle : une toile de personnages, de lieux et d'événements à révéler à travers plusieurs univers parallèles, jusqu'à la résolution d'une question centrale sur une anomalie du multivers.
 
 Application statique (React + TypeScript + Vite), sans backend ni service externe. La progression est sauvegardée localement dans le navigateur.
 

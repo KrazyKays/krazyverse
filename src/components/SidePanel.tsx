@@ -55,7 +55,7 @@ export function SidePanel({ universe, universes, state, selectedNodeId, onSelect
             if (section.unlockedByQuestionId) {
               return (
                 <p key={section.id} className="locked">
-                  Récit verrouillé : une enquête le déblocera.
+                  Récit verrouillé : une question le déblocera.
                 </p>
               );
             }

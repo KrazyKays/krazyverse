@@ -3,7 +3,7 @@ import { JournalDialog } from '../components/JournalDialog';
 import { QuestionDialog } from '../components/QuestionDialog';
 import { ResetDialog } from '../components/ResetDialog';
 import { SidePanel } from '../components/SidePanel';
-import { GraphLegend, UniverseGraph } from '../components/UniverseGraph';
+import { UniverseGraph } from '../components/UniverseGraph';
 import { UniverseSelector } from '../components/UniverseSelector';
 import { META_ID, UNIVERSE_ORDER, universes } from '../data';
 import { availableQuestions, centralRemaining, isEnded } from '../domain/progression';
@@ -71,8 +71,8 @@ export function App() {
           <h1>Krazyverse</h1>
           <p className="counter" aria-live="polite">
             {ended
-              ? 'Enquête centrale résolue'
-              : `Enquête centrale — ${remaining} ${remaining > 1 ? 'nœuds restants' : 'nœud restant'}`}
+              ? 'Question centrale résolue'
+              : `Question centrale — ${remaining} ${remaining > 1 ? 'nœuds restants' : 'nœud restant'}`}
           </p>
         </div>
         <div className="header-actions">
@@ -101,13 +101,6 @@ export function App() {
         </p>
       )}
 
-      <UniverseSelector
-        universes={orderedUniverses}
-        currentId={currentUniverse.id}
-        unseenIds={state.unseen}
-        onSelect={switchUniverse}
-      />
-
       {ended && central.ending && !endingDismissed && (
         <section className="ending" aria-label="Conclusion">
           <h2>{central.ending.title}</h2>
@@ -119,6 +112,13 @@ export function App() {
       )}
 
       <main className="layout">
+        <UniverseSelector
+          universes={orderedUniverses}
+          currentId={currentUniverse.id}
+          unseenIds={state.unseen}
+          onSelect={switchUniverse}
+        />
+
         <section className="graph-area" aria-label="Toile interactive">
           <p className="tagline">{currentUniverse.tagline}</p>
           <UniverseGraph
@@ -130,7 +130,6 @@ export function App() {
             onDeselect={() => setSelectedNodeId(null)}
             onOpenQuestion={setActiveQuestionId}
           />
-          <GraphLegend />
         </section>
 
         <SidePanel

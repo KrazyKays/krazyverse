@@ -56,29 +56,33 @@ export function SetupScreen({ universes, initialUniverseId, onClose }: SetupScre
         </div>
       </header>
 
-      <div className="universe-selector" role="group" aria-label="Univers à éditer">
-        {universes.map((candidate) => {
-          const active = candidate.id === universe.id;
-          return (
-            <button
-              key={candidate.id}
-              type="button"
-              className={active ? 'universe-tab universe-tab--active' : 'universe-tab'}
-              aria-pressed={active}
-              onClick={() => {
-                setUniverseId(candidate.id);
-                setSelectedNodeId(null);
-                setNewNodeOpen(false);
-              }}
-            >
-              {candidate.name}
-            </button>
-          );
-        })}
-      </div>
+      <main className="layout">
+        <div className="universe-selector" role="group" aria-label="Univers à éditer">
+          {universes.map((candidate) => {
+            const active = candidate.id === universe.id;
+            return (
+              <button
+                key={candidate.id}
+                type="button"
+                className={active ? 'universe-tab universe-tab--active' : 'universe-tab'}
+                aria-pressed={active}
+                onClick={() => {
+                  setUniverseId(candidate.id);
+                  setSelectedNodeId(null);
+                  setNewNodeOpen(false);
+                }}
+              >
+                {candidate.name}
+              </button>
+            );
+          })}
+        </div>
 
-      <div className="setup-layout">
-        <div className="setup-graph">
+        <section className="graph-area" aria-label="Graphe des nœuds">
+          <SetupGraph universe={universe} selectedId={selectedNodeId} onSelect={setSelectedNodeId} />
+        </section>
+
+        <aside className="side-panel" aria-label="Panneau d'édition">
           <div className="setup-toolbar">
             <button type="button" onClick={() => setNewNodeOpen((open) => !open)} aria-expanded={newNodeOpen}>
               {newNodeOpen ? 'Annuler' : 'Ajouter un nœud'}
@@ -95,12 +99,6 @@ export function SetupScreen({ universes, initialUniverseId, onClose }: SetupScre
               }}
             />
           )}
-          <section aria-label="Graphe des nœuds">
-            <SetupGraph universe={universe} selectedId={selectedNodeId} onSelect={setSelectedNodeId} />
-          </section>
-        </div>
-
-        <aside className="setup-editor">
           <UniverseFields key={universe.id} universe={universe} commit={commit} />
           {selectedNode ? (
             <NodeEditor
@@ -117,7 +115,7 @@ export function SetupScreen({ universes, initialUniverseId, onClose }: SetupScre
             <p className="hint">Sélectionne un nœud dans le graphe pour éditer son lore, ses liens et ses questions.</p>
           )}
         </aside>
-      </div>
+      </main>
     </div>
   );
 }

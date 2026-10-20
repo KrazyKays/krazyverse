@@ -87,7 +87,7 @@ export function UniverseGraph({
     movedRef.current = true;
     drag.x = event.clientX;
     drag.y = event.clientY;
-    const unit = VIEW_WIDTH / svg.clientWidth;
+    const unit = Math.max(VIEW_WIDTH / svg.clientWidth, VIEW_HEIGHT / svg.clientHeight);
     setView((current) => ({ ...current, tx: current.tx + dx * unit, ty: current.ty + dy * unit }));
   };
 
@@ -216,6 +216,8 @@ export function UniverseGraph({
           Recentrer
         </button>
       </div>
+
+      <GraphLegend />
     </div>
   );
 }
@@ -258,7 +260,7 @@ export function GraphLegend() {
             </text>
           </g>
         </svg>
-        Nœud censuré : une enquête le révèle
+        Nœud censuré : une question le révèle
       </li>
     </ul>
   );

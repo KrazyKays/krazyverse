@@ -141,7 +141,7 @@ describe('données', () => {
   });
 });
 
-describe('enquête centrale', () => {
+describe('question centrale', () => {
   it('calcule le compteur à partir des nœuds obligatoires non révélés', () => {
     const meta = universes[META_ID];
     if (!meta) throw new Error('Univers méta manquant');
