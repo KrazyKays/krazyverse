@@ -36,8 +36,8 @@ Puis ouvrir l'adresse affichée dans le terminal (par défaut `http://localhost:
 
 ## Structure
 
-- `src/data/` : contenu narratif (univers, nœuds, relations, échos, questions).
-- `src/domain/` : types, règles de visibilité, révélations, échos et progression. Indépendant de React.
+- `src/data/` : contenu narratif (univers, nœuds, relations, questions).
+- `src/domain/` : types, règles de visibilité, révélations et progression. Indépendant de React.
 - `src/storage/` : sauvegarde versionnée dans `localStorage` (clé `multiverse-game-save-v1`), avec validation et repli en mémoire.
 - `src/hooks/` : hook de jeu qui relie l'état métier et la sauvegarde.
 - `src/components/` : interface React (graphe SVG, panneau de lecture, dialogues).

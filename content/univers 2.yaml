@@ -8,12 +8,10 @@ tagline: "Un univers hasardeux et chaotique, rien n'est prévisible, sauf le fai
 
 nodes:
 
-  [ { id: u1-aniel-copie, kind: place, title: Centre de l'univers, position: { x: 240, y: 360 }, homologueKey: centre, intro: "", sections: [], revealedAtStart: true }, { id: u1-rouge-copie, kind: character, title: Le petit chaperon rouge, position: { x: 250, y: 550 }, homologueKey: rouge, intro: "", sections: [], central: { required: false } } ]
+  [ { id: u2-centre, kind: place, title: Centre de l'univers, position: { x: 240, y: 360 }, homologueKey: centre, intro: "Dans cette univers tout est magnifique et innocent, le mensonge n'existe pas et tout le monde vit une existence parfaite, au premier abord ...", revealedAtStart: true } ]
 
-relations: [ { id: link-u1-rouge-copie-u1-aniel-copie, from: u1-rouge-copie, to: u1-aniel-copie } ]
-
-echoes: []
+relations: []
 
 questions:
 
-  [ { id: q-u1-rouge-copie, targetNodeId: u1-rouge-copie, access: adjacent, requiresRevealed: [], context: "Dans toutes les version de ce conte il est question d'une enfant, de sa grand mère et d'un loup", prompt: De quel conte s'agit-il ?, answers: [ petit chaperon rouge ], wrongFeedback: "" } ]
+  []

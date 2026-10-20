@@ -3,6 +3,7 @@ import type { NodeKind, Question, StoryNode, Universe } from '../domain/types';
 import type { Commit, CommitBatch, ContentPath } from './api';
 import { planNodeDeletion } from './nodeDeletion';
 import { findHomologue, planNodeCopy } from './nodeCopy';
+import { nodeIdError, planNodeRename } from './nodeRename';
 import { CheckboxField, SelectField, TextField } from './SetupFields';
 
 const KIND_LABELS: Record<NodeKind, string> = {
@@ -37,8 +38,6 @@ export function NodeEditor({ universe, universes, node, commit, commitBatch, onS
     commit(checked ? { op: 'set', path: at(key), value: true } : { op: 'delete', path: at(key) });
   const questions = universe.questions.filter((question) => question.targetNodeId === node.id);
   const relations = universe.relations.filter((relation) => relation.from === node.id || relation.to === node.id);
-  const echoes = universe.echoes.filter((echo) => echo.sourceNodeId === node.id);
-  const allNodes = universes.flatMap((candidate) => candidate.nodes);
   const copyTargets = universes.filter((candidate) => candidate.id !== universe.id);
   const [copyTargetId, setCopyTargetId] = useState(copyTargets[0]?.id ?? '');
   const copyTarget = copyTargets.find((candidate) => candidate.id === copyTargetId);
@@ -47,13 +46,12 @@ export function NodeEditor({ universe, universes, node, commit, commitBatch, onS
   const copyNode = () => {
     if (!copyTarget) return;
     const plan = planNodeCopy(universes, universe.id, node.id, copyTarget.id);
-    const { questions: questionCount, relations: relationCount, echoes: echoCount, skippedLinks, lostUnlocks } = plan.counts;
+    const { questions: questionCount, relations: relationCount, skippedLinks } = plan.counts;
     const message = [
       `Copier « ${node.title} » dans ${copyTarget.name} ?`,
       `Nouvel identifiant : ${plan.newNodeId}`,
-      `Copie ${questionCount} question(s), ${relationCount} lien(s) et ${echoCount} écho(s).`,
+      `Copie ${questionCount} question(s) et ${relationCount} lien(s).`,
       skippedLinks > 0 ? `${skippedLinks} lien(s) ignoré(s) : pas d'homologue dans cet univers.` : '',
-      lostUnlocks > 0 ? `${lostUnlocks} section(s) ne seront plus débloquées par une question.` : '',
     ]
       .filter(Boolean)
       .join('\n');
@@ -63,11 +61,12 @@ export function NodeEditor({ universe, universes, node, commit, commitBatch, onS
 
   const deleteNode = () => {
     const plan = planNodeDeletion(universes, universe.id, node.id);
-    const { relations: relationCount, echoes: echoCount, questions: questionCount, requirements } = plan.counts;
+    const { relations: relationCount, questions: questionCount, requirements, reveals } = plan.counts;
     const message = [
       `Supprimer « ${node.title} » ?`,
-      `Supprime ${relationCount} lien(s), ${echoCount} écho(s) et ${questionCount} question(s).`,
+      `Supprime ${relationCount} lien(s) et ${questionCount} question(s).`,
       requirements > 0 ? `Retire ce nœud des prérequis de ${requirements} question(s).` : '',
+      reveals > 0 ? `Retire ce nœud des révélations de ${reveals} question(s).` : '',
     ]
       .filter(Boolean)
       .join('\n');
@@ -76,15 +75,19 @@ export function NodeEditor({ universe, universes, node, commit, commitBatch, onS
     onDeleted();
   };
 
+  const renameNode = (newId: string) => {
+    commitBatch(planNodeRename(universes, universe.id, node.id, newId));
+    onSelect(newId);
+  };
+
   const startState = node.revealedAtStart
     ? 'révélé dès le départ'
     : 'caché, apparaît quand un voisin est révélé, mais apparaît censuré si une question est renseignée';
 
   return (
     <section className="setup-card" aria-label={`Nœud ${node.title}`}>
-      <p className="kind">
-        {KIND_LABELS[node.kind]} · <code>{node.id}</code>
-      </p>
+      <p className="kind">{KIND_LABELS[node.kind]}</p>
+      <NodeIdField nodeId={node.id} universes={universes} onRename={renameNode} />
       <TextField label="Titre" value={node.title} onCommit={(value) => commit({ op: 'set', path: at('title'), value })} />
       <SelectField
         label="Type"
@@ -126,7 +129,7 @@ export function NodeEditor({ universe, universes, node, commit, commitBatch, onS
         checked={node.revealedAtStart === true}
         onChange={(checked) => setFlag('revealedAtStart', checked)}
       />
-      <p className="hint">Le contenu est accessible et ses échos se déclenchent dès le début.</p>
+      <p className="hint">Le nœud est accessible dès le début.</p>
       <CheckboxField label="Nœud final" checked={node.finale === true} onChange={(checked) => setFlag('finale', checked)} />
       <p className="hint">Le révéler termine la question centrale. Sans effet sur la fin de partie hors de l'univers central.</p>
       {universe.kind === 'meta' && (
@@ -139,57 +142,6 @@ export function NodeEditor({ universe, universes, node, commit, commitBatch, onS
           <p className="hint">Compte dans le décompte « nœuds restants » de la question centrale. Ne bloque pas la conclusion.</p>
         </>
       )}
-
-      <h3>Lore</h3>
-      {node.sections.map((section) => (
-        <div key={section.id} className="setup-subcard">
-          <TextField
-            label="Titre de la section"
-            value={section.title}
-            onCommit={(value) => commit({ op: 'set', path: at('sections', { id: section.id }, 'title'), value })}
-          />
-          <TextField
-            label="Texte"
-            multiline
-            value={section.body}
-            onCommit={(value) => commit({ op: 'set', path: at('sections', { id: section.id }, 'body'), value })}
-          />
-          <SelectField
-            label="Débloquée par la question"
-            value={section.unlockedByQuestionId ?? ''}
-            options={[
-              { value: '', label: 'Toujours visible' },
-              ...universe.questions.map((question) => ({ value: question.id, label: question.id })),
-            ]}
-            onChange={(value) =>
-              commit(
-                value
-                  ? { op: 'set', path: at('sections', { id: section.id }, 'unlockedByQuestionId'), value }
-                  : { op: 'delete', path: at('sections', { id: section.id }, 'unlockedByQuestionId') },
-              )
-            }
-          />
-          <button
-            type="button"
-            className="danger"
-            onClick={() => commit({ op: 'delete', path: at('sections', { id: section.id }) })}
-          >
-            Supprimer la section
-          </button>
-        </div>
-      ))}
-      <button
-        type="button"
-        onClick={() =>
-          commit({
-            op: 'push',
-            path: at('sections'),
-            value: { id: newSectionId(universe, node), title: 'Nouvelle section', body: '' },
-          })
-        }
-      >
-        Ajouter une section
-      </button>
 
       <h3>Liens</h3>
       {relations.length === 0 && <p className="hint">Aucun lien.</p>}
@@ -215,19 +167,6 @@ export function NodeEditor({ universe, universes, node, commit, commitBatch, onS
         })}
       </ul>
       <LinkAdder universe={universe} node={node} commit={commit} />
-
-      <h3>Échos</h3>
-      {echoes.length === 0 && <p className="hint">Aucun écho.</p>}
-      <ul className="setup-list">
-        {echoes.map((echo) => {
-          const target = allNodes.find((candidate) => candidate.id === echo.targetNodeId);
-          return (
-            <li key={echo.id} className="hint">
-              {target?.title ?? echo.targetNodeId}
-            </li>
-          );
-        })}
-      </ul>
 
       <h3>Questions</h3>
       {questions.length === 0 && <p className="hint">Aucune question sur ce nœud.</p>}
@@ -286,6 +225,59 @@ export function NodeEditor({ universe, universes, node, commit, commitBatch, onS
   );
 }
 
+interface NodeIdFieldProps {
+  nodeId: string;
+  universes: Universe[];
+  onRename: (newId: string) => void;
+}
+
+function NodeIdField({ nodeId, universes, onRename }: NodeIdFieldProps) {
+  const [draft, setDraft] = useState(nodeId);
+  const [error, setError] = useState<string | null>(null);
+
+  const commit = () => {
+    const next = draft.trim();
+    if (next === nodeId) {
+      setDraft(nodeId);
+      setError(null);
+      return;
+    }
+    const problem = nodeIdError(universes, next);
+    if (problem) {
+      setError(problem);
+      return;
+    }
+    if (!window.confirm(`Renommer « ${nodeId} » en « ${next} » ? Les liens et questions qui le citent seront mis à jour.`)) {
+      setDraft(nodeId);
+      setError(null);
+      return;
+    }
+    setError(null);
+    onRename(next);
+  };
+
+  return (
+    <>
+      <label className="setup-field">
+        <span>Identifiant</span>
+        <input
+          value={draft}
+          onChange={(event) => setDraft(event.target.value)}
+          onBlur={commit}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter') event.currentTarget.blur();
+          }}
+        />
+      </label>
+      {error && (
+        <p className="notice" role="alert">
+          {error}
+        </p>
+      )}
+    </>
+  );
+}
+
 interface LinkAdderProps {
   universe: Universe;
   node: StoryNode;
@@ -326,6 +318,8 @@ function LinkAdder({ universe, node, commit }: LinkAdderProps) {
   );
 }
 
+type RevealField = 'requiresRevealed' | 'alsoRevealed';
+
 interface QuestionEditorProps {
   universe: Universe;
   universes: Universe[];
@@ -335,12 +329,28 @@ interface QuestionEditorProps {
 
 function QuestionEditor({ universe, universes, question, commit }: QuestionEditorProps) {
   const at = (...rest: ContentPath): ContentPath => ['questions', { id: question.id }, ...rest];
-  const toggleRevealed = (nodeId: string, checked: boolean) => {
-    const next = checked
-      ? [...question.requiresRevealed, nodeId]
-      : question.requiresRevealed.filter((id) => id !== nodeId);
-    commit({ op: 'set', path: at('requiresRevealed'), value: next });
+  const toggleRevealed = (field: RevealField, nodeId: string, checked: boolean) => {
+    const current = question[field] ?? [];
+    const next = checked ? [...current, nodeId] : current.filter((id) => id !== nodeId);
+    commit({ op: 'set', path: at(field), value: next });
   };
+  const revealChecklist = (field: RevealField) => (
+    <div className="setup-checks">
+      {universes.map((candidate) => (
+        <div key={candidate.id}>
+          <p className="hint">{candidate.name}</p>
+          {candidate.nodes.map((node) => (
+            <CheckboxField
+              key={node.id}
+              label={node.title}
+              checked={(question[field] ?? []).includes(node.id)}
+              onChange={(checked) => toggleRevealed(field, node.id, checked)}
+            />
+          ))}
+        </div>
+      ))}
+    </div>
+  );
   const nodeOptions = universe.nodes.map((node) => ({ value: node.id, label: node.title }));
 
   return (
@@ -374,21 +384,11 @@ function QuestionEditor({ universe, universes, question, commit }: QuestionEdito
       />
       <details>
         <summary>Nœuds à révéler avant ({question.requiresRevealed.length})</summary>
-        <div className="setup-checks">
-          {universes.map((candidate) => (
-            <div key={candidate.id}>
-              <p className="hint">{candidate.name}</p>
-              {candidate.nodes.map((node) => (
-                <CheckboxField
-                  key={node.id}
-                  label={node.title}
-                  checked={question.requiresRevealed.includes(node.id)}
-                  onChange={(checked) => toggleRevealed(node.id, checked)}
-                />
-              ))}
-            </div>
-          ))}
-        </div>
+        {revealChecklist('requiresRevealed')}
+      </details>
+      <details>
+        <summary>Nœuds à révéler avec la réponse ({question.alsoRevealed?.length ?? 0})</summary>
+        {revealChecklist('alsoRevealed')}
       </details>
 
       <p className="hint">Réponses acceptées</p>
@@ -424,13 +424,6 @@ function QuestionEditor({ universe, universes, question, commit }: QuestionEdito
       />
     </article>
   );
-}
-
-function newSectionId(universe: Universe, node: StoryNode): string {
-  const taken = new Set(universe.nodes.flatMap((candidate) => candidate.sections.map((section) => section.id)));
-  let index = node.sections.length + 1;
-  while (taken.has(`${node.id}-section-${index}`)) index += 1;
-  return `${node.id}-section-${index}`;
 }
 
 function newQuestionId(universes: Universe[], node: StoryNode): string {

@@ -2,6 +2,7 @@ import { useRef, useState, type FormEvent } from 'react';
 import { NodeShape } from '../components/UniverseGraph';
 import type { NodeKind, Universe } from '../domain/types';
 import { sendContentEdits, type Commit, type CommitBatch, type ContentEdit } from './api';
+import { nodeIdError } from './nodeRename';
 import { KIND_OPTIONS, NodeEditor } from './NodeEditor';
 import { SelectField, TextField } from './SetupFields';
 
@@ -137,12 +138,9 @@ function NewNodeForm({ universes, universe, commit, onCreated }: NewNodeFormProp
     event.preventDefault();
     const nodeId = id.trim();
     const nodeTitle = title.trim();
-    if (!/^[a-z0-9][a-z0-9-]*$/.test(nodeId)) {
-      setError('Identifiant requis : minuscules, chiffres et tirets.');
-      return;
-    }
-    if (universes.some((candidate) => candidate.nodeById.has(nodeId))) {
-      setError('Cet identifiant existe déjà.');
+    const idProblem = nodeIdError(universes, nodeId);
+    if (idProblem) {
+      setError(idProblem);
       return;
     }
     if (nodeTitle === '') {
@@ -159,7 +157,6 @@ function NewNodeForm({ universes, universe, commit, onCreated }: NewNodeFormProp
         position: { x: 500, y: 360 },
         homologueKey: nodeId,
         intro: '',
-        sections: [],
       },
     });
     setId('');

@@ -1,4 +1,4 @@
-# Univers central. Chaque nœud, relation, écho et question est lu par l'application.
+# Univers central. Chaque nœud, relation et question est lu par l'application.
 # Référence : les ids doivent être uniques et les liens doivent pointer vers des ids existants.
 
 id: meta-enquete
@@ -13,7 +13,6 @@ nodes:
     position: { x: 500, y: 120 }
     homologueKey: meta-origine
     intro: "Un personnage porte deux rôles opposés selon l'univers où on le regarde. Ce n'est pas un simple malentendu : il existe une cause, et elle n'a pas encore de nom."
-    sections: []
     central:
       required: true
 
@@ -23,11 +22,6 @@ nodes:
     position: { x: 300, y: 300 }
     homologueKey: meta-anomalie-1
     intro: "Les mêmes chemins apparaissent dans deux récits sans jamais se croiser. Un sentier plus long au retour qu'à l'aller n'est pas une coïncidence : il appartient à deux mondes à la fois."
-    sections:
-      - id: meta-anomalie-1-trace
-        title: "La trace"
-        body: "Les sentiers qui se répètent ont la même largeur, la même pente et les mêmes fougères. Seul le nombre de pas diffère."
-        unlockedByQuestionId: q-meta-anomalie-1
     central:
       required: true
 
@@ -37,7 +31,6 @@ nodes:
     position: { x: 700, y: 300 }
     homologueKey: meta-anomalie-2
     intro: "La nuit du passage et la nuit des vitraux ont lieu le même soir, et les chemins échangent leurs places dans les deux univers à la fois."
-    sections: []
     central:
       required: true
 
@@ -47,7 +40,6 @@ nodes:
     position: { x: 500, y: 470 }
     homologueKey: meta-anomalie-3
     intro: "Un fragment de verre renvoie une image qui n'existe dans aucun des deux univers. La lecture de ce fragment est facultative, mais elle éclaire la suite de l'enquête."
-    sections: []
     central:
       required: false
 
@@ -57,7 +49,6 @@ nodes:
     position: { x: 500, y: 640 }
     homologueKey: meta-finale
     intro: "Les deux univers convergent vers une même source. Pour rétablir l'ordre du multivers, il faut relier le serment brisé à la pierre qui a été déplacée."
-    sections: []
     central:
       required: true
     finale: true
@@ -69,8 +60,6 @@ relations:
   - { id: rm-anomalie-2-anomalie-3, from: meta-anomalie-2, to: meta-anomalie-3 }
   - { id: rm-anomalie-3-finale, from: meta-anomalie-3, to: meta-finale }
   - { id: rm-anomalie-2-finale, from: meta-anomalie-2, to: meta-finale }
-
-echoes: []
 
 questions:
   - id: q-meta-origine

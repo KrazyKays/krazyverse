@@ -1,182 +1,195 @@
 import { describe, expect, it } from 'vitest';
-import { universes, META_ID, BOIS_ID, FORGES_ID } from '../data';
 import {
   answerQuestion,
   centralRemaining,
   createInitialState,
   isEnded,
   isRevealed,
-  revealNode,
   visitUniverse,
 } from '../domain/progression';
-import type { GameState } from '../domain/types';
+import type { UniverseMap } from '../domain/progression';
+import type { GameState, Question, StoryNode, Universe } from '../domain/types';
+import { buildUniverse } from '../domain/universe';
 import { computeVisibility, visibleRelationIds } from '../domain/visibility';
 import { loadGame, sanitizeState, saveGame, SAVE_KEY } from '../storage/save';
 
-function freshState(): GameState {
-  return createInitialState(universes);
+const BOIS = 'tale-bois-de-brume';
+const FORGES = 'tale-forges-de-verre';
+const META = 'meta-enquete';
+
+function node(id: string, extra: Partial<StoryNode> = {}): StoryNode {
+  return { id, kind: 'place', title: id, position: { x: 0, y: 0 }, homologueKey: id, intro: '', ...extra };
 }
 
-function answerCorrect(state: GameState, questionId: string): GameState {
-  const universe = Object.values(universes).find((candidate) =>
-    candidate.questions.some((question) => question.id === questionId),
-  );
-  const question = universe?.questions.find((candidate) => candidate.id === questionId);
-  if (!universe || !question) throw new Error(`Question inconnue : ${questionId}`);
-  return answerQuestion(state, universes, universe.id, questionId, question.answers[0] ?? '').state;
+function question(id: string, targetNodeId: string, extra: Partial<Question> = {}): Question {
+  return {
+    id,
+    targetNodeId,
+    access: 'adjacent',
+    requiresRevealed: [],
+    context: '',
+    prompt: '',
+    answers: ['réponse'],
+    wrongFeedback: '',
+    ...extra,
+  };
+}
+
+const fixtureUniverses = [
+  buildUniverse({
+    id: BOIS,
+    name: 'Bois',
+    kind: 'tale',
+    tagline: '',
+    nodes: [node('a-centre', { revealedAtStart: true }), node('a-sentier'), node('a-gorm', { kind: 'character' }), node('a-pierres')],
+    relations: [
+      { id: 'r-centre-sentier', from: 'a-centre', to: 'a-sentier' },
+      { id: 'r-sentier-gorm', from: 'a-sentier', to: 'a-gorm' },
+      { id: 'r-centre-pierres', from: 'a-centre', to: 'a-pierres' },
+    ],
+    questions: [
+      question('qa-sentier', 'a-sentier', { answers: ['le chemin change de longueur'], alsoRevealed: ['b-foret'] }),
+      question('qa-pierres', 'a-pierres', { access: 'enquete', answers: ['les pierres'], alsoRevealed: ['b-foret'] }),
+    ],
+  }),
+  buildUniverse({
+    id: FORGES,
+    name: 'Forges',
+    kind: 'tale',
+    tagline: '',
+    nodes: [node('b-centre', { revealedAtStart: true }), node('b-foret')],
+    relations: [{ id: 'r-centre-foret', from: 'b-centre', to: 'b-foret' }],
+    questions: [question('qb-foret', 'b-foret', { answers: ['la forêt'] })],
+  }),
+  buildUniverse({
+    id: META,
+    name: 'Multivers',
+    kind: 'meta',
+    tagline: '',
+    nodes: [
+      node('m-origine', { central: { required: true } }),
+      node('m-finale', { central: { required: true }, finale: true }),
+    ],
+    relations: [],
+    questions: [
+      question('qm-origine', 'm-origine', { access: 'enquete', answers: ['origine'] }),
+      question('qm-finale', 'm-finale', { access: 'enquete', answers: ['fin'] }),
+    ],
+  }),
+];
+
+const fixtures: UniverseMap = Object.fromEntries(fixtureUniverses.map((universe) => [universe.id, universe]));
+
+function universeOf(universeId: string): Universe {
+  const universe = fixtures[universeId];
+  if (!universe) throw new Error(`Univers inconnu : ${universeId}`);
+  return universe;
+}
+
+function freshState(): GameState {
+  return createInitialState(fixtures);
+}
+
+function answer(state: GameState, universeId: string, questionId: string, text: string): GameState {
+  return answerQuestion(state, fixtures, universeId, questionId, text).state;
 }
 
 function visibilityOf(state: GameState, universeId: string) {
-  const universe = universes[universeId];
-  if (!universe) throw new Error(`Univers inconnu : ${universeId}`);
-  return computeVisibility(universe, new Set(state.revealed[universeId] ?? []));
+  return computeVisibility(universeOf(universeId), new Set(state.revealed[universeId] ?? []));
 }
 
 describe('visibilité des nœuds', () => {
   it('rend visible un nœud censuré directement connecté à un nœud révélé', () => {
-    const visibility = visibilityOf(freshState(), BOIS_ID);
-    expect(visibility.get('u1-aniel')).toBe('revealed');
-    expect(visibility.get('u1-sentier')).toBe('censored');
+    const visibility = visibilityOf(freshState(), BOIS);
+    expect(visibility.get('a-centre')).toBe('revealed');
+    expect(visibility.get('a-sentier')).toBe('censored');
   });
 
-  it('garde caché un nœud sans question situé derrière un nœud non révélé', () => {
-    const visibility = visibilityOf(freshState(), FORGES_ID);
-    expect(visibility.get('u2-serment')).toBe('hidden');
-    expect(visibility.get('u2-gorm')).toBe('hidden');
+  it('garde caché un nœud situé derrière un nœud non révélé', () => {
+    expect(visibilityOf(freshState(), BOIS).get('a-gorm')).toBe('hidden');
   });
 
-  it('ne révèle pas automatiquement les voisins d\'un nœud révélé', () => {
-    const state = answerCorrect(freshState(), 'q-u1-sentier');
-    expect(isRevealed(state, BOIS_ID, 'u1-sentier')).toBe(true);
-    expect(isRevealed(state, BOIS_ID, 'u1-gorm')).toBe(false);
-    expect(visibilityOf(state, BOIS_ID).get('u1-gorm')).toBe('censored');
+  it('censure dès le départ les nœuds ciblés par une question', () => {
+    expect(visibilityOf(freshState(), META).get('m-origine')).toBe('censored');
+  });
+
+  it("ne révèle pas automatiquement les voisins d'un nœud révélé", () => {
+    const state = answer(freshState(), BOIS, 'qa-sentier', 'le chemin change de longueur');
+    expect(isRevealed(state, BOIS, 'a-sentier')).toBe(true);
+    expect(isRevealed(state, BOIS, 'a-gorm')).toBe(false);
+    expect(visibilityOf(state, BOIS).get('a-gorm')).toBe('censored');
   });
 
   it('met à jour les relations visibles après une révélation', () => {
-    const before = freshState();
-    const after = answerCorrect(before, 'q-u2-sentier');
-    const relationBefore = visibleRelationIds(forgesUniverse(), visibilityOf(before, FORGES_ID));
-    const relationAfter = visibleRelationIds(forgesUniverse(), visibilityOf(after, FORGES_ID));
-    expect(relationBefore).not.toContain('r2-sentier-gorm');
-    expect(relationAfter).toContain('r2-sentier-gorm');
-  });
-
-  it('n\'expose pas de relation vers un nœud caché', () => {
-    const relations = visibleRelationIds(forgesUniverse(), visibilityOf(freshState(), FORGES_ID));
-    expect(relations).not.toContain('r2-gorm-serment');
+    const universe = universeOf(BOIS);
+    const before = visibleRelationIds(universe, visibilityOf(freshState(), BOIS));
+    const after = visibleRelationIds(
+      universe,
+      visibilityOf(answer(freshState(), BOIS, 'qa-sentier', 'le chemin change de longueur'), BOIS),
+    );
+    expect(before).not.toContain('r-sentier-gorm');
+    expect(after).toContain('r-sentier-gorm');
   });
 });
 
 describe('questions', () => {
   it('ne modifie pas la progression après une mauvaise réponse', () => {
     const state = freshState();
-    const result = answerQuestion(state, universes, BOIS_ID, 'q-u1-sentier', 'les fougères poussent');
+    const result = answerQuestion(state, fixtures, BOIS, 'qa-sentier', 'les fougères poussent');
     expect(result.correct).toBe(false);
     expect(result.state).toBe(state);
   });
 
-  it('révèle immédiatement le nœud attendu après une bonne réponse', () => {
-    const result = answerQuestion(freshState(), universes, BOIS_ID, 'q-u1-sentier', 'Le chemin change de longueur');
+  it('révèle le nœud ciblé après une bonne réponse', () => {
+    const result = answerQuestion(freshState(), fixtures, BOIS, 'qa-sentier', 'Le chemin change de longueur');
     expect(result.correct).toBe(true);
-    expect(isRevealed(result.state, BOIS_ID, 'u1-sentier')).toBe(true);
+    expect(isRevealed(result.state, BOIS, 'a-sentier')).toBe(true);
   });
 });
 
-describe('échos entre univers', () => {
-  it('déclenche un indicateur sur l\'univers cible', () => {
-    const state = freshState();
-    expect(isRevealed(state, FORGES_ID, 'u2-aniel')).toBe(true);
-    expect(state.unseen).toContain(FORGES_ID);
+describe('révélations croisées', () => {
+  it('révèle les nœuds choisis par la question dans un autre univers', () => {
+    const state = answer(freshState(), BOIS, 'qa-sentier', 'le chemin change de longueur');
+    expect(isRevealed(state, FORGES, 'b-foret')).toBe(true);
+    expect(isRevealed(state, BOIS, 'a-gorm')).toBe(false);
   });
 
-  it('ne change pas automatiquement l\'univers affiché', () => {
-    expect(freshState().currentUniverseId).toBe(BOIS_ID);
+  it("signale l'univers touché sans changer l'univers affiché", () => {
+    const state = answer(freshState(), BOIS, 'qa-sentier', 'le chemin change de longueur');
+    expect(state.unseen).toEqual([FORGES]);
+    expect(state.currentUniverseId).toBe(BOIS);
   });
 
-  it('retire l\'indicateur lorsque l\'univers cible est consulté', () => {
-    const visited = visitUniverse(freshState(), FORGES_ID);
-    expect(visited.unseen).not.toContain(FORGES_ID);
-    expect(visited.currentUniverseId).toBe(FORGES_ID);
+  it('ne duplique pas le signalement lorsque le nœud est déjà révélé', () => {
+    const first = answer(freshState(), BOIS, 'qa-sentier', 'le chemin change de longueur');
+    const second = answer(first, BOIS, 'qa-pierres', 'les pierres');
+    expect(isRevealed(second, BOIS, 'a-pierres')).toBe(true);
+    expect(second.unseen).toEqual([FORGES]);
   });
 
-  it('ne révèle que les nœuds explicitement configurés', () => {
-    const state = freshState();
-    expect(isRevealed(state, FORGES_ID, 'u2-gorm')).toBe(false);
-    expect(isRevealed(state, FORGES_ID, 'u2-sentier')).toBe(false);
+  it("retire le signalement lorsque l'univers est consulté", () => {
+    const state = answer(freshState(), BOIS, 'qa-sentier', 'le chemin change de longueur');
+    const visited = visitUniverse(state, FORGES);
+    expect(visited.unseen).not.toContain(FORGES);
+    expect(visited.currentUniverseId).toBe(FORGES);
   });
 
-  it('ne révèle pas les voisins d\'un nœud révélé par écho', () => {
-    const state = revealNode(freshState(), universes, FORGES_ID, 'u2-chaumiere');
-    expect(isRevealed(state, FORGES_ID, 'u2-chaumiere')).toBe(true);
-    expect(isRevealed(state, FORGES_ID, 'u2-ysolde')).toBe(false);
-  });
-});
-
-describe('données', () => {
-  it('référence uniquement des identifiants existants', () => {
-    for (const universe of Object.values(universes)) {
-      for (const relation of universe.relations) {
-        expect(universe.nodeById.has(relation.from)).toBe(true);
-        expect(universe.nodeById.has(relation.to)).toBe(true);
-      }
-      for (const echo of universe.echoes) {
-        expect(universe.nodeById.has(echo.sourceNodeId)).toBe(true);
-        const targetExists = Object.values(universes).some((other) => other.nodeById.has(echo.targetNodeId));
-        expect(targetExists).toBe(true);
-      }
-      for (const question of universe.questions) {
-        expect(universe.nodeById.has(question.targetNodeId)).toBe(true);
-        expect(question.answers.length).toBeGreaterThan(0);
-      }
-    }
-  });
-
-  it('censure dès le départ les nœuds ciblés par une question', () => {
-    const meta = universes[META_ID];
-    if (!meta) throw new Error('Univers méta manquant');
-    const visibility = visibilityOf(freshState(), META_ID);
-    for (const question of meta.questions) {
-      expect(visibility.get(question.targetNodeId)).toBe('censored');
-    }
+  it('ne révèle que les nœuds de départ tant qu’aucune question n’est résolue', () => {
+    expect(isRevealed(freshState(), FORGES, 'b-foret')).toBe(false);
   });
 });
 
 describe('question centrale', () => {
-  it('calcule le compteur à partir des nœuds obligatoires non révélés', () => {
-    const meta = universes[META_ID];
-    if (!meta) throw new Error('Univers méta manquant');
-    const state = freshState();
-    expect(centralRemaining(state, meta)).toBe(4);
-    const next = answerCorrect(state, 'q-meta-origine');
-    expect(centralRemaining(next, meta)).toBe(3);
+  it('compte les nœuds obligatoires non révélés', () => {
+    const meta = universeOf(META);
+    expect(centralRemaining(freshState(), meta)).toBe(2);
+    expect(centralRemaining(answer(freshState(), META, 'qm-origine', 'origine'), meta)).toBe(1);
   });
 
-  it('affiche la conclusion lorsque les conditions de victoire sont remplies', () => {
-    const meta = universes[META_ID];
-    if (!meta) throw new Error('Univers méta manquant');
-
-    let state = freshState();
-    for (const questionId of [
-      'q-u1-sentier',
-      'q-u1-chaumiere',
-      'q-u1-ysolde',
-      'q-u1-nuit',
-      'q-u1-gorm',
-      'q-u1-serment',
-      'q-u2-sentier',
-      'q-u2-chaumiere',
-      'q-u2-ysolde',
-      'q-u2-nuit',
-      'q-meta-origine',
-      'q-meta-anomalie-1',
-      'q-meta-anomalie-2',
-      'q-meta-finale',
-    ]) {
-      state = answerCorrect(state, questionId);
-    }
-
-    expect(isEnded(state, meta)).toBe(true);
-    expect(centralRemaining(state, meta)).toBe(0);
+  it('termine la partie lorsque le nœud final est révélé', () => {
+    const meta = universeOf(META);
+    expect(isEnded(freshState(), meta)).toBe(false);
+    expect(isEnded(answer(freshState(), META, 'qm-finale', 'fin'), meta)).toBe(true);
   });
 });
 
@@ -196,46 +209,37 @@ describe('sauvegarde', () => {
 
   it('restaure une sauvegarde après rechargement', () => {
     const store = memoryStore();
-    const state = answerCorrect(freshState(), 'q-u1-sentier');
+    const state = answer(freshState(), BOIS, 'qa-sentier', 'le chemin change de longueur');
     expect(saveGame(store, state)).toBe(true);
-    const restored = loadGame(store, universes);
-    expect(restored).toEqual(state);
+    expect(loadGame(store, fixtures)).toEqual(state);
   });
 
   it('ignore une sauvegarde invalide sans planter', () => {
     const store = memoryStore();
     store.setItem(SAVE_KEY, '{pas du json');
-    expect(loadGame(store, universes)).toBeNull();
+    expect(loadGame(store, fixtures)).toBeNull();
 
     store.setItem(SAVE_KEY, JSON.stringify({ version: 1, state: { revealed: 'n\'importe quoi' } }));
-    expect(loadGame(store, universes)).toBeNull();
+    expect(loadGame(store, fixtures)).toBeNull();
 
     store.setItem(SAVE_KEY, JSON.stringify({ version: 99, state: {} }));
-    expect(loadGame(store, universes)).toBeNull();
+    expect(loadGame(store, fixtures)).toBeNull();
   });
 
-  it('retire les identifiants inconnus d\'une sauvegarde', () => {
+  it("retire les identifiants inconnus d'une sauvegarde", () => {
     const raw = {
       currentUniverseId: 'univers-fantome',
-      revealed: { [BOIS_ID]: ['u1-aniel', 'nœud-fantome'] },
-      unlockedSections: ['section-fantome'],
+      revealed: { [BOIS]: ['a-centre', 'nœud-fantome'] },
       answeredQuestions: ['question-fantome'],
       visited: ['univers-fantome'],
-      unseen: [FORGES_ID, 'univers-fantome'],
-      journal: [{ type: 'reveal', universeId: BOIS_ID, nodeId: 'nœud-fantome' }],
+      unseen: [FORGES, 'univers-fantome'],
+      journal: [{ type: 'reveal', universeId: BOIS, nodeId: 'nœud-fantome' }],
     };
-    const state = sanitizeState(raw, universes);
-    expect(state?.currentUniverseId).toBe(BOIS_ID);
-    expect(state?.revealed[BOIS_ID]).toEqual(['u1-aniel']);
-    expect(state?.unlockedSections).toEqual([]);
+    const state = sanitizeState(raw, fixtures);
+    expect(state?.currentUniverseId).toBe(BOIS);
+    expect(state?.revealed[BOIS]).toEqual(['a-centre']);
     expect(state?.answeredQuestions).toEqual([]);
-    expect(state?.unseen).toEqual([FORGES_ID]);
+    expect(state?.unseen).toEqual([FORGES]);
     expect(state?.journal).toEqual([]);
   });
 });
-
-function forgesUniverse() {
-  const universe = universes[FORGES_ID];
-  if (!universe) throw new Error('Univers forges manquant');
-  return universe;
-}

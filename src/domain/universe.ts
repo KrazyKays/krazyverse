@@ -3,11 +3,9 @@ import type { Universe, UniverseData } from './types';
 export function buildUniverse(data: UniverseData): Universe {
   const nodeById = new Map(data.nodes.map((node) => [node.id, node]));
   const relationIdsByNode = new Map<string, string[]>();
-  const echoIdsByNode = new Map<string, string[]>();
 
   for (const node of data.nodes) {
     relationIdsByNode.set(node.id, []);
-    echoIdsByNode.set(node.id, []);
   }
 
   for (const relation of data.relations) {
@@ -15,11 +13,7 @@ export function buildUniverse(data: UniverseData): Universe {
     relationIdsByNode.get(relation.to)?.push(relation.id);
   }
 
-  for (const echo of data.echoes) {
-    echoIdsByNode.get(echo.sourceNodeId)?.push(echo.id);
-  }
-
-  return { ...data, nodeById, relationIdsByNode, echoIdsByNode };
+  return { ...data, nodeById, relationIdsByNode };
 }
 
 export function neighbourIds(universe: Universe, nodeId: string): string[] {

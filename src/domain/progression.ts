@@ -1,6 +1,6 @@
 import { isAnswerAccepted } from './answers';
 import { computeVisibility } from './visibility';
-import type { GameState, JournalEntry, Question, Universe } from './types';
+import type { GameState, Question, Universe } from './types';
 
 export type UniverseMap = Record<string, Universe>;
 
@@ -10,7 +10,6 @@ export function createInitialState(universes: UniverseMap): GameState {
   let state: GameState = {
     currentUniverseId: START_UNIVERSE_ID,
     revealed: {},
-    unlockedSections: [],
     answeredQuestions: [],
     visited: [START_UNIVERSE_ID],
     unseen: [],
@@ -40,22 +39,12 @@ function findUniverseOfNode(universes: UniverseMap, nodeId: string): Universe | 
   return Object.values(universes).find((universe) => universe.nodeById.has(nodeId));
 }
 
-export function revealNode(
-  state: GameState,
-  universes: UniverseMap,
-  universeId: string,
-  nodeId: string,
-  sourceNodeId?: string,
-): GameState {
+export function revealNode(state: GameState, universes: UniverseMap, universeId: string, nodeId: string): GameState {
   const universe = universes[universeId];
   const node = universe?.nodeById.get(nodeId);
   if (!universe || !node || isRevealed(state, universeId, nodeId)) {
     return state;
   }
-
-  const journalEntry: JournalEntry = sourceNodeId
-    ? { type: 'echo', universeId, nodeId, sourceNodeId }
-    : { type: 'reveal', universeId, nodeId };
 
   let next: GameState = {
     ...state,
@@ -63,26 +52,19 @@ export function revealNode(
       ...state.revealed,
       [universeId]: [...(state.revealed[universeId] ?? []), nodeId],
     },
-    journal: [...state.journal, journalEntry],
+    journal: [...state.journal, { type: 'reveal', universeId, nodeId }],
   };
 
   if (node.finale && !next.journal.some((entry) => entry.type === 'ending')) {
     next = { ...next, journal: [...next.journal, { type: 'ending', universeId }] };
   }
 
-  for (const echoId of universe.echoIdsByNode.get(nodeId) ?? []) {
-    const echo = universe.echoes.find((candidate) => candidate.id === echoId);
-    if (!echo) continue;
-    const targetUniverse = findUniverseOfNode(universes, echo.targetNodeId);
-    if (!targetUniverse || isRevealed(next, targetUniverse.id, echo.targetNodeId)) continue;
-
-    next = revealNode(next, universes, targetUniverse.id, echo.targetNodeId, nodeId);
-    if (targetUniverse.id !== next.currentUniverseId && !next.unseen.includes(targetUniverse.id)) {
-      next = { ...next, unseen: [...next.unseen, targetUniverse.id] };
-    }
-  }
-
   return next;
+}
+
+function markUnseen(state: GameState, universeId: string): GameState {
+  if (universeId === state.currentUniverseId || state.unseen.includes(universeId)) return state;
+  return { ...state, unseen: [...state.unseen, universeId] };
 }
 
 export function isQuestionAvailable(state: GameState, universe: Universe, question: Question): boolean {
@@ -122,19 +104,13 @@ export function answerQuestion(
     answeredQuestions: [...state.answeredQuestions, question.id],
   };
 
-  for (const node of universe.nodes) {
-    for (const section of node.sections) {
-      if (section.unlockedByQuestionId !== question.id) continue;
-      if (next.unlockedSections.includes(section.id)) continue;
-      next = {
-        ...next,
-        unlockedSections: [...next.unlockedSections, section.id],
-        journal: [...next.journal, { type: 'section', universeId, nodeId: node.id, sectionId: section.id }],
-      };
-    }
+  next = revealNode(next, universes, universeId, question.targetNodeId);
+  for (const nodeId of question.alsoRevealed ?? []) {
+    const target = findUniverseOfNode(universes, nodeId);
+    if (!target || isRevealed(next, target.id, nodeId)) continue;
+    next = markUnseen(revealNode(next, universes, target.id, nodeId), target.id);
   }
 
-  next = revealNode(next, universes, universeId, question.targetNodeId);
   return { state: next, correct: true };
 }
 

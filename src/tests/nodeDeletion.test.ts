@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { universes } from '../data';
-import type { UniverseData } from '../domain/types';
+import { buildUniverse } from '../domain/universe';
+import type { Question, StoryNode, Universe, UniverseData } from '../domain/types';
 import type { ContentPath, ScopedEdit } from '../setup/api';
 import { planNodeDeletion } from '../setup/nodeDeletion';
 
@@ -9,11 +10,11 @@ type DataSet = Record<string, UniverseData>;
 
 const allUniverses = Object.values(universes);
 
-function snapshot(): DataSet {
+function snapshotOf(list: Universe[]): DataSet {
   return Object.fromEntries(
-    allUniverses.map(({ id, name, kind, tagline, nodes, relations, echoes, questions, ending }) => [
+    list.map(({ id, name, kind, tagline, nodes, relations, questions, ending }) => [
       id,
-      structuredClone({ id, name, kind, tagline, nodes, relations, echoes, questions, ending }),
+      structuredClone({ id, name, kind, tagline, nodes, relations, questions, ending }),
     ]),
   );
 }
@@ -47,7 +48,6 @@ function applyEdit(data: DataSet, edit: ScopedEdit): void {
 
 function expectConsistent(data: DataSet): void {
   const nodeIds = new Set(Object.values(data).flatMap((universe) => universe.nodes.map((node) => node.id)));
-  const questionIds = new Set(Object.values(data).flatMap((universe) => universe.questions.map((question) => question.id)));
 
   for (const universe of Object.values(data)) {
     const localNodeIds = new Set(universe.nodes.map((node) => node.id));
@@ -55,27 +55,56 @@ function expectConsistent(data: DataSet): void {
       expect(localNodeIds.has(relation.from)).toBe(true);
       expect(localNodeIds.has(relation.to)).toBe(true);
     }
-    for (const echo of universe.echoes) {
-      expect(localNodeIds.has(echo.sourceNodeId)).toBe(true);
-      expect(nodeIds.has(echo.targetNodeId)).toBe(true);
-    }
     for (const question of universe.questions) {
       expect(localNodeIds.has(question.targetNodeId)).toBe(true);
-      for (const revealedId of question.requiresRevealed) expect(nodeIds.has(revealedId)).toBe(true);
-    }
-    for (const node of universe.nodes) {
-      for (const section of node.sections) {
-        if (section.unlockedByQuestionId) expect(questionIds.has(section.unlockedByQuestionId)).toBe(true);
+      for (const revealedId of [...question.requiresRevealed, ...(question.alsoRevealed ?? [])]) {
+        expect(nodeIds.has(revealedId)).toBe(true);
       }
     }
   }
 }
 
+function node(id: string): StoryNode {
+  return { id, kind: 'place', title: id, position: { x: 0, y: 0 }, homologueKey: id, intro: '' };
+}
+
+function question(id: string, targetNodeId: string, requiresRevealed: string[] = [], alsoRevealed: string[] = []): Question {
+  return { id, targetNodeId, access: 'adjacent', requiresRevealed, alsoRevealed, context: '', prompt: '', answers: ['x'], wrongFeedback: '' };
+}
+
+const ORIGINE = 'origine';
+const AUTRE = 'autre';
+
+const exampleUniverses = [
+  buildUniverse({
+    id: ORIGINE,
+    name: 'Origine',
+    kind: 'tale',
+    tagline: '',
+    nodes: [node('n-garde'), node('n-cible')],
+    relations: [],
+    questions: [question('q-cible', 'n-cible')],
+  }),
+  buildUniverse({
+    id: AUTRE,
+    name: 'Autre',
+    kind: 'tale',
+    tagline: '',
+    nodes: [node('a-1')],
+    relations: [],
+    questions: [
+      question('q-req', 'a-1', ['n-cible']),
+      question('q-rev', 'a-1', [], ['n-cible']),
+      question('q-mixte', 'a-1', ['n-garde'], ['n-cible']),
+    ],
+  }),
+];
+
 describe('suppression de nœud', () => {
   for (const universe of allUniverses) {
     for (const node of universe.nodes) {
       it(`supprime ${node.id} sans laisser de référence cassée`, () => {
-        const data = snapshot();
+        const data = snapshotOf(allUniverses);
         const plan = planNodeDeletion(allUniverses, universe.id, node.id);
 
         for (const edit of plan.edits) applyEdit(data, edit);
@@ -88,14 +117,19 @@ describe('suppression de nœud', () => {
     }
   }
 
-  it('compte les questions qui exigent le nœud supprimé', () => {
-    const plan = planNodeDeletion(allUniverses, 'tale-bois-de-brume', 'u1-nuit');
-    expect(plan.counts.requirements).toBe(2);
+  it('compte les prérequis et les révélations qui citent le nœud supprimé', () => {
+    const plan = planNodeDeletion(exampleUniverses, ORIGINE, 'n-cible');
+    expect(plan.counts).toEqual({ relations: 0, questions: 1, requirements: 1, reveals: 2 });
   });
 
-  it('retire les échos entrants depuis un autre univers', () => {
-    const owner = allUniverses.find((universe) => universe.nodeById.has('u2-gorm'));
-    const plan = planNodeDeletion(allUniverses, owner?.id ?? '', 'u2-gorm');
-    expect(plan.counts.echoes).toBe(1);
+  it('retire le nœud des listes de révélation et de prérequis des autres univers', () => {
+    const data = snapshotOf(exampleUniverses);
+    for (const edit of planNodeDeletion(exampleUniverses, ORIGINE, 'n-cible').edits) applyEdit(data, edit);
+
+    const questions = Object.fromEntries(data[AUTRE]?.questions.map((candidate) => [candidate.id, candidate]) ?? []);
+    expect(questions['q-req']?.requiresRevealed).toEqual([]);
+    expect(questions['q-rev']?.alsoRevealed).toEqual([]);
+    expect(questions['q-mixte']).toMatchObject({ requiresRevealed: ['n-garde'], alsoRevealed: [] });
+    expect(data[ORIGINE]?.questions).toEqual([]);
   });
 });

@@ -359,21 +359,13 @@ button.link {
   font-size: 1rem;
 }
 
-.section {
-  border-top: 1px solid var(--line);
-  padding-top: 0.6rem;
-}
-
-.section h3,
-.relations h3,
-.echoes h3 {
+.relations h3 {
   font-size: 0.95rem;
   font-weight: normal;
   color: var(--accent);
   margin: 0.8rem 0 0.4rem;
 }
 
-.locked,
 .hint,
 .censored-text {
   color: var(--ink-soft);
@@ -381,8 +373,7 @@ button.link {
   font-size: 0.92rem;
 }
 
-.relations ul,
-.echoes ul {
+.relations ul {
   list-style: none;
   padding: 0;
   margin: 0;

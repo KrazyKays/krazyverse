@@ -20,10 +20,6 @@ describe('contenu éditable', () => {
           expect(nodeIds).toContain(relation.from);
           expect(nodeIds).toContain(relation.to);
         }
-        for (const echo of universe.echoes) {
-          expect(nodeIds).toContain(echo.sourceNodeId);
-          expect(allNodeIds.has(echo.targetNodeId)).toBe(true);
-        }
       });
 
       it('a des questions cohérentes avec leurs nœuds et leurs réponses', () => {
@@ -33,18 +29,8 @@ describe('contenu éditable', () => {
           for (const answer of question.answers) {
             expect(normalizeAnswer(answer)).not.toBe('');
           }
-          for (const revealedId of question.requiresRevealed) {
+          for (const revealedId of [...question.requiresRevealed, ...(question.alsoRevealed ?? [])]) {
             expect(allNodeIds.has(revealedId)).toBe(true);
-          }
-        }
-      });
-
-      it('débloque les sections par des questions existantes', () => {
-        for (const node of universe.nodes) {
-          for (const section of node.sections) {
-            if (section.unlockedByQuestionId) {
-              expect(questionIds).toContain(section.unlockedByQuestionId);
-            }
           }
         }
       });

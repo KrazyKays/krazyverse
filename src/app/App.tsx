@@ -134,7 +134,6 @@ export function App() {
 
         <SidePanel
           universe={currentUniverse}
-          universes={universes}
           state={state}
           selectedNodeId={selectedNodeId}
           onSelect={setSelectedNodeId}

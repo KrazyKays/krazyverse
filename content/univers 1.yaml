@@ -7,13 +7,12 @@ kind: tale
 tagline: "Un univers positif et joyeux où le mensonge n'existe pas."
 
 nodes:
-  - id: u1-aniel
+  - id: u1-centre
     kind: place
     title: "Centre de l'univers"
     position: { x: 240, y: 360 }
     homologueKey: centre
     intro: "Dans cette univers tout est magnifique et innocent, le mensonge n'existe pas et tout le monde vit une existence parfaite, au premier abord ..."
-    sections: []
     revealedAtStart: true
 
   - id: u1-ysolde
@@ -22,11 +21,6 @@ nodes:
     position: { x: 690, y: 300 }
     homologueKey: ysolde
     intro: "Ysolde vit seule dans la chaumière aux volets verts. Elle connaît les herbes de chaque saison et ne reçoit jamais personne après la nuit tombée."
-    sections:
-      - id: u1-ysolde-herbes
-        title: "Les herbes"
-        body: "Ysolde garde dans un coffre une fiole de sève de fougère, qu'elle n'utilise que lorsque la forêt semble changer de place."
-        unlockedByQuestionId: q-u1-chaumiere
 
   - id: u1-gorm
     kind: character
@@ -34,11 +28,6 @@ nodes:
     position: { x: 600, y: 520 }
     homologueKey: gorm
     intro: "Gorm veille à la lisière. Sa silhouette massive ressemble à celle d'un loup, mais il marche debout et ne cherche jamais à se nourrir de voyageurs."
-    sections:
-      - id: u1-gorm-garde
-        title: "La garde"
-        body: "Gorm surveille les pierres dressées qui délimitent le bois. Il sait que l'une d'elles a été déplacée durant la dernière lune."
-        unlockedByQuestionId: q-u1-gorm
 
   - id: u1-sentier
     kind: place
@@ -46,7 +35,6 @@ nodes:
     position: { x: 420, y: 420 }
     homologueKey: sentier
     intro: "Un chemin étroit bordé de fougères hautes. Les promeneurs assurent qu'il est toujours plus long au retour qu'à l'aller."
-    sections: []
 
   - id: u1-chaumiere
     kind: place
@@ -54,7 +42,6 @@ nodes:
     position: { x: 520, y: 170 }
     homologueKey: chaumiere
     intro: "Une maison basse au toit de chaume, entourée d'un jardin d'aromates. Une lampe reste allumée à la fenêtre, même en plein jour."
-    sections: []
 
   - id: u1-cueillette
     kind: event
@@ -62,7 +49,6 @@ nodes:
     position: { x: 330, y: 230 }
     homologueKey: cueillette
     intro: "Chaque année, les enfants du village cueillent les baies rouges du bois. Une année, aucune baie n'a poussé, et seules des feuilles grises sont restées sur les branches."
-    sections: []
 
   - id: u1-nuit
     kind: event
@@ -70,7 +56,6 @@ nodes:
     position: { x: 780, y: 470 }
     homologueKey: nuit
     intro: "Une nuit par an, les chemins de la forêt échangent leurs places. Ceux qui marchent alors sont censés rentrer avant l'aube."
-    sections: []
   - id: u1-rouge
     kind: character
     title: Le petit chaperon rouge
@@ -79,24 +64,21 @@ nodes:
       y: 550
     homologueKey: rouge
     intro: ""
-    sections: []
     central:
       required: false
 
 relations:
-  - { id: r1-aniel-cueillette, from: u1-aniel, to: u1-cueillette }
+  - { id: r1-aniel-cueillette, from: u1-centre, to: u1-cueillette }
   - { id: r1-sentier-gorm, from: u1-sentier, to: u1-gorm }
   - { id: r1-sentier-chaumiere, from: u1-sentier, to: u1-chaumiere }
   - { id: r1-chaumiere-ysolde, from: u1-chaumiere, to: u1-ysolde }
   - { id: r1-ysolde-nuit, from: u1-ysolde, to: u1-nuit }
   - id: link-u1-aniel-u1-sentier
-    from: u1-aniel
+    from: u1-centre
     to: u1-sentier
   - id: link-u1-rouge-u1-aniel
     from: u1-rouge
-    to: u1-aniel
-
-echoes: []
+    to: u1-centre
 
 questions:
   - id: q-u1-sentier

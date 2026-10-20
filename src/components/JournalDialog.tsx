@@ -11,24 +11,11 @@ interface JournalDialogProps {
 export function JournalDialog({ state, universes, onClose }: JournalDialogProps) {
   const universeName = (id: string) => universes[id]?.name ?? id;
   const nodeTitle = (universeId: string, nodeId: string) => universes[universeId]?.nodeById.get(nodeId)?.title ?? '';
-  const findUniverseOf = (nodeId: string) =>
-    Object.values(universes).find((universe) => universe.nodeById.has(nodeId));
 
   const describe = (entry: JournalEntry): string => {
     switch (entry.type) {
       case 'reveal':
         return `Découverte : ${nodeTitle(entry.universeId, entry.nodeId)} (${universeName(entry.universeId)})`;
-      case 'echo': {
-        const source = findUniverseOf(entry.sourceNodeId);
-        const sourceTitle = source?.nodeById.get(entry.sourceNodeId)?.title ?? '';
-        return `Écho : ${nodeTitle(entry.universeId, entry.nodeId)} (${universeName(entry.universeId)}), depuis ${sourceTitle}`;
-      }
-      case 'section': {
-        const section = universes[entry.universeId]?.nodeById.get(entry.nodeId)?.sections.find(
-          (candidate) => candidate.id === entry.sectionId,
-        );
-        return `Récit débloqué : ${section?.title ?? ''} — ${nodeTitle(entry.universeId, entry.nodeId)}`;
-      }
       case 'visit':
         return `Univers visité : ${universeName(entry.universeId)}`;
       case 'ending': {

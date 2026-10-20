@@ -63,10 +63,6 @@ function sanitizeJournal(raw: unknown, universes: UniverseMap): JournalEntry[] {
 
     if (entry.type === 'reveal') {
       entries.push({ type: 'reveal', universeId: universe.id, nodeId: entry.nodeId });
-    } else if (entry.type === 'echo' && typeof entry.sourceNodeId === 'string') {
-      entries.push({ type: 'echo', universeId: universe.id, nodeId: entry.nodeId, sourceNodeId: entry.sourceNodeId });
-    } else if (entry.type === 'section' && typeof entry.sectionId === 'string') {
-      entries.push({ type: 'section', universeId: universe.id, nodeId: entry.nodeId, sectionId: entry.sectionId });
     }
   }
 
@@ -78,9 +74,6 @@ export function sanitizeState(raw: unknown, universes: UniverseMap): GameState |
   const data = raw as Record<string, unknown>;
 
   const knownUniverseIds = Object.keys(universes);
-  const knownSectionIds = new Set(
-    knownUniverseIds.flatMap((id) => universes[id]?.nodes.flatMap((node) => node.sections.map((s) => s.id)) ?? []),
-  );
   const knownQuestionIds = new Set(knownUniverseIds.flatMap((id) => universes[id]?.questions.map((q) => q.id) ?? []));
 
   if (typeof data.revealed !== 'object' || data.revealed === null) return null;
@@ -107,7 +100,6 @@ export function sanitizeState(raw: unknown, universes: UniverseMap): GameState |
   const state: GameState = {
     currentUniverseId,
     revealed,
-    unlockedSections: pickKnown(data.unlockedSections, knownSectionIds),
     answeredQuestions: pickKnown(data.answeredQuestions, knownQuestionIds),
     visited,
     unseen: pickKnown(data.unseen, knownUniverses),
