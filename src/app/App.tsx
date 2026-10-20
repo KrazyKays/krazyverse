@@ -136,7 +136,6 @@ export function App() {
           universe={currentUniverse}
           state={state}
           selectedNodeId={selectedNodeId}
-          onSelect={setSelectedNodeId}
         />
       </main>
 

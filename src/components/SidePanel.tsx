@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { neighbourIds } from '../domain/universe';
 import { computeVisibility } from '../domain/visibility';
 import type { GameState, NodeKind, Universe } from '../domain/types';
 
@@ -13,10 +12,9 @@ interface SidePanelProps {
   universe: Universe;
   state: GameState;
   selectedNodeId: string | null;
-  onSelect: (nodeId: string) => void;
 }
 
-export function SidePanel({ universe, state, selectedNodeId, onSelect }: SidePanelProps) {
+export function SidePanel({ universe, state, selectedNodeId }: SidePanelProps) {
   const panelRef = useRef<HTMLElement>(null);
   const visibility = useMemo(
     () => computeVisibility(universe, new Set(state.revealed[universe.id] ?? [])),
@@ -38,13 +36,6 @@ export function SidePanel({ universe, state, selectedNodeId, onSelect }: SidePan
           <p className="kind">{KIND_LABELS[readable.kind]}</p>
           <h2>{readable.title}</h2>
           <p className="intro">{readable.intro}</p>
-
-          <RelationList
-            universe={universe}
-            nodeId={readable.id}
-            visibility={visibility}
-            onSelect={onSelect}
-          />
         </article>
       ) : (
         <div className="reading reading--empty">
@@ -58,43 +49,3 @@ export function SidePanel({ universe, state, selectedNodeId, onSelect }: SidePan
   );
 }
 
-function RelationList({
-  universe,
-  nodeId,
-  visibility,
-  onSelect,
-}: {
-  universe: Universe;
-  nodeId: string;
-  visibility: Map<string, string>;
-  onSelect: (nodeId: string) => void;
-}) {
-  const relations = neighbourIds(universe, nodeId).filter((id) => visibility.get(id) !== 'hidden');
-  if (relations.length === 0) return null;
-
-  return (
-    <section className="relations">
-      <h3>Relations connues</h3>
-      <ul>
-        {relations.map((id) => {
-          const other = universe.nodeById.get(id);
-          if (!other) return null;
-          if (visibility.get(id) === 'revealed') {
-            return (
-              <li key={id}>
-                <button type="button" className="link" onClick={() => onSelect(id)}>
-                  {other.title}
-                </button>
-              </li>
-            );
-          }
-          return (
-            <li key={id} className="censored-text">
-              Nœud censuré
-            </li>
-          );
-        })}
-      </ul>
-    </section>
-  );
-}

@@ -109,8 +109,21 @@ describe('visibilité des nœuds', () => {
     expect(visibilityOf(freshState(), BOIS).get('a-gorm')).toBe('hidden');
   });
 
-  it('censure dès le départ les nœuds ciblés par une question', () => {
+  it('censure dès le départ les nœuds ciblés par une enquête', () => {
     expect(visibilityOf(freshState(), META).get('m-origine')).toBe('censored');
+  });
+
+  it("ne censure pas la cible d'une question accessible par adjacence si elle n'est pas liée à un nœud révélé", () => {
+    const universe = buildUniverse({
+      id: 'x',
+      name: 'x',
+      kind: 'tale',
+      tagline: '',
+      nodes: [node('x-centre', { revealedAtStart: true }), node('x-loin')],
+      relations: [],
+      questions: [question('qx-loin', 'x-loin')],
+    });
+    expect(computeVisibility(universe, new Set(['x-centre'])).get('x-loin')).toBe('hidden');
   });
 
   it("ne révèle pas automatiquement les voisins d'un nœud révélé", () => {

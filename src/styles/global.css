@@ -359,27 +359,10 @@ button.link {
   font-size: 1rem;
 }
 
-.relations h3 {
-  font-size: 0.95rem;
-  font-weight: normal;
-  color: var(--accent);
-  margin: 0.8rem 0 0.4rem;
-}
-
-.hint,
-.censored-text {
+.hint {
   color: var(--ink-soft);
   font-style: italic;
   font-size: 0.92rem;
-}
-
-.relations ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
 }
 
 .dialog-backdrop {
