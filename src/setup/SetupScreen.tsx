@@ -1,11 +1,11 @@
-import { useRef, useState, type FormEvent } from 'react';
-import { GraphEdges, RevealedNode, VIEW_HEIGHT, VIEW_WIDTH } from '../components/graph';
+import { useEffect, useId, useRef, useState, type FormEvent, type MouseEvent as ReactMouseEvent } from 'react';
+import { GraphEdges, GraphLegend, RevealedNode, VIEW_HEIGHT, VIEW_WIDTH } from '../components/graph';
 import { KIND_OPTIONS } from '../components/labels';
 import type { NodeKind, Universe } from '../domain/types';
 import { sendContentEdits, type Commit, type CommitBatch, type ContentEdit } from './api';
 import { nodeIdError } from './nodeRename';
 import { NodeEditor } from './NodeEditor';
-import { SelectField, TextField } from './SetupFields';
+import { Section, SelectField, TextField } from './SetupFields';
 
 interface SetupScreenProps {
   universes: Universe[];
@@ -13,12 +13,37 @@ interface SetupScreenProps {
   onClose: () => void;
 }
 
+type StatusTone = 'idle' | 'saving' | 'saved' | 'error';
+
+interface Status {
+  tone: StatusTone;
+  text: string;
+}
+
 export function SetupScreen({ universes, initialUniverseId, onClose }: SetupScreenProps) {
   const [universeId, setUniverseId] = useState(initialUniverseId);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [newNodeOpen, setNewNodeOpen] = useState(false);
-  const [status, setStatus] = useState('Chaque modification est écrite dans content/*.yaml.');
+  const [status, setStatus] = useState<Status>({ tone: 'idle', text: 'Prêt' });
   const queue = useRef<Promise<void>>(Promise.resolve());
+  const panelRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (selectedNodeId === null) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape' || event.defaultPrevented) return;
+      if (event.target instanceof Element && event.target.closest('input, textarea, select, [role="dialog"]')) return;
+      setSelectedNodeId(null);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [selectedNodeId]);
+
+  useEffect(() => {
+    if (selectedNodeId === null || !window.matchMedia('(max-width: 860px)').matches) return;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    panelRef.current?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+  }, [selectedNodeId]);
 
   const universe = universes.find((candidate) => candidate.id === universeId) ?? universes[0];
   if (!universe) return <p className="fatal">Aucun univers à éditer.</p>;
@@ -26,12 +51,15 @@ export function SetupScreen({ universes, initialUniverseId, onClose }: SetupScre
   const commitBatch: CommitBatch = (edits) => {
     queue.current = queue.current
       .then(() => {
-        setStatus('Enregistrement…');
+        setStatus({ tone: 'saving', text: 'Enregistrement…' });
         return sendContentEdits(edits);
       })
-      .then(() => setStatus('Enregistré dans content/*.yaml.'))
+      .then(() => setStatus({ tone: 'saved', text: 'Enregistré' }))
       .catch((error: unknown) => {
-        setStatus(`Échec de l'enregistrement : ${error instanceof Error ? error.message : String(error)}`);
+        setStatus({
+          tone: 'error',
+          text: `Échec de l'enregistrement : ${error instanceof Error ? error.message : String(error)}`,
+        });
       });
   };
 
@@ -44,9 +72,14 @@ export function SetupScreen({ universes, initialUniverseId, onClose }: SetupScre
       <header className="app-header">
         <div className="title-block">
           <h1>Setup</h1>
-          <p className="counter" role="status">
-            {status}
+          <p
+            className={`setup-status setup-status--${status.tone}`}
+            role="status"
+            aria-live={status.tone === 'error' ? 'assertive' : 'polite'}
+          >
+            {status.text}
           </p>
+          <p className="counter">Chaque modification est écrite dans content/*.yaml. Entrée valide un champ, Échap l'annule.</p>
         </div>
         <div className="header-actions">
           <button type="button" onClick={onClose}>
@@ -78,10 +111,18 @@ export function SetupScreen({ universes, initialUniverseId, onClose }: SetupScre
         </div>
 
         <section className="graph-area" aria-label="Graphe des nœuds">
-          <SetupGraph universe={universe} selectedId={selectedNodeId} onSelect={setSelectedNodeId} />
+          <button type="button" className="skip-link" onClick={() => panelRef.current?.focus()}>
+            Aller au panneau d'édition
+          </button>
+          <SetupGraph
+            universe={universe}
+            selectedId={selectedNodeId}
+            onSelect={setSelectedNodeId}
+            onDeselect={() => setSelectedNodeId(null)}
+          />
         </section>
 
-        <aside className="side-panel" aria-label="Panneau d'édition">
+        <aside ref={panelRef} tabIndex={-1} className="side-panel" aria-label="Panneau d'édition">
           <div className="setup-toolbar">
             <button type="button" onClick={() => setNewNodeOpen((open) => !open)} aria-expanded={newNodeOpen}>
               {newNodeOpen ? 'Annuler' : 'Ajouter un nœud'}
@@ -109,9 +150,10 @@ export function SetupScreen({ universes, initialUniverseId, onClose }: SetupScre
               commitBatch={commitBatch}
               onSelect={setSelectedNodeId}
               onDeleted={() => setSelectedNodeId(null)}
+              onClose={() => setSelectedNodeId(null)}
             />
           ) : (
-            <p className="hint">Sélectionne un nœud dans le graphe pour éditer son lore, ses liens et ses questions.</p>
+            <p className="setup-empty">Sélectionne un nœud dans le graphe pour éditer son lore, ses liens et ses questions.</p>
           )}
         </aside>
       </main>
@@ -126,11 +168,17 @@ interface NewNodeFormProps {
   onCreated: (nodeId: string) => void;
 }
 
+interface FormError {
+  field: 'id' | 'title';
+  message: string;
+}
+
 function NewNodeForm({ universes, universe, commit, onCreated }: NewNodeFormProps) {
   const [id, setId] = useState('');
   const [title, setTitle] = useState('');
   const [kind, setKind] = useState<NodeKind>('event');
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<FormError | null>(null);
+  const errorId = useId();
 
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -138,11 +186,11 @@ function NewNodeForm({ universes, universe, commit, onCreated }: NewNodeFormProp
     const nodeTitle = title.trim();
     const idProblem = nodeIdError(universes, nodeId);
     if (idProblem) {
-      setError(idProblem);
+      setError({ field: 'id', message: idProblem });
       return;
     }
     if (nodeTitle === '') {
-      setError('Le titre est requis.');
+      setError({ field: 'title', message: 'Le titre est requis.' });
       return;
     }
     commit({
@@ -163,20 +211,30 @@ function NewNodeForm({ universes, universe, commit, onCreated }: NewNodeFormProp
     onCreated(nodeId);
   };
 
+  const describe = (field: FormError['field']) =>
+    error?.field === field ? { 'aria-invalid': true, 'aria-describedby': errorId } : {};
+
   return (
     <form className="setup-card setup-new-node" onSubmit={submit} aria-label={`Nouveau nœud dans ${universe.name}`}>
       <label className="setup-field">
         <span>Identifiant</span>
-        <input value={id} onChange={(event) => setId(event.target.value)} placeholder="ex. u1-lanterne" />
+        <input
+          autoFocus
+          value={id}
+          onChange={(event) => setId(event.target.value)}
+          placeholder="ex. u1-lanterne"
+          {...describe('id')}
+        />
       </label>
       <label className="setup-field">
         <span>Titre</span>
-        <input value={title} onChange={(event) => setTitle(event.target.value)} />
+        <input value={title} onChange={(event) => setTitle(event.target.value)} {...describe('title')} />
       </label>
       <SelectField label="Type" value={kind} options={KIND_OPTIONS} onChange={(value) => setKind(value as NodeKind)} />
+      <p className="hint">Le nœud est créé au centre du graphe : ajuste ensuite sa position X/Y.</p>
       {error && (
-        <p className="notice" role="alert">
-          {error}
+        <p id={errorId} className="notice" role="alert">
+          {error.message}
         </p>
       )}
       <button type="submit" className="primary">
@@ -190,12 +248,35 @@ interface SetupGraphProps {
   universe: Universe;
   selectedId: string | null;
   onSelect: (nodeId: string) => void;
+  onDeselect: () => void;
 }
 
-function SetupGraph({ universe, selectedId, onSelect }: SetupGraphProps) {
+function nodeBadge(universe: Universe, nodeId: string): string | undefined {
+  const node = universe.nodeById.get(nodeId);
+  const questionCount = universe.questions.filter((question) => question.targetNodeId === nodeId).length;
+  const parts = [
+    node?.revealedAtStart ? '▸' : '',
+    node?.finale ? '★' : '',
+    questionCount > 0 ? `?${questionCount}` : '',
+  ].filter(Boolean);
+  return parts.length > 0 ? parts.join(' ') : undefined;
+}
+
+function SetupGraph({ universe, selectedId, onSelect, onDeselect }: SetupGraphProps) {
+  const onBackgroundClick = (event: ReactMouseEvent<SVGSVGElement>) => {
+    if ((event.target as Element).closest('.node')) return;
+    onDeselect();
+  };
+
   return (
     <div className="graph-wrapper">
-      <svg className="graph" viewBox={`0 0 ${VIEW_WIDTH} ${VIEW_HEIGHT}`} role="group" aria-label={`Graphe de ${universe.name}`}>
+      <svg
+        className="graph"
+        viewBox={`0 0 ${VIEW_WIDTH} ${VIEW_HEIGHT}`}
+        role="group"
+        aria-label={`Graphe de ${universe.name}`}
+        onClick={onBackgroundClick}
+      >
         <GraphEdges universe={universe} relations={universe.relations} selectedId={selectedId} />
         <g className="graph-nodes">
           {universe.nodes.map((node) => (
@@ -203,11 +284,22 @@ function SetupGraph({ universe, selectedId, onSelect }: SetupGraphProps) {
               key={node.id}
               node={node}
               selected={node.id === selectedId}
+              badge={nodeBadge(universe, node.id)}
               onSelect={() => onSelect(node.id)}
             />
           ))}
         </g>
       </svg>
+      <GraphLegend
+        censored={false}
+        extra={
+          <>
+            <li>▸ révélé au départ</li>
+            <li>★ nœud final</li>
+            <li>?n questions</li>
+          </>
+        }
+      />
     </div>
   );
 }
@@ -220,29 +312,31 @@ interface UniverseFieldsProps {
 function UniverseFields({ universe, commit }: UniverseFieldsProps) {
   return (
     <section className="setup-card" aria-label="Univers">
-      <h2>Univers</h2>
-      <TextField label="Nom" value={universe.name} onCommit={(value) => commit({ op: 'set', path: ['name'], value })} />
-      <TextField
-        label="Accroche"
-        multiline
-        value={universe.tagline}
-        onCommit={(value) => commit({ op: 'set', path: ['tagline'], value })}
-      />
-      {universe.ending && (
-        <>
-          <TextField
-            label="Titre de la conclusion"
-            value={universe.ending.title}
-            onCommit={(value) => commit({ op: 'set', path: ['ending', 'title'], value })}
-          />
-          <TextField
-            label="Texte de la conclusion"
-            multiline
-            value={universe.ending.body}
-            onCommit={(value) => commit({ op: 'set', path: ['ending', 'body'], value })}
-          />
-        </>
-      )}
+      <Section title={`Univers : ${universe.name}`} level={2} defaultOpen={false}>
+        <TextField label="Nom" value={universe.name} onCommit={(value) => commit({ op: 'set', path: ['name'], value })} />
+        <TextField
+          label="Accroche"
+          multiline
+          value={universe.tagline}
+          onCommit={(value) => commit({ op: 'set', path: ['tagline'], value })}
+        />
+        {universe.ending && (
+          <>
+            <TextField
+              label="Titre de la conclusion"
+              value={universe.ending.title}
+              onCommit={(value) => commit({ op: 'set', path: ['ending', 'title'], value })}
+            />
+            <TextField
+              label="Texte de la conclusion"
+              multiline
+              rows={6}
+              value={universe.ending.body}
+              onCommit={(value) => commit({ op: 'set', path: ['ending', 'body'], value })}
+            />
+          </>
+        )}
+      </Section>
     </section>
   );
 }

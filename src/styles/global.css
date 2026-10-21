@@ -12,6 +12,9 @@
   --danger: #a33a3a;
   --focus: #9a6700;
   --gold: #8a6510;
+  --surface-active: #ead9b8;
+  --danger-strong: #6b2a33;
+  --field-border: #96706a;
   font-family: 'Georgia', 'Iowan Old Style', 'Palatino Linotype', serif;
   color: var(--ink);
   background: radial-gradient(circle at 50% 30%, #fdf9f0 0%, var(--bg) 70%);
@@ -37,8 +40,13 @@ button {
   cursor: pointer;
 }
 
-button:hover {
+button:not(:disabled):hover {
   border-color: var(--accent);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 button:focus-visible,
@@ -56,7 +64,7 @@ button.primary {
 button.danger {
   border-color: var(--danger);
   color: #fff;
-  background: #6b2a33;
+  background: var(--danger-strong);
 }
 
 button.link {
@@ -144,7 +152,7 @@ button.link {
 
 .universe-tab--active {
   border-color: var(--accent);
-  background: #ead9b8;
+  background: var(--surface-active);
 }
 
 .universe-tab--central {
@@ -282,7 +290,7 @@ button.link {
 }
 
 .node--revealed:hover .shape {
-  fill: #ead9b8;
+  fill: var(--surface-active);
 }
 
 .node--selected .shape {
@@ -510,12 +518,25 @@ button.link {
 .setup-field textarea,
 .setup-field select {
   font: inherit;
+  line-height: 1.35;
   color: var(--ink);
   background: var(--bg);
-  border: 1px solid var(--edge);
+  border: 1px solid var(--field-border);
   border-radius: 6px;
   padding: 0.45rem 0.55rem;
   width: 100%;
+}
+
+.setup-field input,
+.setup-field select {
+  min-height: 2.4rem;
+}
+
+.setup-field input:focus-visible,
+.setup-field textarea:focus-visible,
+.setup-field select:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
 }
 
 .setup-field textarea {
@@ -528,12 +549,33 @@ button.link {
   align-items: flex-end;
 }
 
+.setup-row > button {
+  min-height: 2.4rem;
+}
+
 .setup-check {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.5rem;
   color: var(--ink-soft);
   font-size: 0.9rem;
+}
+
+.setup-check input {
+  flex: none;
+  margin: 0.3rem 0 0;
+  accent-color: var(--accent);
+}
+
+.setup-check-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.setup-check-desc {
+  font-size: 0.82rem;
+  font-style: italic;
 }
 
 .setup-checks {
@@ -629,4 +671,218 @@ button.link {
     animation: none;
     transition: none;
   }
+}
+
+/* Setup */
+
+@media (min-width: 861px) {
+  .app.setup .layout {
+    grid-template-columns: 11rem minmax(0, 1fr) clamp(340px, 30vw, 30rem);
+  }
+}
+
+@media (max-width: 860px) {
+  .app.setup .app-header {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    padding: 0.5rem 0;
+    background: var(--bg);
+  }
+}
+
+.app.setup .node {
+  animation: none;
+}
+
+.setup-status {
+  margin: 0;
+  padding: 0.1rem 0.7rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--bg-elevated);
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+
+.setup-status--saving {
+  border-color: var(--focus);
+  color: var(--focus);
+}
+
+.setup-status--saved {
+  border-color: #3d6b3a;
+  color: #3d6b3a;
+}
+
+.setup-status--error {
+  border-color: var(--danger-strong);
+  background: var(--danger-strong);
+  color: #fff;
+}
+
+.setup button.danger {
+  border-color: var(--danger);
+  background: transparent;
+  color: var(--danger);
+}
+
+.setup button.danger:not(:disabled):hover {
+  border-color: var(--danger-strong);
+  background: var(--danger-strong);
+  color: #fff;
+}
+
+.setup .dialog button.danger {
+  border-color: var(--danger-strong);
+  background: var(--danger-strong);
+  color: #fff;
+}
+
+.setup .icon-button {
+  min-width: 2.4rem;
+  min-height: 2.4rem;
+  padding: 0 0.5rem;
+}
+
+.setup .icon-button.danger {
+  border-color: transparent;
+}
+
+.skip-link {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 3;
+}
+
+.skip-link:not(:focus) {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.node-badge {
+  fill: var(--ink-soft);
+  font-size: 11px;
+  paint-order: stroke;
+  stroke: var(--bg);
+  stroke-width: 3px;
+  pointer-events: none;
+}
+
+.setup-empty {
+  margin: 0;
+  padding: 1rem;
+  border: 1px dashed var(--line-strong);
+  border-radius: 12px;
+  color: var(--ink-soft);
+  font-style: italic;
+  text-align: center;
+}
+
+.setup-card summary {
+  cursor: pointer;
+}
+
+.setup-section {
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--line);
+}
+
+.setup-card > .setup-section:first-child {
+  padding-top: 0;
+  border-top: none;
+}
+
+.setup-section > summary h2,
+.setup-section > summary h3 {
+  display: inline;
+  margin: 0;
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.setup-section > summary h2 {
+  font-size: 1.1rem;
+}
+
+.setup-count {
+  color: var(--ink-soft);
+  font-weight: normal;
+}
+
+.setup-section-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding-top: 0.6rem;
+}
+
+.setup-section--danger {
+  padding: 0.6rem 0.8rem;
+  border: 1px solid rgba(163, 58, 58, 0.4);
+  border-radius: 10px;
+  background: rgba(163, 58, 58, 0.05);
+}
+
+.setup-node-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin: -1rem -1.1rem 0;
+  padding: 0.8rem 1.1rem 0.6rem;
+  border-bottom: 1px solid var(--line);
+  border-radius: 14px 14px 0 0;
+  background: var(--bg-elevated);
+}
+
+.setup-node-header h2 {
+  margin: 0.1rem 0 0;
+  font-size: 1.2rem;
+}
+
+.setup-question {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(255, 252, 243, 0.5);
+}
+
+.setup-question > details > summary {
+  padding: 0.5rem 0.7rem;
+}
+
+.setup-question-title {
+  font-weight: 600;
+}
+
+.setup-question summary code {
+  margin-left: 0.5rem;
+  color: var(--ink-soft);
+}
+
+.setup-question .setup-subcard {
+  border-top: 1px solid var(--line);
+  border-left: none;
+}
+
+.setup-fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.setup-fieldset > legend {
+  margin-bottom: 0.3rem;
+  padding: 0;
+  color: var(--accent);
+  font-size: 0.9rem;
 }

@@ -1,17 +1,21 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import type { Question, StoryNode, Universe } from '../domain/types';
 import { KIND_LABELS, KIND_OPTIONS } from '../components/labels';
 import type { Commit, CommitBatch, ContentPath } from './api';
+import type { ConfirmRequest } from './ConfirmDialog';
+import { ConfirmDialog } from './ConfirmDialog';
 import { uniqueId } from './ids';
 import { planNodeDeletion } from './nodeDeletion';
 import { findHomologue, planNodeCopy } from './nodeCopy';
 import { nodeIdError, planNodeRename } from './nodeRename';
-import { CheckboxField, SelectField, TextField } from './SetupFields';
+import { CheckboxField, Section, SelectField, TextField } from './SetupFields';
 
 const ACCESS_OPTIONS = [
   { value: 'adjacent', label: 'Adjacente' },
   { value: 'enquete', label: 'Question centrale' },
 ];
+
+const QUESTION_TITLE_LENGTH = 70;
 
 interface NodeEditorProps {
   universe: Universe;
@@ -21,9 +25,10 @@ interface NodeEditorProps {
   commitBatch: CommitBatch;
   onSelect: (nodeId: string) => void;
   onDeleted: () => void;
+  onClose: () => void;
 }
 
-export function NodeEditor({ universe, universes, node, commit, commitBatch, onSelect, onDeleted }: NodeEditorProps) {
+export function NodeEditor({ universe, universes, node, commit, commitBatch, onSelect, onDeleted, onClose }: NodeEditorProps) {
   const at = (...rest: ContentPath): ContentPath => ['nodes', { id: node.id }, ...rest];
   const setFlag = (key: 'revealedAtStart' | 'finale', checked: boolean) =>
     commit(checked ? { op: 'set', path: at(key), value: true } : { op: 'delete', path: at(key) });
@@ -33,37 +38,43 @@ export function NodeEditor({ universe, universes, node, commit, commitBatch, onS
   const [copyTargetId, setCopyTargetId] = useState(copyTargets[0]?.id ?? '');
   const copyTarget = copyTargets.find((candidate) => candidate.id === copyTargetId);
   const copyBlocked = copyTarget ? findHomologue(copyTarget, node) : undefined;
+  const [confirmRequest, setConfirmRequest] = useState<ConfirmRequest | null>(null);
+  const [focusTarget, setFocusTarget] = useState<string | null>(null);
 
   const copyNode = () => {
     if (!copyTarget) return;
     const plan = planNodeCopy(universes, universe.id, node.id, copyTarget.id);
     const { questions: questionCount, relations: relationCount, skippedLinks } = plan.counts;
-    const message = [
-      `Copier « ${node.title} » dans ${copyTarget.name} ?`,
-      `Nouvel identifiant : ${plan.newNodeId}`,
-      `Copie ${questionCount} question(s) et ${relationCount} lien(s).`,
-      skippedLinks > 0 ? `${skippedLinks} lien(s) ignoré(s) : pas d'homologue dans cet univers.` : '',
-    ]
-      .filter(Boolean)
-      .join('\n');
-    if (!window.confirm(message)) return;
-    commitBatch(plan.edits);
+    setConfirmRequest({
+      title: `Copier « ${node.title} »`,
+      lines: [
+        `Destination : ${copyTarget.name}`,
+        `Nouvel identifiant : ${plan.newNodeId}`,
+        `Copie ${questionCount} question(s) et ${relationCount} lien(s).`,
+        skippedLinks > 0 ? `${skippedLinks} lien(s) ignoré(s) : pas d'homologue dans cet univers.` : '',
+      ].filter(Boolean),
+      confirmLabel: 'Copier',
+      onConfirm: () => commitBatch(plan.edits),
+    });
   };
 
   const deleteNode = () => {
     const plan = planNodeDeletion(universes, universe.id, node.id);
     const { relations: relationCount, questions: questionCount, requirements, reveals } = plan.counts;
-    const message = [
-      `Supprimer « ${node.title} » ?`,
-      `Supprime ${relationCount} lien(s) et ${questionCount} question(s).`,
-      requirements > 0 ? `Retire ce nœud des prérequis de ${requirements} question(s).` : '',
-      reveals > 0 ? `Retire ce nœud des révélations de ${reveals} question(s).` : '',
-    ]
-      .filter(Boolean)
-      .join('\n');
-    if (!window.confirm(message)) return;
-    commitBatch(plan.edits);
-    onDeleted();
+    setConfirmRequest({
+      title: `Supprimer « ${node.title} »`,
+      lines: [
+        `Supprime ${relationCount} lien(s) et ${questionCount} question(s).`,
+        requirements > 0 ? `Retire ce nœud des prérequis de ${requirements} question(s).` : '',
+        reveals > 0 ? `Retire ce nœud des révélations de ${reveals} question(s).` : '',
+      ].filter(Boolean),
+      confirmLabel: 'Supprimer',
+      danger: true,
+      onConfirm: () => {
+        commitBatch(plan.edits);
+        onDeleted();
+      },
+    });
   };
 
   const renameNode = (newId: string) => {
@@ -71,20 +82,50 @@ export function NodeEditor({ universe, universes, node, commit, commitBatch, onS
     onSelect(newId);
   };
 
-  const startState = node.revealedAtStart
-    ? 'révélé dès le départ'
-    : 'caché, apparaît quand un voisin est révélé, mais apparaît censuré si une question est renseignée';
+  const addQuestion = () => {
+    const id = newQuestionId(universes, node);
+    setFocusTarget(`question:${id}`);
+    commit({
+      op: 'push',
+      path: ['questions'],
+      value: {
+        id,
+        targetNodeId: node.id,
+        access: 'adjacent',
+        requiresRevealed: [],
+        context: '',
+        prompt: 'Nouvelle question',
+        answers: ['Nouvelle réponse'],
+        wrongFeedback: '',
+      },
+    });
+  };
 
   return (
     <section className="setup-card" aria-label={`Nœud ${node.title}`}>
-      <p className="kind">{KIND_LABELS[node.kind]}</p>
-      <NodeIdField nodeId={node.id} universes={universes} onRename={renameNode} />
+      <header className="setup-node-header">
+        <div>
+          <p className="kind">{KIND_LABELS[node.kind]}</p>
+          <h2>{node.title || node.id}</h2>
+        </div>
+        <button type="button" className="icon-button" aria-label="Fermer l'éditeur de nœud" onClick={onClose}>
+          ×
+        </button>
+      </header>
+
       <TextField label="Titre" value={node.title} onCommit={(value) => commit({ op: 'set', path: at('title'), value })} />
       <SelectField
         label="Type"
         value={node.kind}
         options={KIND_OPTIONS}
         onChange={(value) => commit({ op: 'set', path: at('kind'), value })}
+      />
+      <TextField
+        label="Introduction"
+        multiline
+        rows={6}
+        value={node.intro}
+        onCommit={(value) => commit({ op: 'set', path: at('intro'), value })}
       />
       <div className="setup-row">
         <TextField
@@ -100,118 +141,109 @@ export function NodeEditor({ universe, universes, node, commit, commitBatch, onS
           onCommit={(value) => commit({ op: 'set', path: at('position', 'y'), value: Number(value) })}
         />
       </div>
-      <TextField
-        label="Clé d'homologue"
-        value={node.homologueKey}
-        onCommit={(value) => commit({ op: 'set', path: at('homologueKey'), value })}
-      />
-      <TextField
-        label="Introduction"
-        multiline
-        value={node.intro}
-        onCommit={(value) => commit({ op: 'set', path: at('intro'), value })}
-      />
-      <h3>États</h3>
-      <p className="hint">
-        État au départ : <strong>{startState}</strong>
-      </p>
-      <CheckboxField
-        label="Révélé au départ"
-        checked={node.revealedAtStart === true}
-        onChange={(checked) => setFlag('revealedAtStart', checked)}
-      />
-      <p className="hint">Le nœud est accessible dès le début.</p>
-      <CheckboxField label="Nœud final" checked={node.finale === true} onChange={(checked) => setFlag('finale', checked)} />
-      <p className="hint">Le révéler termine la question centrale. Sans effet sur la fin de partie hors de l'univers central.</p>
-      {universe.kind === 'meta' && (
-        <>
+
+      <Section title="Technique" defaultOpen={false}>
+        <NodeIdField nodeId={node.id} universes={universes} onRename={renameNode} askConfirm={setConfirmRequest} />
+        <TextField
+          label="Clé d'homologue"
+          value={node.homologueKey}
+          onCommit={(value) => commit({ op: 'set', path: at('homologueKey'), value })}
+        />
+      </Section>
+
+      <Section title="États">
+        <CheckboxField
+          label="Révélé au départ"
+          description="Visible dès le début de la partie. Sinon le nœud reste caché jusqu'à la révélation d'un voisin, puis apparaît censuré tant qu'une question le cible."
+          checked={node.revealedAtStart === true}
+          onChange={(checked) => setFlag('revealedAtStart', checked)}
+        />
+        <CheckboxField
+          label="Nœud final"
+          description="Le révéler termine la question centrale. Sans effet sur la fin de partie hors de l'univers central."
+          checked={node.finale === true}
+          onChange={(checked) => setFlag('finale', checked)}
+        />
+        {universe.kind === 'meta' && (
           <CheckboxField
             label="Requis pour la question centrale"
+            description="Compte dans le décompte « nœuds restants » de la question centrale. Ne bloque pas la conclusion."
             checked={node.central?.required === true}
             onChange={(checked) => commit({ op: 'set', path: at('central', 'required'), value: checked })}
           />
-          <p className="hint">Compte dans le décompte « nœuds restants » de la question centrale. Ne bloque pas la conclusion.</p>
-        </>
-      )}
+        )}
+      </Section>
 
-      <h3>Liens</h3>
-      {relations.length === 0 && <p className="hint">Aucun lien.</p>}
-      <ul className="setup-list">
-        {relations.map((relation) => {
-          const otherId = relation.from === node.id ? relation.to : relation.from;
-          const other = universe.nodeById.get(otherId);
-          return (
-            <li key={relation.id} className="setup-link">
-              <button type="button" className="link" onClick={() => onSelect(otherId)}>
-                {other?.title ?? otherId}
-              </button>
-              <button
-                type="button"
-                className="danger"
-                aria-label={`Supprimer le lien avec ${other?.title ?? otherId}`}
-                onClick={() => commit({ op: 'delete', path: ['relations', { id: relation.id }] })}
-              >
-                ×
-              </button>
-            </li>
-          );
-        })}
-      </ul>
-      <LinkAdder universe={universe} node={node} commit={commit} />
+      <Section title="Liens" count={relations.length}>
+        {relations.length === 0 && <p className="hint">Aucun lien.</p>}
+        <ul className="setup-list">
+          {relations.map((relation) => {
+            const otherId = relation.from === node.id ? relation.to : relation.from;
+            const other = universe.nodeById.get(otherId);
+            return (
+              <li key={relation.id} className="setup-link">
+                <button type="button" className="link" onClick={() => onSelect(otherId)}>
+                  {other?.title ?? otherId}
+                </button>
+                <button
+                  type="button"
+                  className="danger icon-button"
+                  aria-label={`Supprimer le lien avec ${other?.title ?? otherId}`}
+                  onClick={() => commit({ op: 'delete', path: ['relations', { id: relation.id }] })}
+                >
+                  ×
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+        <LinkAdder universe={universe} node={node} commit={commit} />
+      </Section>
 
-      <h3>Questions</h3>
-      {questions.length === 0 && <p className="hint">Aucune question sur ce nœud.</p>}
-      {questions.map((question) => (
-        <QuestionEditor
-          key={question.id}
-          universe={universe}
-          universes={universes}
-          question={question}
-          commit={commit}
+      <Section title="Questions" count={questions.length}>
+        {questions.length === 0 && <p className="hint">Aucune question sur ce nœud.</p>}
+        {questions.map((question) => (
+          <QuestionEditor
+            key={question.id}
+            universe={universe}
+            universes={universes}
+            question={question}
+            single={questions.length === 1}
+            focusTarget={focusTarget}
+            onRequestFocus={setFocusTarget}
+            askConfirm={setConfirmRequest}
+            commit={commit}
+          />
+        ))}
+        <button type="button" onClick={addQuestion}>
+          Ajouter une question
+        </button>
+      </Section>
+
+      <Section title="Copie" defaultOpen={false}>
+        <SelectField
+          label="Copier vers l'univers"
+          value={copyTargetId}
+          options={copyTargets.map((candidate) => ({ value: candidate.id, label: candidate.name }))}
+          onChange={setCopyTargetId}
         />
-      ))}
-      <button
-        type="button"
-        onClick={() =>
-          commit({
-            op: 'push',
-            path: ['questions'],
-            value: {
-              id: newQuestionId(universes, node),
-              targetNodeId: node.id,
-              access: 'adjacent',
-              requiresRevealed: [],
-              context: '',
-              prompt: 'Nouvelle question',
-              answers: ['Nouvelle réponse'],
-              wrongFeedback: '',
-            },
-          })
-        }
-      >
-        Ajouter une question
-      </button>
+        {copyBlocked && (
+          <p className="hint">
+            Un homologue existe déjà dans {copyTarget?.name} : « {copyBlocked.title} ».
+          </p>
+        )}
+        <button type="button" disabled={!copyTarget || copyBlocked !== undefined} onClick={copyNode}>
+          Copier le nœud
+        </button>
+      </Section>
 
-      <h3>Copie</h3>
-      <SelectField
-        label="Copier vers l'univers"
-        value={copyTargetId}
-        options={copyTargets.map((candidate) => ({ value: candidate.id, label: candidate.name }))}
-        onChange={setCopyTargetId}
-      />
-      {copyBlocked && (
-        <p className="hint">
-          Un homologue existe déjà dans {copyTarget?.name} : « {copyBlocked.title} ».
-        </p>
-      )}
-      <button type="button" disabled={!copyTarget || copyBlocked !== undefined} onClick={copyNode}>
-        Copier le nœud
-      </button>
+      <Section title="Danger" tone="danger" defaultOpen={false}>
+        <button type="button" className="danger" onClick={deleteNode}>
+          Supprimer le nœud
+        </button>
+      </Section>
 
-      <h3>Danger</h3>
-      <button type="button" className="danger" onClick={deleteNode}>
-        Supprimer le nœud
-      </button>
+      {confirmRequest && <ConfirmDialog request={confirmRequest} onClose={() => setConfirmRequest(null)} />}
     </section>
   );
 }
@@ -220,16 +252,17 @@ interface NodeIdFieldProps {
   nodeId: string;
   universes: Universe[];
   onRename: (newId: string) => void;
+  askConfirm: (request: ConfirmRequest) => void;
 }
 
-function NodeIdField({ nodeId, universes, onRename }: NodeIdFieldProps) {
+function NodeIdField({ nodeId, universes, onRename, askConfirm }: NodeIdFieldProps) {
   const [draft, setDraft] = useState(nodeId);
   const [error, setError] = useState<string | null>(null);
+  const errorId = useId();
 
-  const commit = () => {
+  const submit = () => {
     const next = draft.trim();
     if (next === nodeId) {
-      setDraft(nodeId);
       setError(null);
       return;
     }
@@ -238,30 +271,44 @@ function NodeIdField({ nodeId, universes, onRename }: NodeIdFieldProps) {
       setError(problem);
       return;
     }
-    if (!window.confirm(`Renommer « ${nodeId} » en « ${next} » ? Les liens et questions qui le citent seront mis à jour.`)) {
-      setDraft(nodeId);
-      setError(null);
-      return;
-    }
     setError(null);
-    onRename(next);
+    askConfirm({
+      title: 'Renommer le nœud',
+      lines: [`Renommer « ${nodeId} » en « ${next} » ?`, 'Les liens et questions qui le citent seront mis à jour.'],
+      confirmLabel: 'Renommer',
+      onConfirm: () => onRename(next),
+      onCancel: () => setDraft(nodeId),
+    });
   };
 
   return (
     <>
-      <label className="setup-field">
-        <span>Identifiant</span>
-        <input
-          value={draft}
-          onChange={(event) => setDraft(event.target.value)}
-          onBlur={commit}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter') event.currentTarget.blur();
-          }}
-        />
-      </label>
+      <div className="setup-row">
+        <label className="setup-field">
+          <span>Identifiant</span>
+          <input
+            value={draft}
+            aria-invalid={error !== null || undefined}
+            aria-describedby={error ? errorId : undefined}
+            onChange={(event) => setDraft(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') {
+                event.preventDefault();
+                submit();
+              } else if (event.key === 'Escape') {
+                event.preventDefault();
+                setDraft(nodeId);
+                setError(null);
+              }
+            }}
+          />
+        </label>
+        <button type="button" disabled={draft.trim() === nodeId} onClick={submit}>
+          Renommer
+        </button>
+      </div>
       {error && (
-        <p className="notice" role="alert">
+        <p id={errorId} className="notice" role="alert">
           {error}
         </p>
       )}
@@ -315,11 +362,26 @@ interface QuestionEditorProps {
   universe: Universe;
   universes: Universe[];
   question: Question;
+  single: boolean;
+  focusTarget: string | null;
+  onRequestFocus: (target: string) => void;
+  askConfirm: (request: ConfirmRequest) => void;
   commit: Commit;
 }
 
-function QuestionEditor({ universe, universes, question, commit }: QuestionEditorProps) {
+function QuestionEditor({
+  universe,
+  universes,
+  question,
+  single,
+  focusTarget,
+  onRequestFocus,
+  askConfirm,
+  commit,
+}: QuestionEditorProps) {
   const at = (...rest: ContentPath): ContentPath => ['questions', { id: question.id }, ...rest];
+  const isNew = focusTarget === `question:${question.id}`;
+  const [initiallyOpen] = useState(isNew || single);
   const toggleRevealed = (field: RevealField, nodeId: string, checked: boolean) => {
     const current = question[field] ?? [];
     const next = checked ? [...current, nodeId] : current.filter((id) => id !== nodeId);
@@ -328,8 +390,8 @@ function QuestionEditor({ universe, universes, question, commit }: QuestionEdito
   const revealChecklist = (field: RevealField) => (
     <div className="setup-checks">
       {universes.map((candidate) => (
-        <div key={candidate.id}>
-          <p className="hint">{candidate.name}</p>
+        <fieldset key={candidate.id} className="setup-fieldset">
+          <legend>{candidate.name}</legend>
           {candidate.nodes.map((node) => (
             <CheckboxField
               key={node.id}
@@ -338,90 +400,114 @@ function QuestionEditor({ universe, universes, question, commit }: QuestionEdito
               onChange={(checked) => toggleRevealed(field, node.id, checked)}
             />
           ))}
-        </div>
+        </fieldset>
       ))}
     </div>
   );
   const nodeOptions = universe.nodes.map((node) => ({ value: node.id, label: node.title }));
 
   const deleteQuestion = () => {
-    if (!window.confirm(`Supprimer la question « ${question.id} » ?`)) return;
-    commit({ op: 'delete', path: ['questions', { id: question.id }] });
+    askConfirm({
+      title: 'Supprimer la question',
+      lines: [`Supprimer la question « ${question.id} » ?`],
+      confirmLabel: 'Supprimer',
+      danger: true,
+      onConfirm: () => commit({ op: 'delete', path: ['questions', { id: question.id }] }),
+    });
   };
 
-  return (
-    <article className="setup-subcard" aria-label={`Question ${question.id}`}>
-      <p className="hint">
-        <code>{question.id}</code>
-      </p>
-      <SelectField
-        label="Nœud ciblé"
-        value={question.targetNodeId}
-        options={nodeOptions}
-        onChange={(value) => commit({ op: 'set', path: at('targetNodeId'), value })}
-      />
-      <SelectField
-        label="Accès"
-        value={question.access}
-        options={ACCESS_OPTIONS}
-        onChange={(value) => commit({ op: 'set', path: at('access'), value })}
-      />
-      <TextField
-        label="Contexte"
-        multiline
-        value={question.context}
-        onCommit={(value) => commit({ op: 'set', path: at('context'), value })}
-      />
-      <TextField
-        label="Question"
-        multiline
-        value={question.prompt}
-        onCommit={(value) => commit({ op: 'set', path: at('prompt'), value })}
-      />
-      <details>
-        <summary>Nœuds à révéler avant ({question.requiresRevealed.length})</summary>
-        {revealChecklist('requiresRevealed')}
-      </details>
-      <details>
-        <summary>Nœuds à révéler avec la réponse ({question.alsoRevealed?.length ?? 0})</summary>
-        {revealChecklist('alsoRevealed')}
-      </details>
+  const prompt = question.prompt.trim();
+  const title = prompt === '' ? question.id : prompt.length > QUESTION_TITLE_LENGTH ? `${prompt.slice(0, QUESTION_TITLE_LENGTH)}…` : prompt;
 
-      <p className="hint">Réponses acceptées</p>
-      {question.answers.map((answer, answerIndex) => (
-        <div key={answerIndex} className="setup-row">
-          <TextField
-            label={`Réponse ${answerIndex + 1}`}
-            value={answer}
-            onCommit={(value) => {
-              if (value.trim() !== '') commit({ op: 'set', path: at('answers', answerIndex), value });
-            }}
+  return (
+    <article className="setup-question" aria-label={`Question ${question.id}`}>
+      <details open={initiallyOpen}>
+        <summary>
+          <span className="setup-question-title">{title}</span>
+          <code>{question.id}</code>
+        </summary>
+        <div className="setup-subcard">
+          <SelectField
+            label="Nœud ciblé"
+            value={question.targetNodeId}
+            options={nodeOptions}
+            onChange={(value) => commit({ op: 'set', path: at('targetNodeId'), value })}
           />
-          <button
-            type="button"
-            className="danger"
-            disabled={question.answers.length <= 1}
-            aria-label={`Supprimer la réponse ${answerIndex + 1}`}
-            onClick={() => commit({ op: 'delete', path: at('answers', answerIndex) })}
-          >
-            ×
+          <p className="hint">Changer le nœud ciblé déplace la question hors de ce nœud.</p>
+          <SelectField
+            label="Accès"
+            value={question.access}
+            options={ACCESS_OPTIONS}
+            onChange={(value) => commit({ op: 'set', path: at('access'), value })}
+          />
+          <TextField
+            label="Contexte"
+            multiline
+            value={question.context}
+            onCommit={(value) => commit({ op: 'set', path: at('context'), value })}
+          />
+          <TextField
+            label="Question"
+            multiline
+            autoFocus={isNew}
+            value={question.prompt}
+            onCommit={(value) => commit({ op: 'set', path: at('prompt'), value })}
+          />
+          <details>
+            <summary>Nœuds à révéler avant ({question.requiresRevealed.length})</summary>
+            {revealChecklist('requiresRevealed')}
+          </details>
+          <details>
+            <summary>Nœuds à révéler avec la réponse ({question.alsoRevealed?.length ?? 0})</summary>
+            {revealChecklist('alsoRevealed')}
+          </details>
+
+          <fieldset className="setup-fieldset">
+            <legend>Réponses acceptées</legend>
+            {question.answers.map((answer, answerIndex) => (
+              <div key={answerIndex} className="setup-row">
+                <TextField
+                  label={`Réponse ${answerIndex + 1}`}
+                  value={answer}
+                  autoFocus={focusTarget === `answer:${question.id}:${answerIndex}`}
+                  onCommit={(value) => {
+                    if (value.trim() !== '') commit({ op: 'set', path: at('answers', answerIndex), value });
+                  }}
+                />
+                <button
+                  type="button"
+                  className="danger icon-button"
+                  disabled={question.answers.length <= 1}
+                  aria-label={`Supprimer la réponse ${answerIndex + 1}`}
+                  onClick={() => commit({ op: 'delete', path: at('answers', answerIndex) })}
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => {
+                onRequestFocus(`answer:${question.id}:${question.answers.length}`);
+                commit({ op: 'push', path: at('answers'), value: 'Nouvelle réponse' });
+              }}
+            >
+              Ajouter une réponse
+            </button>
+          </fieldset>
+
+          <TextField
+            label="Retour en cas d'erreur"
+            multiline
+            value={question.wrongFeedback}
+            onCommit={(value) => commit({ op: 'set', path: at('wrongFeedback'), value })}
+          />
+
+          <button type="button" className="danger" onClick={deleteQuestion}>
+            Supprimer la question
           </button>
         </div>
-      ))}
-      <button type="button" onClick={() => commit({ op: 'push', path: at('answers'), value: 'Nouvelle réponse' })}>
-        Ajouter une réponse
-      </button>
-
-      <TextField
-        label="Retour en cas d'erreur"
-        multiline
-        value={question.wrongFeedback}
-        onCommit={(value) => commit({ op: 'set', path: at('wrongFeedback'), value })}
-      />
-
-      <button type="button" className="danger" onClick={deleteQuestion}>
-        Supprimer la question
-      </button>
+      </details>
     </article>
   );
 }

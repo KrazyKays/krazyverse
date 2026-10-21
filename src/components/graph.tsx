@@ -1,4 +1,4 @@
-import type { KeyboardEvent as ReactKeyboardEvent } from 'react';
+import type { KeyboardEvent as ReactKeyboardEvent, ReactNode } from 'react';
 import type { NodeKind, Relation, StoryNode, Universe } from '../domain/types';
 import { KIND_LABELS } from './labels';
 
@@ -54,11 +54,12 @@ export function GraphEdges({ universe, relations, selectedId }: GraphEdgesProps)
 interface RevealedNodeProps {
   node: StoryNode;
   selected: boolean;
+  badge?: string;
   onSelect: () => void;
   onClick?: () => void;
 }
 
-export function RevealedNode({ node, selected, onSelect, onClick = onSelect }: RevealedNodeProps) {
+export function RevealedNode({ node, selected, badge, onSelect, onClick = onSelect }: RevealedNodeProps) {
   return (
     <g
       className={`node node--revealed${selected ? ' node--selected' : ''}`}
@@ -74,13 +75,23 @@ export function RevealedNode({ node, selected, onSelect, onClick = onSelect }: R
       <text className="node-label" textAnchor="middle" y={30}>
         {node.title}
       </text>
+      {badge && (
+        <text className="node-badge" x={20} y={-14} aria-hidden="true">
+          {badge}
+        </text>
+      )}
     </g>
   );
 }
 
 const NODE_KINDS: NodeKind[] = ['character', 'place', 'event'];
 
-export function GraphLegend() {
+interface GraphLegendProps {
+  censored?: boolean;
+  extra?: ReactNode;
+}
+
+export function GraphLegend({ censored = true, extra }: GraphLegendProps) {
   return (
     <ul className="graph-legend" aria-label="Légende de la toile">
       {NODE_KINDS.map((kind) => (
@@ -93,17 +104,20 @@ export function GraphLegend() {
           {KIND_LABELS[kind]}
         </li>
       ))}
-      <li>
-        <svg className="legend-icon" viewBox="-16 -16 32 32" aria-hidden="true">
-          <g className="node node--censored">
-            <circle r={12} />
-            <text className="node-mark" textAnchor="middle" dominantBaseline="central">
-              ?
-            </text>
-          </g>
-        </svg>
-        Nœud censuré : une question le révèle
-      </li>
+      {censored && (
+        <li>
+          <svg className="legend-icon" viewBox="-16 -16 32 32" aria-hidden="true">
+            <g className="node node--censored">
+              <circle r={12} />
+              <text className="node-mark" textAnchor="middle" dominantBaseline="central">
+                ?
+              </text>
+            </g>
+          </svg>
+          Nœud censuré : une question le révèle
+        </li>
+      )}
+      {extra}
     </ul>
   );
 }
