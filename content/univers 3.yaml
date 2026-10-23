@@ -1,9 +1,9 @@
 # Référence : les ids doivent être uniques et les liens doivent pointer vers des ids existants.
 
 id: universe3
-name: "Univers 12345"
+name: "Univers 440"
 kind: tale
-tagline: ""
+tagline: "Un univers où tout est dirigé par l'argent, sans prendre en compte ni les sentiments ni l'étique."
 
 nodes:
 
