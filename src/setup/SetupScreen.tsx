@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState, type FormEvent, type MouseEvent as ReactMouseEvent } from 'react';
-import { GraphEdges, GraphLegend, RevealedNode, VIEW_HEIGHT, VIEW_WIDTH } from '../components/graph';
+import { GraphEdges, GraphLegend, NodeShape, RevealedNode, VIEW_HEIGHT, VIEW_WIDTH } from '../components/graph';
 import { KIND_OPTIONS } from '../components/labels';
+import { unreachableNodeIds } from '../domain/visibility';
 import type { NodeKind, Universe } from '../domain/types';
 import { sendContentEdits, type Commit, type CommitBatch, type ContentEdit } from './api';
 import { nodeIdError } from './nodeRename';
@@ -115,6 +116,7 @@ export function SetupScreen({ universes, initialUniverseId, onClose }: SetupScre
             Aller au panneau d'édition
           </button>
           <SetupGraph
+            universes={universes}
             universe={universe}
             selectedId={selectedNodeId}
             onSelect={setSelectedNodeId}
@@ -245,6 +247,7 @@ function NewNodeForm({ universes, universe, commit, onCreated }: NewNodeFormProp
 }
 
 interface SetupGraphProps {
+  universes: Universe[];
   universe: Universe;
   selectedId: string | null;
   onSelect: (nodeId: string) => void;
@@ -262,7 +265,8 @@ function nodeBadge(universe: Universe, nodeId: string): string | undefined {
   return parts.length > 0 ? parts.join(' ') : undefined;
 }
 
-function SetupGraph({ universe, selectedId, onSelect, onDeselect }: SetupGraphProps) {
+function SetupGraph({ universes, universe, selectedId, onSelect, onDeselect }: SetupGraphProps) {
+  const unreachable = unreachableNodeIds(universes, universe);
   const onBackgroundClick = (event: ReactMouseEvent<SVGSVGElement>) => {
     if ((event.target as Element).closest('.node')) return;
     onDeselect();
@@ -284,6 +288,7 @@ function SetupGraph({ universe, selectedId, onSelect, onDeselect }: SetupGraphPr
               key={node.id}
               node={node}
               selected={node.id === selectedId}
+              unreachable={unreachable.has(node.id)}
               badge={nodeBadge(universe, node.id)}
               onSelect={() => onSelect(node.id)}
             />
@@ -297,6 +302,14 @@ function SetupGraph({ universe, selectedId, onSelect, onDeselect }: SetupGraphPr
             <li>▸ révélé au départ</li>
             <li>★ nœud final</li>
             <li>?n questions</li>
+            <li>
+              <svg className="legend-icon" viewBox="-16 -16 32 32" aria-hidden="true">
+                <g className="node node--unreachable">
+                  <NodeShape kind="event" />
+                </g>
+              </svg>
+              jamais révélable (ni question, ni révélation)
+            </li>
           </>
         }
       />

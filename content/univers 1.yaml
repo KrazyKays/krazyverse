@@ -6,150 +6,31 @@ kind: tale
 tagline: "Un univers positif et joyeux où le mensonge n'existe pas."
 
 nodes:
-  - id: u1-centre
+  - id: centre
     kind: place
     title: "Centre de l'univers"
-    position: { x: 240, y: 360 }
+    position: { x: 540, y: 360 }
     homologueKey: centre
     intro: "Dans cette univers tout est magnifique et innocent, le mensonge n'existe pas et tout le monde vit une existence parfaite, au premier abord ..."
     revealedAtStart: true
-
-  - id: u1-ysolde
-    kind: character
-    title: "Mère Ysolde"
-    position: { x: 690, y: 300 }
-    homologueKey: ysolde
-    intro: "Ysolde vit seule dans la chaumière aux volets verts. Elle connaît les herbes de chaque saison et ne reçoit jamais personne après la nuit tombée."
-
-  - id: u1-gorm
-    kind: character
-    title: "Gorm le Veilleur"
-    position: { x: 600, y: 520 }
-    homologueKey: gorm
-    intro: "Gorm veille à la lisière. Sa silhouette massive ressemble à celle d'un loup, mais il marche debout et ne cherche jamais à se nourrir de voyageurs."
-
-  - id: u1-sentier
-    kind: place
-    title: "Le sentier des fougères"
-    position: { x: 420, y: 420 }
-    homologueKey: sentier
-    intro: "Un chemin étroit bordé de fougères hautes. Les promeneurs assurent qu'il est toujours plus long au retour qu'à l'aller."
-
-  - id: u1-chaumiere
-    kind: place
-    title: "La chaumière aux volets verts"
-    position: { x: 520, y: 170 }
-    homologueKey: chaumiere
-    intro: "Une maison basse au toit de chaume, entourée d'un jardin d'aromates. Une lampe reste allumée à la fenêtre, même en plein jour."
-
-  - id: u1-cueillette
-    kind: event
-    title: "La cueillette interdite"
-    position: { x: 330, y: 230 }
-    homologueKey: cueillette
-    intro: "Chaque année, les enfants du village cueillent les baies rouges du bois. Une année, aucune baie n'a poussé, et seules des feuilles grises sont restées sur les branches."
-
-  - id: u1-nuit
-    kind: event
-    title: "La nuit du passage"
-    position: { x: 780, y: 470 }
-    homologueKey: nuit
-    intro: "Une nuit par an, les chemins de la forêt échangent leurs places. Ceux qui marchent alors sont censés rentrer avant l'aube."
   - id: u1-rouge
     kind: character
     title: Le petit chaperon rouge
     position:
-      x: 250
-      y: 550
+      x: 350
+      y: 250
     homologueKey: rouge
-    intro: ""
+    intro: "Le petit chaperon rouge est une jeune enfant qui a prévu d'aller donner quelques victuailles à sa grand-mère, pour se faire elle doit traverser la forêt en suivant le sentier."
     central:
       required: false
 
 relations:
-  - { id: r1-aniel-cueillette, from: u1-centre, to: u1-cueillette }
-  - { id: r1-sentier-gorm, from: u1-sentier, to: u1-gorm }
-  - { id: r1-sentier-chaumiere, from: u1-sentier, to: u1-chaumiere }
-  - { id: r1-chaumiere-ysolde, from: u1-chaumiere, to: u1-ysolde }
-  - { id: r1-ysolde-nuit, from: u1-ysolde, to: u1-nuit }
-  - id: link-u1-aniel-u1-sentier
-    from: u1-centre
-    to: u1-sentier
   - id: link-u1-rouge-u1-aniel
     from: u1-rouge
-    to: u1-centre
+    to: centre
 
 questions:
-  - id: q-u1-sentier
-    targetNodeId: u1-sentier
-    access: adjacent
-    requiresRevealed: []
-    context: "Aniel s'apprête à prendre le chemin habituel vers la chaumière."
-    prompt: "Pourquoi le sentier des fougères semble-t-il toujours plus long au retour ?"
-    answers:
-      - "le chemin change de longueur selon les promeneurs"
-      - "le chemin change de longueur"
-      - "il change de longueur selon les promeneurs"
-    wrongFeedback: "Ce n'est pas la bonne piste. Relis ce que disent les promeneurs sur le chemin."
 
-  - id: q-u1-cueillette
-    targetNodeId: u1-cueillette
-    access: adjacent
-    requiresRevealed: []
-    context: "Les baies rouges n'ont pas poussé cette année, et Aniel cherche pourquoi."
-    prompt: "Qu'a laissé le bois à la place des baies ?"
-    answers:
-      - "des feuilles grises"
-      - "feuilles grises"
-    wrongFeedback: "Ce n'est pas cela. Relis le récit de la cueillette."
-
-  - id: q-u1-gorm
-    targetNodeId: u1-gorm
-    access: adjacent
-    requiresRevealed: []
-    context: "Un être massif se tient à la lisière, près du sentier."
-    prompt: "Que surveille Gorm à la lisière ?"
-    answers:
-      - "les pierres"
-      - "les pierres dressées"
-      - "les pierres qui délimitent le bois"
-    wrongFeedback: "Pas encore. Observe ce que fait Gorm près des pierres."
-
-  - id: q-u1-chaumiere
-    targetNodeId: u1-chaumiere
-    access: adjacent
-    requiresRevealed: []
-    context: "Le sentier mène à une maison dont la lampe brille en plein jour."
-    prompt: "Pourquoi la lampe de la chaumière reste-t-elle allumée ?"
-    answers:
-      - "elle attend le retour de quelqu'un"
-      - "elle attend quelqu'un"
-      - "le retour de quelqu'un"
-    wrongFeedback: "Ce n'est pas ce que suggère le récit. Pense à qui attend Ysolde."
-
-  - id: q-u1-ysolde
-    targetNodeId: u1-ysolde
-    access: adjacent
-    requiresRevealed: []
-    context: "Une vieille femme vit seule dans la chaumière aux volets verts."
-    prompt: "Que garde Ysolde dans son coffre ?"
-    answers:
-      - "une fiole de sève de fougère"
-      - "fiole de sève de fougère"
-      - "sève de fougère"
-    wrongFeedback: "Ce n'est pas cela. Relis ce qu'on dit d'Ysolde."
-
-  - id: q-u1-nuit
-    targetNodeId: u1-nuit
-    access: adjacent
-    requiresRevealed: []
-    context: "Ysolde évoque une nuit où les chemins changent de place."
-    prompt: "Quand les chemins de la forêt échangent-ils leurs places ?"
-    answers:
-      - "une nuit par an"
-      - "une fois par an"
-      - "la nuit du passage"
-    wrongFeedback: "Pas tout à fait. Relis ce qu'on dit de la nuit du passage."
   - id: q-u1-rouge
     targetNodeId: u1-rouge
     access: adjacent
@@ -159,3 +40,5 @@ questions:
     answers:
       - petit chaperon rouge
     wrongFeedback: "Mauvaise réponse"
+    alsoRevealed:
+      - u1-rouge-copie

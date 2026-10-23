@@ -293,6 +293,11 @@ button.link {
   fill: var(--surface-active);
 }
 
+.node--unreachable .shape {
+  stroke: var(--danger);
+  stroke-dasharray: 4 3;
+}
+
 .node--selected .shape {
   fill: var(--accent-strong);
   stroke: var(--focus);

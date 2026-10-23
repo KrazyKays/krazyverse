@@ -143,7 +143,7 @@ export function UniverseGraph({
                   >
                     <circle r={12} />
                     <text className="node-mark" textAnchor="middle" dominantBaseline="central">
-                      ?
+                      {question ? '?' : '×'}
                     </text>
                   </g>
                 );

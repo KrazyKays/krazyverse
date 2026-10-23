@@ -26,41 +26,8 @@ nodes:
     central:
       required: true
 
-  - id: meta-anomalie-2
-    kind: event
-    title: "Deux aubes pour une nuit"
-    position: { x: 700, y: 300 }
-    homologueKey: meta-anomalie-2
-    intro: "La nuit du passage et la nuit des vitraux ont lieu le même soir, et les chemins échangent leurs places dans les deux univers à la fois."
-    central:
-      required: true
-
-  - id: meta-anomalie-3
-    kind: event
-    title: "Le miroir sans reflet"
-    position: { x: 500, y: 470 }
-    homologueKey: meta-anomalie-3
-    intro: "Un fragment de verre renvoie une image qui n'existe dans aucun des deux univers. La lecture de ce fragment est facultative, mais elle éclaire la suite de l'enquête."
-    central:
-      required: false
-
-  - id: meta-finale
-    kind: event
-    title: "Le fil rétabli"
-    position: { x: 500, y: 640 }
-    homologueKey: meta-finale
-    intro: "Les deux univers convergent vers une même source. Pour rétablir l'ordre du multivers, il faut relier le serment brisé à la pierre qui a été déplacée."
-    central:
-      required: true
-    finale: true
-
 relations:
   - { id: rm-origine-anomalie-1, from: meta-origine, to: meta-anomalie-1 }
-  - { id: rm-origine-anomalie-2, from: meta-origine, to: meta-anomalie-2 }
-  - { id: rm-anomalie-1-anomalie-3, from: meta-anomalie-1, to: meta-anomalie-3 }
-  - { id: rm-anomalie-2-anomalie-3, from: meta-anomalie-2, to: meta-anomalie-3 }
-  - { id: rm-anomalie-3-finale, from: meta-anomalie-3, to: meta-finale }
-  - { id: rm-anomalie-2-finale, from: meta-anomalie-2, to: meta-finale }
 
 questions:
 
@@ -73,45 +40,6 @@ questions:
     answers:
       - "parasyndèse"
     wrongFeedback: "Mauvaise réponse, il existe un terme spécifique."
-
-  - id: q-meta-anomalie-2
-    targetNodeId: meta-anomalie-2
-    access: enquete
-    requiresRevealed:
-      - u1-nuit
-    context: "La forge et la chaumière semblent pourtant reliées au même chemin."
-    prompt: "Quel lien unit la nuit du passage à la forge aux vitraux ?"
-    answers:
-      - "elles ont lieu la même nuit"
-      - "la même nuit"
-      - "elles se déroulent la même nuit"
-      - "la même nuit de l'année"
-    wrongFeedback: "Ce n'est pas la bonne réponse. Regarde à quel moment ces nuits surviennent."
-
-  - id: q-meta-anomalie-3
-    targetNodeId: meta-anomalie-3
-    access: enquete
-    requiresRevealed:
-      - u1-nuit
-    context: "Un fragment renvoie un reflet qui n'existe dans aucun univers."
-    prompt: "Que reflète le fragment de verre ?"
-    answers:
-      - "un chemin inexistant"
-      - "un chemin inconnu"
-      - "un chemin qui n'existe dans aucun univers"
-    wrongFeedback: "Pas encore. Pense à ce qui n'appartient à aucun univers connu."
-
-  - id: q-meta-finale
-    targetNodeId: meta-finale
-    access: enquete
-    requiresRevealed:
-      - meta-anomalie-2
-    context: "Le serment brisé et la pierre déplacée doivent être reliés pour refermer l'anomalie."
-    prompt: "Quel serment relie la pierre déplacée à l'anomalie ?"
-    answers:
-      - "protéger la lisière"
-      - "le serment de protéger la lisière"
-    wrongFeedback: "Ce n'est pas ce serment. Relis la promesse gravée sous les ronces."
 
 ending:
   title: "Votre mission est terminée !"

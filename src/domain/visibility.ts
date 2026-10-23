@@ -22,6 +22,21 @@ export function visibilityFor(state: GameState, universe: Universe): VisibilityM
   return computeVisibility(universe, new Set(state.revealed[universe.id] ?? []));
 }
 
+export function unreachableNodeIds(universes: Universe[], universe: Universe): Set<string> {
+  const revealable = new Set<string>();
+  for (const candidate of universes) {
+    for (const question of candidate.questions) {
+      revealable.add(question.targetNodeId);
+      for (const nodeId of question.alsoRevealed ?? []) revealable.add(nodeId);
+    }
+  }
+  return new Set(
+    universe.nodes
+      .filter((node) => !node.revealedAtStart && !revealable.has(node.id))
+      .map((node) => node.id),
+  );
+}
+
 export function visibleRelationIds(universe: Universe, visibility: VisibilityMap): Set<string> {
   return new Set(
     universe.relations

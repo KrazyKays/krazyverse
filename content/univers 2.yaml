@@ -7,9 +7,9 @@ tagline: "Un univers hasardeux et chaotique, rien n'est prévisible, sauf le fai
 
 nodes:
 
-  [ { id: u2-centre, kind: place, title: Centre de l'univers, position: { x: 240, y: 360 }, homologueKey: centre, intro: "Dans cette univers tout est magnifique et innocent, le mensonge n'existe pas et tout le monde vit une existence parfaite, au premier abord ...", revealedAtStart: true } ]
+  [ { id: centre-copie, kind: place, title: Centre de l'univers, position: { x: 540, y: 360 }, homologueKey: centre, intro: "Dans cette univers tout est magnifique et innocent, le mensonge n'existe pas et tout le monde vit une existence parfaite, au premier abord ...", revealedAtStart: true }, { id: u1-rouge-copie, kind: character, title: Le petit chaperon rouge, position: { x: 350, y: 250 }, homologueKey: rouge, intro: "Le petit chaperon rouge est une jeune enfant qui a prévu d'aller donner quelques victuailles à sa grand-mère, pour se faire, la logique voudrait qu'elle traverse la forêt en suivant le sentier, mais elle se sent plus intéressée par l'idée de vadrouiller au hasard entre les arbres jusqu'à tomber sur sa destination.", central: { required: false } } ]
 
-relations: []
+relations: [ { id: link-u1-rouge-copie-centre-copie, from: u1-rouge-copie, to: centre-copie } ]
 
 questions:
 

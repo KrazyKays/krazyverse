@@ -54,15 +54,26 @@ export function GraphEdges({ universe, relations, selectedId }: GraphEdgesProps)
 interface RevealedNodeProps {
   node: StoryNode;
   selected: boolean;
+  unreachable?: boolean;
   badge?: string;
   onSelect: () => void;
   onClick?: () => void;
 }
 
-export function RevealedNode({ node, selected, badge, onSelect, onClick = onSelect }: RevealedNodeProps) {
+export function RevealedNode({
+  node,
+  selected,
+  unreachable = false,
+  badge,
+  onSelect,
+  onClick = onSelect,
+}: RevealedNodeProps) {
+  const classes = ['node', 'node--revealed'];
+  if (selected) classes.push('node--selected');
+  if (unreachable) classes.push('node--unreachable');
   return (
     <g
-      className={`node node--revealed${selected ? ' node--selected' : ''}`}
+      className={classes.join(' ')}
       transform={`translate(${node.position.x} ${node.position.y})`}
       role="button"
       tabIndex={0}
@@ -105,17 +116,30 @@ export function GraphLegend({ censored = true, extra }: GraphLegendProps) {
         </li>
       ))}
       {censored && (
-        <li>
-          <svg className="legend-icon" viewBox="-16 -16 32 32" aria-hidden="true">
-            <g className="node node--censored">
-              <circle r={12} />
-              <text className="node-mark" textAnchor="middle" dominantBaseline="central">
-                ?
-              </text>
-            </g>
-          </svg>
-          Nœud censuré : une question le révèle
-        </li>
+        <>
+          <li>
+            <svg className="legend-icon" viewBox="-16 -16 32 32" aria-hidden="true">
+              <g className="node node--censored">
+                <circle r={12} />
+                <text className="node-mark" textAnchor="middle" dominantBaseline="central">
+                  ?
+                </text>
+              </g>
+            </svg>
+            Nœud censuré : une question le révèle
+          </li>
+          <li>
+            <svg className="legend-icon" viewBox="-16 -16 32 32" aria-hidden="true">
+              <g className="node node--censored">
+                <circle r={12} />
+                <text className="node-mark" textAnchor="middle" dominantBaseline="central">
+                  ×
+                </text>
+              </g>
+            </svg>
+            Nœud censuré sans question
+          </li>
+        </>
       )}
       {extra}
     </ul>
