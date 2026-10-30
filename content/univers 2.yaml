@@ -6,11 +6,86 @@ kind: tale
 tagline: "Un univers hasardeux et chaotique, rien n'est prévisible, sauf le fait de ne pas savoir ce qui va arriver."
 
 nodes:
+  - id: centre-copie
+    kind: place
+    title: Centre de l'univers
+    position: { x: 540, y: 360 }
+    homologueKey: centre
+    intro: ""
+    revealedAtStart: true
+  - id: u1-rouge-copie
+    kind: character
+    title: Le petit chaperon rouge
+    position: { x: 350, y: 250 }
+    homologueKey: rouge
+    intro: "Le petit chaperon rouge est une jeune enfant qui a prévu d'aller donner quelques victuailles à sa grand-mère, pour se faire, la logique voudrait qu'elle traverse la forêt en suivant le sentier, mais elle se sent plus intéressée par l'idée de vadrouiller au hasard entre les arbres jusqu'à tomber sur sa destination."
+    central:
+      required: false
+  - id: u1-sentier-copie
+    kind: place
+    title: "Le sentier"
+    position: { x: 330, y: 430 }
+    homologueKey: sentier
+    intro: "Le sentier change de place à chaque fois qu'on le cherche. Il ne mène pas toujours où l'on croit, et parfois il ne mène nulle part."
+  - id: u1-loup-copie
+    kind: character
+    title: "Le loup"
+    position: { x: 160, y: 470 }
+    homologueKey: loup
+    intro: "Un loup imprévisible, tantôt amical, tantôt affamé. Impossible de savoir ce qu'il fera, ni même s'il sera encore là quand on se retournera."
+  - id: u1-grand-mere-copie
+    kind: character
+    title: "La grand-mère"
+    position: { x: 300, y: 600 }
+    homologueKey: grand-mere
+    intro: "Une grand-mère dont l'humeur change sans prévenir. Elle peut accueillir sa petite-fille à bras ouverts, ou ne jamais avoir entendu parler d'elle."
+  - id: u1-maison-copie
+    kind: place
+    title: "La maison de la grand-mère"
+    position: { x: 130, y: 640 }
+    homologueKey: maison
+    intro: "La maison apparaît au gré du hasard, parfois au bout du sentier, parfois au bout d'une autre forêt tout à fait différente."
+  - id: u1-chasseur-copie
+    kind: character
+    title: "Le chasseur"
+    position: { x: 130, y: 760 }
+    homologueKey: chasseur
+    intro: "Un chasseur qui arrive ou n'arrive pas, selon le hasard. Quand il se montre, son passage ressemble trait pour trait à celui du chasseur de l'univers 42 : les observateurs parlent alors de parasyndèse."
 
-  [ { id: centre-copie, kind: place, title: Centre de l'univers, position: { x: 540, y: 360 }, homologueKey: centre, intro: "", revealedAtStart: true }, { id: u1-rouge-copie, kind: character, title: Le petit chaperon rouge, position: { x: 350, y: 250 }, homologueKey: rouge, intro: "Le petit chaperon rouge est une jeune enfant qui a prévu d'aller donner quelques victuailles à sa grand-mère, pour se faire, la logique voudrait qu'elle traverse la forêt en suivant le sentier, mais elle se sent plus intéressée par l'idée de vadrouiller au hasard entre les arbres jusqu'à tomber sur sa destination.", central: { required: false } } ]
-
-relations: [ { id: link-u1-rouge-copie-centre-copie, from: u1-rouge-copie, to: centre-copie } ]
+relations:
+  - { id: link-u1-rouge-copie-centre-copie, from: u1-rouge-copie, to: centre-copie }
+  - { id: link-u1-sentier-copie-centre-copie, from: u1-sentier-copie, to: centre-copie }
+  - { id: link-u1-loup-copie-u1-sentier-copie, from: u1-loup-copie, to: u1-sentier-copie }
+  - { id: link-u1-grand-mere-copie-u1-sentier-copie, from: u1-grand-mere-copie, to: u1-sentier-copie }
+  - { id: link-u1-maison-copie-u1-grand-mere-copie, from: u1-maison-copie, to: u1-grand-mere-copie }
+  - { id: link-u1-chasseur-copie-u1-maison-copie, from: u1-chasseur-copie, to: u1-maison-copie }
 
 questions:
 
-  []
+  - id: q-u2-sentier
+    targetNodeId: u1-sentier-copie
+    access: enquete
+    requiresRevealed:
+      - u1-rouge
+    context: "Dans cet univers le hasard décide de tout, mais le point de départ reste celui de l'univers 42."
+    prompt: "Quel chemin la petite fille doit-elle suivre ?"
+    answers:
+      - sentier
+    wrongFeedback: "Mauvaise réponse"
+    alsoRevealed:
+      - u1-sentier
+      - u1-sentier-copie-copie
+
+  - id: q-u2-chasseur
+    targetNodeId: u1-chasseur-copie
+    access: enquete
+    requiresRevealed:
+      - u1-grand-mere
+    context: "Un chasseur rôde parfois dans les environs de la maison, quand le hasard le veut bien."
+    prompt: "Comment s'appelle le chasseur ami de la grand-mère ?"
+    answers:
+      - Brenn
+    wrongFeedback: "Mauvaise réponse"
+    alsoRevealed:
+      - u1-chasseur
+      - u1-chasseur-copie-copie

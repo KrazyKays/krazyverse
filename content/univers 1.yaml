@@ -23,11 +23,46 @@ nodes:
     intro: "Le petit chaperon rouge est une jeune enfant qui a prévu d'aller donner quelques victuailles à sa grand-mère, pour se faire elle doit traverser la forêt en suivant le sentier."
     central:
       required: false
+  - id: u1-sentier
+    kind: place
+    title: "Le sentier"
+    position: { x: 330, y: 430 }
+    homologueKey: sentier
+    intro: "Un chemin de terre bien tracé, bordé de fleurs. Un loup nommé Vorgas rôde dans les fourrés, et au bout du chemin vit la grand-mère, Oldrine."
+  - id: u1-loup
+    kind: character
+    title: "Le loup"
+    position: { x: 160, y: 470 }
+    homologueKey: loup
+    intro: "Un loup curieux qui s'approche et demande où elle va. Ne sachant pas mentir, la petite fille lui répond sans détour, et le loup, qui n'a pas de mauvaises intentions, lui propose de l'accompagner un bout de chemin."
+  - id: u1-grand-mere
+    kind: character
+    title: "La grand-mère"
+    position: { x: 300, y: 600 }
+    homologueKey: grand-mere
+    intro: "Une grand-mère joyeuse et en pleine forme, qui accueille sa petite-fille et son nouvel ami avec la même chaleur. Elle est très liée à Brenn, le chasseur du village."
+  - id: u1-maison
+    kind: place
+    title: "La maison de la grand-mère"
+    position: { x: 130, y: 640 }
+    homologueKey: maison
+    intro: "Une petite maison au toit de chaume, où la grand-mère prépare déjà le thé en attendant la visite de sa petite-fille."
+  - id: u1-chasseur
+    kind: character
+    title: "Le chasseur"
+    position: { x: 130, y: 760 }
+    homologueKey: chasseur
+    intro: "Un chasseur qui rentre de sa promenade en forêt et salue tout le monde, loup compris. Il veille sur les promeneurs."
 
 relations:
   - id: link-u1-rouge-u1-aniel
     from: u1-rouge
     to: centre
+  - { id: link-u1-sentier-centre, from: u1-sentier, to: centre }
+  - { id: link-u1-loup-u1-sentier, from: u1-loup, to: u1-sentier }
+  - { id: link-u1-grand-mere-u1-sentier, from: u1-grand-mere, to: u1-sentier }
+  - { id: link-u1-maison-u1-grand-mere, from: u1-maison, to: u1-grand-mere }
+  - { id: link-u1-chasseur-u1-maison, from: u1-chasseur, to: u1-maison }
 
 questions:
 
@@ -35,10 +70,27 @@ questions:
     targetNodeId: u1-rouge
     access: adjacent
     requiresRevealed: []
-    context: "Dans toutes les version de ce conte il est question d'une enfant, de sa grand mère et d'un loup"
-    prompt: De quel conte s'agit-il ?
+    context: "Tout semble parfait, au premier abord."
+    prompt: "Qu'est-ce qui n'existe pas dans cet univers ?"
     answers:
-      - petit chaperon rouge
+      - mensonge
     wrongFeedback: "Mauvaise réponse"
     alsoRevealed:
       - u1-rouge-copie
+      - u1-rouge-copie-copie
+
+  - id: q-u1-grand-mere
+    targetNodeId: u1-grand-mere
+    access: adjacent
+    requiresRevealed: []
+    context: "Une grand-mère attend sa petite-fille au bout du chemin."
+    prompt: "Comment s'appelle la vieille dame qui attend au bout du chemin ?"
+    answers:
+      - Oldrine
+    wrongFeedback: "Mauvaise réponse"
+    alsoRevealed:
+      - u1-maison
+      - u1-grand-mere-copie
+      - u1-grand-mere-copie-copie
+      - u1-maison-copie
+      - u1-maison-copie-copie

@@ -34,7 +34,8 @@ questions:
   - id: q-meta-anomalie-1
     targetNodeId: meta-anomalie-1
     access: enquete
-    requiresRevealed: []
+    requiresRevealed:
+      - u1-chasseur-copie
     context: "Personne ne sais ce qui pourrait se passer si deux évènements, dans deux univers distincts se déroulaient de façon totalement identique."
     prompt: "Quel est le nom de ce phénomène ?"
     answers:

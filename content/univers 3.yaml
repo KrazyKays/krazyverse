@@ -6,11 +6,72 @@ kind: tale
 tagline: "Un univers où tout est dirigé par l'argent, sans prendre en compte ni les sentiments ni l'étique."
 
 nodes:
+  - id: centre-copie-2
+    kind: place
+    title: Centre de l'univers
+    position: { x: 540, y: 360 }
+    homologueKey: centre
+    intro: "Dans cet univers, tout se mesure en argent : les services se vendent, les amitiés se facturent et les sentiments n'apparaissent dans aucun budget. Au premier abord, tout semble prospère, mais chacun ne regarde son voisin que pour savoir ce qu'il peut en tirer."
+    revealedAtStart: true
+  - id: u1-rouge-copie-copie
+    kind: character
+    title: Le petit chaperon rouge
+    position: { x: 350, y: 250 }
+    homologueKey: rouge
+    intro: "Le petit chaperon rouge est une enfant qui transporte des victuailles pour sa grand-mère. Elle sait que chaque chose a un prix, et compte bien en tirer profit."
+    central:
+      required: false
+  - id: u1-sentier-copie-copie
+    kind: place
+    title: "Le sentier"
+    position: { x: 330, y: 430 }
+    homologueKey: sentier
+    intro: "Un chemin à péage, dont la forêt a été rachetée par une société. Chaque promeneur paie pour l'emprunter, et le tarif augmente à chaque saison."
+  - id: u1-loup-copie-copie
+    kind: character
+    title: "Le loup"
+    position: { x: 160, y: 470 }
+    homologueKey: loup
+    intro: "Un loup homme d'affaires, qui ne fait rien sans contrepartie. Il propose d'acheter les victuailles de la petite fille à un prix dérisoire, sans jamais se soucier de la grand-mère."
+  - id: u1-grand-mere-copie-copie
+    kind: character
+    title: "La grand-mère"
+    position: { x: 300, y: 600 }
+    homologueKey: grand-mere
+    intro: "Une grand-mère qui a fait fortune et n'a plus besoin de rien. Elle ne reçoit sa petite-fille que si celle-ci lui apporte un cadeau d'une valeur suffisante."
+  - id: u1-maison-copie-copie
+    kind: place
+    title: "La maison de la grand-mère"
+    position: { x: 130, y: 640 }
+    homologueKey: maison
+    intro: "Une maison située sur un terrain très convoité. Un promoteur attend déjà que la vieille dame la quitte pour y construire un lotissement."
+  - id: u1-chasseur-copie-copie
+    kind: character
+    title: "Le chasseur"
+    position: { x: 130, y: 760 }
+    homologueKey: chasseur
+    intro: "Un chasseur à gages, payé à la tête du loup. Il ne se déplace que si la prime est assez élevée."
 
-  [ { id: centre-copie-2, kind: place, title: Centre de l'univers, position: { x: 540, y: 360 }, homologueKey: centre, intro: "", revealedAtStart: true }, { id: u1-rouge-copie-copie, kind: character, title: Le petit chaperon rouge, position: { x: 350, y: 250 }, homologueKey: rouge, intro: "", central: { required: false } } ]
-
-relations: [ { id: link-u1-rouge-copie-copie-centre-copie-2, from: u1-rouge-copie-copie, to: centre-copie-2 } ]
+relations:
+  - { id: link-u1-rouge-copie-copie-centre-copie-2, from: u1-rouge-copie-copie, to: centre-copie-2 }
+  - { id: link-u1-sentier-copie-copie-centre-copie-2, from: u1-sentier-copie-copie, to: centre-copie-2 }
+  - { id: link-u1-loup-copie-copie-u1-sentier-copie-copie, from: u1-loup-copie-copie, to: u1-sentier-copie-copie }
+  - { id: link-u1-grand-mere-copie-copie-u1-sentier-copie-copie, from: u1-grand-mere-copie-copie, to: u1-sentier-copie-copie }
+  - { id: link-u1-maison-copie-copie-u1-grand-mere-copie-copie, from: u1-maison-copie-copie, to: u1-grand-mere-copie-copie }
+  - { id: link-u1-chasseur-copie-copie-u1-maison-copie-copie, from: u1-chasseur-copie-copie, to: u1-maison-copie-copie }
 
 questions:
 
-  []
+  - id: q-u3-loup
+    targetNodeId: u1-loup-copie-copie
+    access: enquete
+    requiresRevealed:
+      - u1-sentier
+    context: "Ici, tout a un prix, même la rencontre avec le loup."
+    prompt: "Comment s'appelle le loup qui rôde sur le sentier ?"
+    answers:
+      - Vorgas
+    wrongFeedback: "Mauvaise réponse"
+    alsoRevealed:
+      - u1-loup
+      - u1-loup-copie
