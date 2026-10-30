@@ -95,16 +95,36 @@ export function RevealedNode({
   );
 }
 
+interface CensoredNodeProps {
+  investigable: boolean;
+  selected?: boolean;
+}
+
+/** Nœud voilé : « ? » quand une question est ouverte, « … » sinon. */
+export function CensoredMark({ investigable, selected = false }: CensoredNodeProps) {
+  return (
+    <>
+      {investigable && <circle r={20} className="pulse" />}
+      <circle r={13} className={selected ? 'veil veil--selected' : 'veil'} />
+      <text className="node-mark" textAnchor="middle" dominantBaseline="central">
+        {investigable ? '?' : '…'}
+      </text>
+    </>
+  );
+}
+
 const NODE_KINDS: NodeKind[] = ['character', 'place', 'event'];
 
 interface GraphLegendProps {
   censored?: boolean;
+  /** Légende intégrée au texte (aide) plutôt que superposée à la toile. */
+  inline?: boolean;
   extra?: ReactNode;
 }
 
-export function GraphLegend({ censored = true, extra }: GraphLegendProps) {
+export function GraphLegend({ censored = true, inline = false, extra }: GraphLegendProps) {
   return (
-    <ul className="graph-legend" aria-label="Légende de la toile">
+    <ul className={inline ? 'graph-legend graph-legend--inline' : 'graph-legend'} aria-label="Légende de la toile">
       {NODE_KINDS.map((kind) => (
         <li key={kind}>
           <svg className="legend-icon" viewBox="-16 -16 32 32" aria-hidden="true">
@@ -118,26 +138,20 @@ export function GraphLegend({ censored = true, extra }: GraphLegendProps) {
       {censored && (
         <>
           <li>
-            <svg className="legend-icon" viewBox="-16 -16 32 32" aria-hidden="true">
-              <g className="node node--censored">
-                <circle r={12} />
-                <text className="node-mark" textAnchor="middle" dominantBaseline="central">
-                  ?
-                </text>
+            <svg className="legend-icon" viewBox="-22 -22 44 44" aria-hidden="true">
+              <g className="node node--censored node--investigable">
+                <CensoredMark investigable />
               </g>
             </svg>
-            Nœud censuré : une question le révèle
+            Question ouverte
           </li>
           <li>
             <svg className="legend-icon" viewBox="-16 -16 32 32" aria-hidden="true">
               <g className="node node--censored">
-                <circle r={12} />
-                <text className="node-mark" textAnchor="middle" dominantBaseline="central">
-                  ×
-                </text>
+                <CensoredMark investigable={false} />
               </g>
             </svg>
-            Nœud censuré sans question
+            Voilé, piste à trouver
           </li>
         </>
       )}

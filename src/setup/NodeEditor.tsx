@@ -503,6 +503,15 @@ function QuestionEditor({
             onCommit={(value) => commit({ op: 'set', path: at('wrongFeedback'), value })}
           />
 
+          <TextField
+            label="Indice (affiché à la demande du joueur)"
+            multiline
+            value={question.hint ?? ''}
+            onCommit={(value) =>
+              commit(value.trim() === '' ? { op: 'delete', path: at('hint') } : { op: 'set', path: at('hint'), value })
+            }
+          />
+
           <button type="button" className="danger" onClick={deleteQuestion}>
             Supprimer la question
           </button>

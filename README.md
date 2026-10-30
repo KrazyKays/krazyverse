@@ -36,12 +36,15 @@ Puis ouvrir l'adresse affichée dans le terminal (par défaut `http://localhost:
 
 ## Structure
 
-- `src/data/` : contenu narratif (univers, nœuds, relations, questions).
+- `content/*.yaml` : contenu narratif, un fichier par univers (nœuds, relations, questions, indices). Tout fichier ajouté ici est chargé automatiquement ; l'univers `kind: meta` est l'univers central.
+- `src/data/` : chargement et ordre des univers.
 - `src/domain/` : types, règles de visibilité, révélations et progression. Indépendant de React.
-- `src/storage/` : sauvegarde versionnée dans `localStorage` (clé `multiverse-game-save-v1`), avec validation et repli en mémoire.
+- `src/storage/` : sauvegarde versionnée dans `localStorage` (clé `multiverse-game-save-v1`, format version 2), avec validation et repli en mémoire.
 - `src/hooks/` : hook de jeu qui relie l'état métier et la sauvegarde.
-- `src/components/` : interface React (graphe SVG, panneau de lecture, dialogues).
-- `src/tests/` : tests de la logique métier.
+- `src/components/` : interface React (en-tête de mission, navigation entre univers, toile SVG, panneaux Récit et Pistes, dialogues).
+- `src/setup/` : éditeur de contenu (bouton **Setup**, en développement uniquement) qui écrit directement dans `content/*.yaml`.
+- `src/styles/` : `base.css` (jeu) et `setup.css` (éditeur).
+- `src/tests/` : tests de la logique métier, plus `content.test.ts` qui vérifie que l'histoire réelle est cohérente et peut être terminée.
 - `.github/workflows/deploy.yml` : vérifications et déploiement GitHub Pages.
 
 ## Mise en ligne sur GitHub

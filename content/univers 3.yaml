@@ -3,75 +3,168 @@
 id: universe3
 name: "Univers 440"
 kind: tale
-tagline: "Un univers où tout est dirigé par l'argent, sans prendre en compte ni les sentiments ni l'étique."
+tagline: "Un univers où tout est dirigé par l'argent, sans égard pour les sentiments ni pour l'éthique."
 
 nodes:
-  - id: centre-copie-2
+  - id: u3-centre
     kind: place
-    title: Centre de l'univers
-    position: { x: 540, y: 360 }
+    title: "Le village"
+    position: { x: 140, y: 380 }
     homologueKey: centre
-    intro: "Dans cet univers, tout se mesure en argent : les services se vendent, les amitiés se facturent et les sentiments n'apparaissent dans aucun budget. Au premier abord, tout semble prospère, mais chacun ne regarde son voisin que pour savoir ce qu'il peut en tirer."
+    intro: "Dans l'Univers 440, tout se mesure en écus. Les services se vendent, les amitiés se facturent et les sentiments n'apparaissent dans aucun budget. Au premier abord, tout semble prospère ; mais chacun ne regarde son voisin que pour savoir ce qu'il peut en tirer."
     revealedAtStart: true
-  - id: u1-rouge-copie-copie
+  - id: u3-mere
     kind: character
-    title: Le petit chaperon rouge
-    position: { x: 350, y: 250 }
+    title: "La mère"
+    position: { x: 150, y: 170 }
+    homologueKey: mere
+    intro: "Maëlle a calculé que la visite à la grand-mère était un bon investissement : Oldrine est riche, et n'a désigné aucun héritier. Elle remplit le panier de victuailles soigneusement étiquetées, avec leur prix, et y glisse une facture adressée à la vieille dame."
+  - id: u3-rouge
+    kind: character
+    title: "Le Petit Chaperon rouge"
+    position: { x: 330, y: 250 }
     homologueKey: rouge
-    intro: "Le petit chaperon rouge est une enfant qui transporte des victuailles pour sa grand-mère. Elle sait que chaque chose a un prix, et compte bien en tirer profit."
-    central:
-      required: false
-  - id: u1-sentier-copie-copie
+    intro: "Le Petit Chaperon rouge sait que chaque chose a un prix, et compte bien en tirer profit : elle a négocié une commission sur le panier. Avant de partir, elle compte sa monnaie. Il lui faudra cinq écus pour le péage du sentier."
+  - id: u3-sentier
     kind: place
-    title: "Le sentier"
-    position: { x: 330, y: 430 }
+    title: "Le sentier à péage"
+    position: { x: 380, y: 450 }
     homologueKey: sentier
-    intro: "Un chemin à péage, dont la forêt a été rachetée par une société. Chaque promeneur paie pour l'emprunter, et le tarif augmente à chaque saison."
-  - id: u1-loup-copie-copie
+    intro: "Le sentier des Aubépines a été racheté par une société. Chaque promeneur paie cinq écus pour l'emprunter, et le tarif augmente à chaque saison. Au poste de péage, un loup en gilet se fait appeler « Monsieur V. ». Plus loin, un panneau annonce : « Futur lotissement. Promoteur : Maître Gripon »."
+  - id: u3-loup
     kind: character
     title: "Le loup"
-    position: { x: 160, y: 470 }
+    position: { x: 520, y: 610 }
     homologueKey: loup
-    intro: "Un loup homme d'affaires, qui ne fait rien sans contrepartie. Il propose d'acheter les victuailles de la petite fille à un prix dérisoire, sans jamais se soucier de la grand-mère."
-  - id: u1-grand-mere-copie-copie
+    intro: "Vorgas, alias Monsieur V., ne fait rien sans contrepartie. Il propose d'acheter les victuailles de l'enfant à un prix dérisoire, puis lui vend un ticket pour son raccourci privé, racheté l'hiver dernier au conseil de la forêt."
+  - id: u3-raccourci
+    kind: place
+    title: "Le raccourci des Ronces"
+    position: { x: 730, y: 610 }
+    homologueKey: raccourci
+    intro: "Le raccourci est devenu une voie express bordée de panneaux publicitaires. Vorgas l'emprunte gratuitement, arrive le premier chez Oldrine et lui fait une offre pour sa maison. Il travaille pour Maître Gripon, à la commission."
+  - id: u3-maison
+    kind: place
+    title: "La maison aux volets dorés"
+    position: { x: 680, y: 380 }
+    homologueKey: maison
+    intro: "La maison se dresse sur un terrain très convoité. Maître Gripon attend que la vieille dame la quitte pour y construire un lotissement. Elle a fait poser trois serrures et une sonnette payante."
+  - id: u3-grand-mere
     kind: character
     title: "La grand-mère"
-    position: { x: 300, y: 600 }
+    position: { x: 700, y: 160 }
     homologueKey: grand-mere
-    intro: "Une grand-mère qui a fait fortune et n'a plus besoin de rien. Elle ne reçoit sa petite-fille que si celle-ci lui apporte un cadeau d'une valeur suffisante."
-  - id: u1-maison-copie-copie
-    kind: place
-    title: "La maison de la grand-mère"
-    position: { x: 130, y: 640 }
-    homologueKey: maison
-    intro: "Une maison située sur un terrain très convoité. Un promoteur attend déjà que la vieille dame la quitte pour y construire un lotissement."
-  - id: u1-chasseur-copie-copie
+    intro: "Oldrine a fait fortune et n'a plus besoin de rien. Elle ne reçoit sa petite-fille que si celle-ci apporte un cadeau d'une valeur suffisante. Pour se protéger des loups et des promoteurs, elle a engagé un chasseur à gages : cent écus le déplacement."
+  - id: u3-chasseur
     kind: character
     title: "Le chasseur"
-    position: { x: 130, y: 760 }
+    position: { x: 880, y: 250 }
     homologueKey: chasseur
-    intro: "Un chasseur à gages, payé à la tête du loup. Il ne se déplace que si la prime est assez élevée."
+    intro: "Brenn est un chasseur à gages, payé à la tête du loup. Il ne se déplace qu'après avoir fait signer un contrat en bonne et due forme chez le notaire du village, Maître Plumet."
+  - id: u3-denouement
+    kind: event
+    title: "Le dénouement"
+    position: { x: 880, y: 480 }
+    homologueKey: denouement
+    intro: "Chez Maître Plumet, tout le monde finit par signer : Oldrine vend sa maison à Gripon, Vorgas touche sa commission, Brenn sa prime et le Petit Chaperon rouge un pourcentage. Une fin rentable pour tous, sans un sou pour les sentiments. Dans la marge de l'acte, le notaire a pourtant recopié une vieille formule, héritée des fondateurs du village : « Tant que le Voile tient, chaque histoire reste la sienne. » Plus personne ici ne sait ce qu'est le Voile. On recopie la formule par habitude : elle ne coûte rien."
 
 relations:
-  - { id: link-u1-rouge-copie-copie-centre-copie-2, from: u1-rouge-copie-copie, to: centre-copie-2 }
-  - { id: link-u1-sentier-copie-copie-centre-copie-2, from: u1-sentier-copie-copie, to: centre-copie-2 }
-  - { id: link-u1-loup-copie-copie-u1-sentier-copie-copie, from: u1-loup-copie-copie, to: u1-sentier-copie-copie }
-  - { id: link-u1-grand-mere-copie-copie-u1-sentier-copie-copie, from: u1-grand-mere-copie-copie, to: u1-sentier-copie-copie }
-  - { id: link-u1-maison-copie-copie-u1-grand-mere-copie-copie, from: u1-maison-copie-copie, to: u1-grand-mere-copie-copie }
-  - { id: link-u1-chasseur-copie-copie-u1-maison-copie-copie, from: u1-chasseur-copie-copie, to: u1-maison-copie-copie }
+  - { id: link-u3-centre-mere, from: u3-centre, to: u3-mere }
+  - { id: link-u3-centre-rouge, from: u3-centre, to: u3-rouge }
+  - { id: link-u3-mere-rouge, from: u3-mere, to: u3-rouge }
+  - { id: link-u3-centre-sentier, from: u3-centre, to: u3-sentier }
+  - { id: link-u3-sentier-loup, from: u3-sentier, to: u3-loup }
+  - { id: link-u3-loup-raccourci, from: u3-loup, to: u3-raccourci }
+  - { id: link-u3-raccourci-maison, from: u3-raccourci, to: u3-maison }
+  - { id: link-u3-sentier-maison, from: u3-sentier, to: u3-maison }
+  - { id: link-u3-maison-grand-mere, from: u3-maison, to: u3-grand-mere }
+  - { id: link-u3-maison-chasseur, from: u3-maison, to: u3-chasseur }
+  - { id: link-u3-grand-mere-chasseur, from: u3-grand-mere, to: u3-chasseur }
+  - { id: link-u3-maison-denouement, from: u3-maison, to: u3-denouement }
+  - { id: link-u3-chasseur-denouement, from: u3-chasseur, to: u3-denouement }
 
 questions:
+  - id: q-u3-rouge
+    targetNodeId: u3-rouge
+    access: adjacent
+    requiresRevealed: []
+    context: "Ici, tout a un prix."
+    prompt: "Qu'est-ce qui dirige tout dans cet univers ?"
+    answers:
+      - argent
+      - écus
+    hint: "L'accroche de l'univers le dit clairement."
+    wrongFeedback: "Ce n'est pas cela qui gouverne l'Univers 440."
+
+  - id: q-u3-sentier
+    targetNodeId: u3-sentier
+    access: adjacent
+    requiresRevealed:
+      - u3-rouge
+    context: "Le Petit Chaperon rouge compte sa monnaie avant de partir."
+    prompt: "Combien coûte le péage du sentier ?"
+    answers:
+      - cinq
+      - "5"
+    hint: "Comptez avec le Petit Chaperon rouge."
+    wrongFeedback: "Ce n'est pas le tarif de cette saison."
 
   - id: q-u3-loup
-    targetNodeId: u1-loup-copie-copie
-    access: enquete
+    targetNodeId: u3-loup
+    access: adjacent
     requiresRevealed:
-      - u1-sentier
-    context: "Ici, tout a un prix, même la rencontre avec le loup."
-    prompt: "Comment s'appelle le loup qui rôde sur le sentier ?"
+      - u1-loup
+    context: "Au poste de péage, un loup en gilet se fait appeler « Monsieur V. »."
+    prompt: "Quel est le vrai nom de « Monsieur V. » ?"
     answers:
       - Vorgas
-    wrongFeedback: "Mauvaise réponse"
-    alsoRevealed:
-      - u1-loup
-      - u1-loup-copie
+    hint: "Les noms traversent les univers."
+    wrongFeedback: "Ce n'est pas son vrai nom."
+
+  - id: q-u3-raccourci
+    targetNodeId: u3-raccourci
+    access: adjacent
+    requiresRevealed:
+      - u1-raccourci
+    context: "Le loup vend des tickets pour un raccourci privé, qu'il a racheté l'hiver dernier."
+    prompt: "Quel raccourci le loup a-t-il racheté ?"
+    answers:
+      - Ronces
+    hint: "Ce raccourci existe aussi dans l'Univers 42."
+    wrongFeedback: "Ce n'est pas ce raccourci-là."
+
+  - id: q-u3-maison
+    targetNodeId: u3-maison
+    access: adjacent
+    requiresRevealed: []
+    context: "La maison de la grand-mère est convoitée. Un panneau, le long du sentier, nomme celui qui la guette."
+    prompt: "Quel promoteur convoite la maison ?"
+    answers:
+      - Gripon
+    hint: "Lisez le panneau du sentier à péage."
+    wrongFeedback: "Ce n'est pas le nom du promoteur."
+
+  - id: q-u3-chasseur
+    targetNodeId: u3-chasseur
+    access: adjacent
+    requiresRevealed:
+      - u3-grand-mere
+    context: "Oldrine a engagé un chasseur à gages pour se protéger."
+    prompt: "Combien d'écus coûte un déplacement du chasseur ?"
+    answers:
+      - cent
+      - "100"
+    hint: "Oldrine connaît le tarif."
+    wrongFeedback: "Ce n'est pas son tarif."
+
+  - id: q-u3-denouement
+    targetNodeId: u3-denouement
+    access: adjacent
+    requiresRevealed:
+      - u3-chasseur
+    context: "Ici, aucune histoire ne se dénoue sans contrat signé."
+    prompt: "Chez quel notaire tout le monde vient-il signer ?"
+    answers:
+      - Plumet
+    hint: "Le chasseur ne se déplace jamais sans passer chez lui."
+    wrongFeedback: "Ce n'est pas le nom du notaire."

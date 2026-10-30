@@ -1,31 +1,21 @@
 import { parse } from 'yaml';
 import { buildUniverse } from '../domain/universe';
 import type { UniverseMap } from '../domain/progression';
-import type { UniverseData } from '../domain/types';
-import boisDeBrumeSource from '../../content/univers 1.yaml?raw';
-import forgesDeVerreSource from '../../content/univers 2.yaml?raw';
-import univers3Source from '../../content/univers 3.yaml?raw';
-import multiversSource from '../../content/multivers.yaml?raw';
+import type { Universe, UniverseData } from '../domain/types';
 
-function loadUniverse(source: string): UniverseData {
-  return parse(source) as UniverseData;
-}
+// Chaque fichier content/*.yaml décrit un univers ; en ajouter un suffit à l'intégrer au jeu.
+const sources = import.meta.glob<string>('../../content/*.yaml', { query: '?raw', import: 'default', eager: true });
 
-const boisDeBrume = loadUniverse(boisDeBrumeSource);
-const forgesDeVerre = loadUniverse(forgesDeVerreSource);
-const univers3 = loadUniverse(univers3Source);
-const multivers = loadUniverse(multiversSource);
+const loaded = Object.keys(sources)
+  .sort((a, b) => a.localeCompare(b, 'fr', { numeric: true }))
+  .map((file) => buildUniverse(parse(sources[file]!) as UniverseData));
 
-export const BOIS_ID = boisDeBrume.id;
-export const FORGES_ID = forgesDeVerre.id;
-export const UNIVERS3_ID = univers3.id;
-export const META_ID = multivers.id;
+const central = loaded.find((universe) => universe.kind === 'meta');
+if (!central) throw new Error('Aucun univers central (kind: meta) dans content/.');
 
-export const UNIVERSE_ORDER = [META_ID, BOIS_ID, FORGES_ID, UNIVERS3_ID] as const;
+export const META_ID = central.id;
 
-export const universes: UniverseMap = {
-  [BOIS_ID]: buildUniverse(boisDeBrume),
-  [FORGES_ID]: buildUniverse(forgesDeVerre),
-  [UNIVERS3_ID]: buildUniverse(univers3),
-  [META_ID]: buildUniverse(multivers),
-};
+/** Univers central d'abord, puis les contes dans l'ordre des fichiers. */
+export const orderedUniverses: Universe[] = [central, ...loaded.filter((universe) => universe !== central)];
+
+export const universes: UniverseMap = Object.fromEntries(orderedUniverses.map((universe) => [universe.id, universe]));

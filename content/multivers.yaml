@@ -2,46 +2,119 @@
 # Référence : les ids doivent être uniques et les liens doivent pointer vers des ids existants.
 
 id: meta-enquete
-name: "Le multivers"
+name: "Le Bureau des Concordances"
 kind: meta
-tagline: "Chaque univers a ses propres règles, mais à partir de quel moment peut-on qualifier un univers de défaillant ? La mission qui vous a été confiée est de parcourir ces univers, dans un premier temps pour assimiler leurs spécificités, et cela vous conduira peut-être à faire des découvertes qui vous permettrons de répondre aux questions qui régissent le monde entier."
+tagline: "Le Bureau surveille les univers de conte. Votre mission : déterminer à partir de quel moment un univers doit être déclaré défaillant."
 
 nodes:
-  - id: meta-origine
-    kind: event
-    title: "Les univers et leurs règles"
-    position: { x: 500, y: 120 }
-    homologueKey: meta-origine
-    intro: "Pourquoi les règles sont elles créées ? Il semblerait que chaque univers naisse avec une règle qui lui est propre, qui nous permet de les distinguer les uns des autres, mais à quoi cela sert-il concrètement ? Il semblerait qu'une force cosmique cherche à ce que les évènements qui se déroulent dans chaque univers diffèrent à tout prix."
-    central:
-      required: true
+  - id: meta-bureau
+    kind: place
+    title: "Le Bureau des Concordances"
+    position: { x: 500, y: 610 }
+    homologueKey: ""
+    intro: "Le Bureau veille sur les univers de conte : des mondes qui racontent tous la même histoire, celle du Petit Chaperon rouge, chacun à sa façon. Chaque univers naît avec une Loi qui le distingue des autres. Le Bureau attribue ces Lois à une force cosmique qu'il nomme la Divergence : elle veille à ce qu'aucune histoire ne se répète d'un univers à l'autre. Votre mission : arpenter ces univers et déterminer à partir de quel moment l'un d'eux doit être déclaré défaillant. Conseil d'Arpenteur : les noms traversent les univers. Ce que vous apprenez dans l'un vous servira dans les autres."
     revealedAtStart: true
 
-  - id: meta-anomalie-1
+  - id: meta-lois
     kind: event
-    title: "La parasyndèse"
-    position: { x: 300, y: 300 }
+    title: "Les trois Lois"
+    position: { x: 500, y: 440 }
     homologueKey: ""
-    intro: "On nomme parasyndèse, un évènement qui se déroule de façon similaire dans deux univers différents, il a pour conséquence de"
+    intro: "Dans l'Univers 42, personne ne ment. Dans l'Univers 2345, le hasard décide de tout. Dans l'Univers 440, tout s'achète. Ces Lois ne servent pas à rendre les univers meilleurs ou pires : elles servent à les rendre différents. Une Loi est une promesse faite par la Divergence : l'histoire de cet univers ne se répétera nulle part ailleurs. Reste à savoir ce qui arrive lorsqu'une promesse n'est pas tenue."
     central:
       required: true
 
+  - id: meta-parasyndese
+    kind: event
+    title: "La parasyndèse"
+    position: { x: 280, y: 290 }
+    homologueKey: ""
+    intro: "On nomme parasyndèse un événement qui se déroule de façon strictement identique dans deux univers différents. Le Bureau n'en avait jamais observé : la Divergence est censée les rendre impossibles. Celle de l'Univers 2345 a eu une conséquence immédiate : la Loi de l'Univers 42 y a débordé, et plus personne n'y parvient à mentir. Quelque chose qui séparait les deux univers a cédé. L'Univers 440, où l'on archive tout, en garde peut-être une trace écrite."
+    central:
+      required: true
+
+  - id: meta-voile
+    kind: place
+    title: "Le Voile"
+    position: { x: 720, y: 290 }
+    homologueKey: ""
+    intro: "Le Voile est la membrane qui sépare les univers. Chaque Loi en est un fil : tant qu'elles font diverger les histoires, il tient. Chaque parasyndèse l'use un peu, et les Lois commencent à fuir d'un monde à l'autre. Si le Voile se déchirait, tous les univers de conte se confondraient en une seule histoire, la même pour tous, et la Divergence n'aurait plus rien à protéger."
+    central:
+      required: true
+
+  - id: meta-defaillance
+    kind: event
+    title: "L'univers défaillant"
+    position: { x: 500, y: 120 }
+    homologueKey: ""
+    intro: "Un univers est défaillant dès que sa Loi ne peut plus garantir qu'il diverge. L'Univers 42 ne peut pas mentir, l'Univers 440 ne peut rien donner : ces Lois contraignent leurs histoires et les éloignent des autres. Mais le hasard de l'Univers 2345 peut tout produire, y compris, un jour, la même histoire qu'ailleurs. Sa Loi ne contraint rien : ce n'est pas une promesse, c'est un pari. L'Univers 2345 est défaillant."
+    central:
+      required: true
+    finale: true
+
 relations:
-  - { id: rm-origine-anomalie-1, from: meta-origine, to: meta-anomalie-1 }
+  - { id: rm-bureau-lois, from: meta-bureau, to: meta-lois }
+  - { id: rm-lois-parasyndese, from: meta-lois, to: meta-parasyndese }
+  - { id: rm-lois-voile, from: meta-lois, to: meta-voile }
+  - { id: rm-parasyndese-voile, from: meta-parasyndese, to: meta-voile }
+  - { id: rm-parasyndese-defaillance, from: meta-parasyndese, to: meta-defaillance }
+  - { id: rm-voile-defaillance, from: meta-voile, to: meta-defaillance }
 
 questions:
-
-  - id: q-meta-anomalie-1
-    targetNodeId: meta-anomalie-1
+  - id: q-meta-lois
+    targetNodeId: meta-lois
     access: enquete
     requiresRevealed:
-      - u1-chasseur-copie
-    context: "Personne ne sais ce qui pourrait se passer si deux évènements, dans deux univers distincts se déroulaient de façon totalement identique."
-    prompt: "Quel est le nom de ce phénomène ?"
+      - u1-rouge
+      - u2-rouge
+      - u3-rouge
+    context: "Vous avez relevé la Loi de chacun des trois univers de conte. Le Bureau affirme qu'elles ont toutes la même origine."
+    prompt: "Quelle force cosmique impose une Loi à chaque univers ?"
+    answers:
+      - "Divergence"
+    hint: "Relisez le récit du Bureau des Concordances."
+    wrongFeedback: "Ce n'est pas le nom que lui donne le Bureau."
+
+  - id: q-meta-parasyndese
+    targetNodeId: meta-parasyndese
+    access: enquete
+    requiresRevealed:
+      - u2-denouement
+    context: "Dans l'Univers 2345, une scène s'est rejouée à l'identique, mot pour mot, geste pour geste. Le Bureau possède un terme précis pour cela."
+    prompt: "Quel nom donne-t-on à un événement qui se produit à l'identique dans deux univers ?"
     answers:
       - "parasyndèse"
-    wrongFeedback: "Mauvaise réponse, il existe un terme spécifique."
+    hint: "Le terme figure dans le dénouement de l'Univers 2345."
+    wrongFeedback: "Il existe un terme spécifique, utilisé par le Bureau."
+
+  - id: q-meta-voile
+    targetNodeId: meta-voile
+    access: enquete
+    requiresRevealed:
+      - meta-parasyndese
+      - u3-denouement
+    context: "Depuis la parasyndèse, la Loi de l'Univers 42 a débordé sur l'Univers 2345. Une vieille formule de l'Univers 440 nomme ce qui sépare les histoires."
+    prompt: "Comment s'appelle ce qui sépare les univers les uns des autres ?"
+    answers:
+      - "Voile"
+    hint: "Lisez l'acte signé chez le notaire de l'Univers 440."
+    wrongFeedback: "Ce n'est pas le mot de la formule."
+
+  - id: q-meta-defaillance
+    targetNodeId: meta-defaillance
+    access: enquete
+    requiresRevealed:
+      - meta-lois
+      - meta-voile
+    context: "Une Loi est une promesse : l'histoire de son univers ne se répétera nulle part. Deux Lois contraignent leur histoire et l'éloignent des autres. La troisième peut tout produire… y compris la même histoire qu'ailleurs."
+    prompt: "Quel univers le Bureau doit-il déclarer défaillant ?"
+    answers:
+      - "2345"
+      - "deux mille trois cent quarante-cinq"
+      - "hasard"
+    hint: "Quelle Loi a rendu la parasyndèse possible ?"
+    wrongFeedback: "Cette Loi-là tient sa promesse. Cherchez celle qui ne contraint rien."
 
 ending:
-  title: "Votre mission est terminée !"
-  body: "Fin du jeu."
+  title: "Rapport d'arpentage : Univers 2345 défaillant"
+  body: "Le Bureau des Concordances a reçu votre rapport. Un univers ne devient pas défaillant parce qu'il est cruel, absurde ou injuste, mais lorsque sa Loi cesse de le rendre unique. L'Univers 2345 est placé sous surveillance, et le Voile qui le borde sera recousu fil à fil. En refermant votre carnet, vous remarquez pourtant une ligne que vous ne vous souvenez pas avoir écrite, de votre propre main : « Dans l'Univers 42, quelqu'un vient de mentir. »"

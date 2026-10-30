@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { MouseEvent as ReactMouseEvent, PointerEvent as ReactPointerEvent } from 'react';
 import { visibilityFor, visibleRelationIds } from '../domain/visibility';
 import type { GameState, Question, Universe } from '../domain/types';
-import { GraphEdges, GraphLegend, onActivateKey, RevealedNode, VIEW_HEIGHT, VIEW_WIDTH } from './graph';
+import { CensoredMark, GraphEdges, GraphLegend, onActivateKey, RevealedNode, VIEW_HEIGHT, VIEW_WIDTH } from './graph';
 
 const MIN_SCALE = 0.5;
 const MAX_SCALE = 2.5;
@@ -15,6 +15,18 @@ interface View {
 }
 
 const INITIAL_VIEW: View = { scale: 1, tx: 0, ty: 0 };
+
+/** Portion de la toile cadrée par le viewBox, en coordonnées des nœuds. */
+interface Frame {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+const FRAME_PADDING = 80;
+const MIN_FRAME_WIDTH = 720;
+const FRAME_ANIMATION_MS = 450;
 
 interface UniverseGraphProps {
   universe: Universe;
@@ -41,6 +53,11 @@ export function UniverseGraph({
   const movedRef = useRef(false);
 
   const visibility = useMemo(() => visibilityFor(state, universe), [state, universe]);
+  const targetFrame = useMemo(
+    () => fitFrame(universe.nodes.filter((node) => visibility.get(node.id) !== 'hidden').map((node) => node.position)),
+    [universe, visibility],
+  );
+  const frame = useAnimatedFrame(targetFrame);
   const relationIds = useMemo(() => visibleRelationIds(universe, visibility), [universe, visibility]);
   const investigationByNodeId = useMemo(
     () => new Map(questions.map((question) => [question.targetNodeId, question])),
@@ -52,8 +69,8 @@ export function UniverseGraph({
     if (!svg) return;
     const onWheel = (event: WheelEvent) => {
       event.preventDefault();
-      const factor = event.deltaY < 0 ? 1.1 : 0.9;
-      setView((current) => ({ ...current, scale: clampScale(current.scale * factor) }));
+      const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(svg.getScreenCTM()?.inverse());
+      setView((current) => zoomAround(current, event.deltaY < 0 ? 1.1 : 1 / 1.1, point.x, point.y));
     };
     svg.addEventListener('wheel', onWheel, { passive: false });
     return () => svg.removeEventListener('wheel', onWheel);
@@ -78,7 +95,7 @@ export function UniverseGraph({
     movedRef.current = true;
     drag.x = event.clientX;
     drag.y = event.clientY;
-    const unit = Math.max(VIEW_WIDTH / svg.clientWidth, VIEW_HEIGHT / svg.clientHeight);
+    const unit = Math.max(frame.w / svg.clientWidth, frame.h / svg.clientHeight);
     setView((current) => ({ ...current, tx: current.tx + dx * unit, ty: current.ty + dy * unit }));
   };
 
@@ -93,7 +110,7 @@ export function UniverseGraph({
   };
 
   const zoomBy = (factor: number) => {
-    setView((current) => ({ ...current, scale: clampScale(current.scale * factor) }));
+    setView((current) => zoomAround(current, factor, frame.x + frame.w / 2, frame.y + frame.h / 2));
   };
 
   const activate = (action: () => void) => {
@@ -106,7 +123,7 @@ export function UniverseGraph({
       <svg
         ref={svgRef}
         className="graph"
-        viewBox={`0 0 ${VIEW_WIDTH} ${VIEW_HEIGHT}`}
+        viewBox={`${frame.x} ${frame.y} ${frame.w} ${frame.h}`}
         role="group"
         aria-label={`Toile de l'univers ${universe.name}`}
         onPointerDown={onPointerDown}
@@ -129,22 +146,21 @@ export function UniverseGraph({
 
               if (status === 'censored') {
                 const question = investigationByNodeId.get(node.id);
-                const openInvestigation = question ? () => onOpenQuestion(question.id) : undefined;
+                const action = question ? () => onOpenQuestion(question.id) : () => onSelect(node.id);
+                const classes = ['node', 'node--censored'];
+                if (question) classes.push('node--investigable');
                 return (
                   <g
                     key={node.id}
-                    className={question ? 'node node--censored node--investigable' : 'node node--censored'}
+                    className={classes.join(' ')}
                     transform={`translate(${x} ${y})`}
-                    aria-label={question ? 'Nœud censuré, question disponible' : 'Nœud censuré'}
-                    role={question ? 'button' : 'img'}
-                    tabIndex={question ? 0 : undefined}
-                    onClick={openInvestigation && (() => activate(openInvestigation))}
-                    onKeyDown={openInvestigation && ((event) => onActivateKey(event, openInvestigation))}
+                    aria-label={question ? 'Élément voilé : question ouverte' : 'Élément voilé'}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => activate(action)}
+                    onKeyDown={(event) => onActivateKey(event, action)}
                   >
-                    <circle r={12} />
-                    <text className="node-mark" textAnchor="middle" dominantBaseline="central">
-                      {question ? '?' : '×'}
-                    </text>
+                    <CensoredMark investigable={question !== undefined} selected={node.id === selectedId} />
                   </g>
                 );
               }
@@ -165,14 +181,14 @@ export function UniverseGraph({
       </svg>
 
       <div className="graph-controls" role="toolbar" aria-label="Contrôles de la toile">
-        <button type="button" onClick={() => zoomBy(1.2)} aria-label="Zoom avant">
+        <button type="button" onClick={() => zoomBy(1.2)} aria-label="Zoom avant" title="Zoom avant">
           +
         </button>
-        <button type="button" onClick={() => zoomBy(1 / 1.2)} aria-label="Zoom arrière">
+        <button type="button" onClick={() => zoomBy(1 / 1.2)} aria-label="Zoom arrière" title="Zoom arrière">
           −
         </button>
-        <button type="button" onClick={() => setView(INITIAL_VIEW)}>
-          Recentrer
+        <button type="button" onClick={() => setView(INITIAL_VIEW)} aria-label="Recentrer la toile" title="Recentrer">
+          ⌖
         </button>
       </div>
 
@@ -183,4 +199,55 @@ export function UniverseGraph({
 
 function clampScale(value: number): number {
   return Math.min(MAX_SCALE, Math.max(MIN_SCALE, value));
+}
+
+/** Zoome en gardant fixe le point (x, y) exprimé en coordonnées de la toile. */
+function zoomAround(view: View, factor: number, x: number, y: number): View {
+  const scale = clampScale(view.scale * factor);
+  const ratio = scale / view.scale;
+  return { scale, tx: x - (x - view.tx) * ratio, ty: y - (y - view.ty) * ratio };
+}
+
+/** Cadre englobant les nœuds visibles, aux proportions de la toile complète. */
+function fitFrame(points: { x: number; y: number }[]): Frame {
+  if (points.length === 0) return { x: 0, y: 0, w: VIEW_WIDTH, h: VIEW_HEIGHT };
+  const xs = points.map((point) => point.x);
+  const ys = points.map((point) => point.y);
+  const minX = Math.min(...xs) - FRAME_PADDING;
+  const minY = Math.min(...ys) - FRAME_PADDING;
+  const ratio = VIEW_WIDTH / VIEW_HEIGHT;
+  let w = Math.max(Math.max(...xs) + FRAME_PADDING - minX, MIN_FRAME_WIDTH);
+  let h = Math.max(...ys) + FRAME_PADDING - minY;
+  if (w / h < ratio) w = h * ratio;
+  else h = w / ratio;
+  const cx = (Math.min(...xs) + Math.max(...xs)) / 2;
+  const cy = (Math.min(...ys) + Math.max(...ys)) / 2;
+  return { x: cx - w / 2, y: cy - h / 2, w, h };
+}
+
+function useAnimatedFrame(target: Frame): Frame {
+  const [frame, setFrame] = useState(target);
+  const frameRef = useRef(frame);
+  frameRef.current = frame;
+
+  useEffect(() => {
+    const from = frameRef.current;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setFrame(target);
+      return;
+    }
+    const start = performance.now();
+    let handle = 0;
+    const step = (now: number) => {
+      const t = Math.min(1, (now - start) / FRAME_ANIMATION_MS);
+      const eased = 1 - (1 - t) ** 3;
+      const mix = (a: number, b: number) => a + (b - a) * eased;
+      setFrame({ x: mix(from.x, target.x), y: mix(from.y, target.y), w: mix(from.w, target.w), h: mix(from.h, target.h) });
+      if (t < 1) handle = requestAnimationFrame(step);
+    };
+    handle = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(handle);
+  }, [target]);
+
+  return frame;
 }

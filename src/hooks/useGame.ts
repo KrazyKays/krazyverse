@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { universes } from '../data';
-import { answerQuestion, createInitialState, visitUniverse } from '../domain/progression';
+import { answerQuestion, createInitialState, visitUniverse, type AnswerResult } from '../domain/progression';
 import type { GameState } from '../domain/types';
 import { clearGame, loadGame, resolveStore, saveGame } from '../storage/save';
 
@@ -8,17 +8,21 @@ const storage = resolveStore();
 
 export interface GameController {
   state: GameState;
+  /** Vrai quand aucune sauvegarde n'existait au chargement de la page. */
+  isNewGame: boolean;
   persistent: boolean;
   saveFailed: boolean;
   selectUniverse: (universeId: string) => void;
-  answer: (universeId: string, questionId: string, answer: string) => boolean;
+  answer: (universeId: string, questionId: string, answer: string) => AnswerResult;
   reset: () => void;
 }
 
 export function useGame(): GameController {
-  const [state, setState] = useState<GameState>(
-    () => loadGame(storage.store, universes) ?? createInitialState(universes),
-  );
+  const [initial] = useState(() => {
+    const saved = loadGame(storage.store, universes);
+    return { state: saved ?? createInitialState(universes), isNewGame: saved === null };
+  });
+  const [state, setState] = useState<GameState>(initial.state);
   const [saveFailed, setSaveFailed] = useState(false);
 
   const commit = useCallback((next: GameState) => {
@@ -37,7 +41,7 @@ export function useGame(): GameController {
     (universeId: string, questionId: string, answer: string) => {
       const result = answerQuestion(state, universes, universeId, questionId, answer);
       if (result.correct) commit(result.state);
-      return result.correct;
+      return result;
     },
     [state, commit],
   );
@@ -50,6 +54,7 @@ export function useGame(): GameController {
 
   return {
     state,
+    isNewGame: initial.isNewGame,
     persistent: storage.persistent,
     saveFailed,
     selectUniverse,

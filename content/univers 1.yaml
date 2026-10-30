@@ -3,69 +3,87 @@
 id: universe1
 name: "Univers 42"
 kind: tale
-tagline: "Un univers positif et joyeux où le mensonge n'existe pas."
+tagline: "Un univers lumineux et sincère, où le mensonge n'existe pas."
 
 nodes:
-  - id: centre
+  - id: u1-centre
     kind: place
-    title: "Centre de l'univers"
-    position: { x: 540, y: 360 }
+    title: "Le village"
+    position: { x: 140, y: 380 }
     homologueKey: centre
-    intro: "Dans cette univers tout est magnifique et innocent, le mensonge n'existe pas et tout le monde vit une existence parfaite, au premier abord ..."
+    intro: "Dans l'Univers 42, personne n'a jamais menti : le mensonge n'existe pas, pas même le mot pour le dire. On s'y salue d'un « bonjour » sincère et l'on répond toujours à la question posée. Devant la dernière maison du village, Maëlle remplit un panier pour la grand-mère. Sa fille, coiffée d'un chaperon rouge, trépigne déjà sur le seuil."
     revealedAtStart: true
+  - id: u1-mere
+    kind: character
+    title: "La mère"
+    position: { x: 150, y: 170 }
+    homologueKey: mere
+    intro: "Maëlle n'a jamais eu besoin de faire promettre quoi que ce soit à sa fille : ici, une parole donnée est une parole tenue. Elle se contente de dire : « Prends le sentier des Aubépines, et salue tout le monde de ma part. » Puis elle glisse dans le panier une galette, un petit pot de beurre et un bouquet de lavande."
   - id: u1-rouge
     kind: character
-    title: Le petit chaperon rouge
-    position:
-      x: 350
-      y: 250
+    title: "Le Petit Chaperon rouge"
+    position: { x: 330, y: 250 }
     homologueKey: rouge
-    intro: "Le petit chaperon rouge est une jeune enfant qui a prévu d'aller donner quelques victuailles à sa grand-mère, pour se faire elle doit traverser la forêt en suivant le sentier."
-    central:
-      required: false
+    intro: "Le Petit Chaperon rouge est une enfant curieuse et franche. Elle ne sait pas mentir, et ne voit d'ailleurs pas pourquoi on le ferait. Elle répond à chaque question qu'on lui pose, y compris à celles qu'un adulte prudent aurait préféré esquiver."
   - id: u1-sentier
     kind: place
-    title: "Le sentier"
-    position: { x: 330, y: 430 }
+    title: "Le sentier des Aubépines"
+    position: { x: 380, y: 450 }
     homologueKey: sentier
-    intro: "Un chemin de terre bien tracé, bordé de fleurs. Un loup nommé Vorgas rôde dans les fourrés, et au bout du chemin vit la grand-mère, Oldrine."
+    intro: "Le sentier serpente entre les aubépines en fleurs. Un loup nommé Vorgas rôde dans les fourrés, à quelques pas du chemin. Tout au bout, on aperçoit déjà la petite maison aux volets bleus."
   - id: u1-loup
     kind: character
     title: "Le loup"
-    position: { x: 160, y: 470 }
+    position: { x: 520, y: 610 }
     homologueKey: loup
-    intro: "Un loup curieux qui s'approche et demande où elle va. Ne sachant pas mentir, la petite fille lui répond sans détour, et le loup, qui n'a pas de mauvaises intentions, lui propose de l'accompagner un bout de chemin."
+    intro: "Vorgas s'approche et demande à l'enfant où elle va. Elle le lui dit, sans détour. Lui non plus ne sait pas mentir : « J'ai faim, avoue-t-il, mais pas de petites filles. Je vais prendre le raccourci des Ronces pour arriver avant toi et cueillir des mûres pour ta grand-mère. »"
+  - id: u1-raccourci
+    kind: place
+    title: "Le raccourci des Ronces"
+    position: { x: 730, y: 610 }
+    homologueKey: raccourci
+    intro: "Le raccourci coupe à travers les buissons épineux. Vorgas en ressort griffé, la gueule violette de mûres, mais fier d'arriver le premier. Il frappe, annonce son nom et la raison de sa visite : personne n'a peur d'un loup qui dit la vérité."
+  - id: u1-maison
+    kind: place
+    title: "La maison aux volets bleus"
+    position: { x: 680, y: 380 }
+    homologueKey: maison
+    intro: "La maison sent le thé noir et la cire. Sur la porte, une plaque gravée : « Ici vit Oldrine. Entrez, c'est ouvert. » Une vieille horloge marque les heures dans l'entrée."
   - id: u1-grand-mere
     kind: character
     title: "La grand-mère"
-    position: { x: 300, y: 600 }
+    position: { x: 700, y: 160 }
     homologueKey: grand-mere
-    intro: "Une grand-mère joyeuse et en pleine forme, qui accueille sa petite-fille et son nouvel ami avec la même chaleur. Elle est très liée à Brenn, le chasseur du village."
-  - id: u1-maison
-    kind: place
-    title: "La maison de la grand-mère"
-    position: { x: 130, y: 640 }
-    homologueKey: maison
-    intro: "Une petite maison au toit de chaume, où la grand-mère prépare déjà le thé en attendant la visite de sa petite-fille."
+    intro: "Oldrine est joyeuse et en pleine forme, n'en déplaise aux contes des autres univers. Elle accueille le loup et sa petite-fille avec la même chaleur. Son plus vieil ami, Brenn, le chasseur du village, lui rend visite chaque jour."
   - id: u1-chasseur
     kind: character
     title: "Le chasseur"
-    position: { x: 130, y: 760 }
+    position: { x: 880, y: 250 }
     homologueKey: chasseur
-    intro: "Un chasseur qui rentre de sa promenade en forêt et salue tout le monde, loup compris. Il veille sur les promeneurs."
+    intro: "Brenn ne chasse plus guère, mais il veille sur les promeneurs de la forêt. C'est l'homme le plus ponctuel de l'univers : chaque jour, il passe chez Oldrine à midi sonnant, pas une minute de plus, pas une minute de moins."
+  - id: u1-denouement
+    kind: event
+    title: "Le dénouement"
+    position: { x: 880, y: 480 }
+    homologueKey: denouement
+    intro: "À midi sonnant, Brenn frappe trois coups à la porte, entre, pose son fusil contre l'horloge et dit : « Tout le monde est sain et sauf. » Le loup, l'enfant, la grand-mère et le chasseur partagent la galette. C'est la fin de l'histoire dans l'Univers 42 : une fin sans ruse, sans peur et sans mensonge. Le Bureau l'a consignée mot pour mot dans ses archives."
 
 relations:
-  - id: link-u1-rouge-u1-aniel
-    from: u1-rouge
-    to: centre
-  - { id: link-u1-sentier-centre, from: u1-sentier, to: centre }
-  - { id: link-u1-loup-u1-sentier, from: u1-loup, to: u1-sentier }
-  - { id: link-u1-grand-mere-u1-sentier, from: u1-grand-mere, to: u1-sentier }
-  - { id: link-u1-maison-u1-grand-mere, from: u1-maison, to: u1-grand-mere }
-  - { id: link-u1-chasseur-u1-maison, from: u1-chasseur, to: u1-maison }
+  - { id: link-u1-centre-mere, from: u1-centre, to: u1-mere }
+  - { id: link-u1-centre-rouge, from: u1-centre, to: u1-rouge }
+  - { id: link-u1-mere-rouge, from: u1-mere, to: u1-rouge }
+  - { id: link-u1-centre-sentier, from: u1-centre, to: u1-sentier }
+  - { id: link-u1-sentier-loup, from: u1-sentier, to: u1-loup }
+  - { id: link-u1-loup-raccourci, from: u1-loup, to: u1-raccourci }
+  - { id: link-u1-raccourci-maison, from: u1-raccourci, to: u1-maison }
+  - { id: link-u1-sentier-maison, from: u1-sentier, to: u1-maison }
+  - { id: link-u1-maison-grand-mere, from: u1-maison, to: u1-grand-mere }
+  - { id: link-u1-maison-chasseur, from: u1-maison, to: u1-chasseur }
+  - { id: link-u1-grand-mere-chasseur, from: u1-grand-mere, to: u1-chasseur }
+  - { id: link-u1-maison-denouement, from: u1-maison, to: u1-denouement }
+  - { id: link-u1-chasseur-denouement, from: u1-chasseur, to: u1-denouement }
 
 questions:
-
   - id: q-u1-rouge
     targetNodeId: u1-rouge
     access: adjacent
@@ -74,23 +92,105 @@ questions:
     prompt: "Qu'est-ce qui n'existe pas dans cet univers ?"
     answers:
       - mensonge
-    wrongFeedback: "Mauvaise réponse"
+      - mentir
+    hint: "Relisez le récit du village."
+    wrongFeedback: "Ce n'est pas cela. Le village vous le dit dès la première phrase."
+
+  - id: q-u1-mere
+    targetNodeId: u1-mere
+    access: adjacent
+    requiresRevealed: []
+    context: "Une femme prépare un panier devant la dernière maison du village. Les noms traversent les univers : la découvrir ici la révélera aussi ailleurs."
+    prompt: "Comment s'appelle la mère du Petit Chaperon rouge ?"
+    answers:
+      - Maëlle
+    hint: "Son nom apparaît dans le récit du village."
+    wrongFeedback: "Ce n'est pas son nom."
     alsoRevealed:
-      - u1-rouge-copie
-      - u1-rouge-copie-copie
+      - u2-mere
+      - u3-mere
+
+  - id: q-u1-sentier
+    targetNodeId: u1-sentier
+    access: adjacent
+    requiresRevealed:
+      - u1-mere
+    context: "Avant de partir, la mère donne un conseil à sa fille."
+    prompt: "Quel sentier la mère recommande-t-elle de prendre ?"
+    answers:
+      - Aubépines
+    hint: "Écoutez ce que dit Maëlle."
+    wrongFeedback: "Ce n'est pas le sentier qu'elle a nommé."
+
+  - id: q-u1-loup
+    targetNodeId: u1-loup
+    access: adjacent
+    requiresRevealed: []
+    context: "Quelqu'un rôde dans les fourrés, à quelques pas du sentier."
+    prompt: "Comment s'appelle le loup ?"
+    answers:
+      - Vorgas
+    hint: "Le récit du sentier le nomme."
+    wrongFeedback: "Ce n'est pas son nom."
+
+  - id: q-u1-maison
+    targetNodeId: u1-maison
+    access: adjacent
+    requiresRevealed: []
+    context: "Au bout du sentier, une petite maison se dessine entre les arbres."
+    prompt: "De quelle couleur sont ses volets ?"
+    answers:
+      - bleus
+    hint: "Regardez au bout du sentier."
+    wrongFeedback: "Ce n'est pas la bonne couleur."
+
+  - id: q-u1-raccourci
+    targetNodeId: u1-raccourci
+    access: adjacent
+    requiresRevealed: []
+    context: "Le loup ne sait pas mentir : il annonce lui-même le chemin qu'il compte prendre."
+    prompt: "Quel raccourci le loup veut-il emprunter ?"
+    answers:
+      - Ronces
+    hint: "Relisez l'aveu de Vorgas."
+    wrongFeedback: "Ce n'est pas le raccourci dont il parle."
 
   - id: q-u1-grand-mere
     targetNodeId: u1-grand-mere
     access: adjacent
     requiresRevealed: []
-    context: "Une grand-mère attend sa petite-fille au bout du chemin."
-    prompt: "Comment s'appelle la vieille dame qui attend au bout du chemin ?"
+    context: "Une plaque est gravée sur la porte de la maison. Ce nom traverse les univers."
+    prompt: "Comment s'appelle la grand-mère ?"
     answers:
       - Oldrine
-    wrongFeedback: "Mauvaise réponse"
+    hint: "Lisez la plaque de la maison."
+    wrongFeedback: "Ce n'est pas le nom gravé sur la porte."
     alsoRevealed:
-      - u1-maison
-      - u1-grand-mere-copie
-      - u1-grand-mere-copie-copie
-      - u1-maison-copie
-      - u1-maison-copie-copie
+      - u2-grand-mere
+      - u3-grand-mere
+
+  - id: q-u1-chasseur
+    targetNodeId: u1-chasseur
+    access: adjacent
+    requiresRevealed:
+      - u1-grand-mere
+    context: "La grand-mère a un vieil ami qui lui rend visite chaque jour."
+    prompt: "Comment s'appelle le chasseur ?"
+    answers:
+      - Brenn
+    hint: "Oldrine parle de lui."
+    wrongFeedback: "Ce n'est pas le nom de son ami."
+
+  - id: q-u1-denouement
+    targetNodeId: u1-denouement
+    access: adjacent
+    requiresRevealed:
+      - u1-chasseur
+    context: "Le chasseur est d'une ponctualité légendaire. L'histoire se dénoue à l'instant où il frappe à la porte."
+    prompt: "À quelle heure le chasseur arrive-t-il chez la grand-mère ?"
+    answers:
+      - midi
+      - "12h"
+      - "12 heures"
+    hint: "Relisez le portrait de Brenn."
+    wrongFeedback: "Brenn n'arrive jamais à cette heure-là."

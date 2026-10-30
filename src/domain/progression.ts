@@ -1,6 +1,6 @@
 import { isAnswerAccepted } from './answers';
 import { visibilityFor } from './visibility';
-import type { GameState, Question, Universe } from './types';
+import type { GameState, NodeRef, Question, StoryNode, Universe } from './types';
 
 export type UniverseMap = Record<string, Universe>;
 
@@ -31,11 +31,11 @@ export function isRevealed(state: GameState, universeId: string, nodeId: string)
   return state.revealed[universeId]?.includes(nodeId) ?? false;
 }
 
-function isRevealedAnywhere(state: GameState, nodeId: string): boolean {
+export function isRevealedAnywhere(state: GameState, nodeId: string): boolean {
   return Object.values(state.revealed).some((ids) => ids.includes(nodeId));
 }
 
-function findUniverseOfNode(universes: UniverseMap, nodeId: string): Universe | undefined {
+export function findUniverseOfNode(universes: UniverseMap, nodeId: string): Universe | undefined {
   return Object.values(universes).find((universe) => universe.nodeById.has(nodeId));
 }
 
@@ -83,20 +83,27 @@ export function availableQuestions(state: GameState, universe: Universe): Questi
   return universe.questions.filter((question) => isQuestionAvailable(state, universe, question));
 }
 
+export interface AnswerResult {
+  state: GameState;
+  correct: boolean;
+  /** Nœuds révélés par la réponse, la cible en premier. */
+  discoveries: NodeRef[];
+}
+
 export function answerQuestion(
   state: GameState,
   universes: UniverseMap,
   universeId: string,
   questionId: string,
   answer: string,
-): { state: GameState; correct: boolean } {
+): AnswerResult {
   const universe = universes[universeId];
   const question = universe?.questions.find((candidate) => candidate.id === questionId);
   if (!universe || !question || !isQuestionAvailable(state, universe, question)) {
-    return { state, correct: false };
+    return { state, correct: false, discoveries: [] };
   }
   if (!isAnswerAccepted(answer, question.answers)) {
-    return { state, correct: false };
+    return { state, correct: false, discoveries: [] };
   }
 
   let next: GameState = {
@@ -111,7 +118,11 @@ export function answerQuestion(
     next = markUnseen(revealNode(next, universes, target.id, nodeId), target.id);
   }
 
-  return { state: next, correct: true };
+  const discoveries = next.journal
+    .slice(state.journal.length)
+    .flatMap((entry) => (entry.type === 'reveal' ? [{ universeId: entry.universeId, nodeId: entry.nodeId }] : []));
+
+  return { state: next, correct: true, discoveries };
 }
 
 export function visitUniverse(state: GameState, universeId: string): GameState {
@@ -133,4 +144,37 @@ export function centralRemaining(state: GameState, central: Universe): number {
 
 export function isEnded(state: GameState, central: Universe): boolean {
   return central.nodes.some((node) => node.finale && isRevealed(state, central.id, node.id));
+}
+
+/** Nœuds que la question exige d'avoir révélés et qui ne le sont encore nulle part. */
+export function missingRequirements(state: GameState, universes: UniverseMap, question: Question): NodeRef[] {
+  return question.requiresRevealed
+    .filter((nodeId) => !isRevealedAnywhere(state, nodeId))
+    .flatMap((nodeId) => {
+      const universe = findUniverseOfNode(universes, nodeId);
+      return universe ? [{ universeId: universe.id, nodeId }] : [];
+    });
+}
+
+export interface OpenQuestion {
+  universe: Universe;
+  question: Question;
+}
+
+export function openQuestions(state: GameState, ordered: Universe[]): OpenQuestion[] {
+  return ordered.flatMap((universe) => availableQuestions(state, universe).map((question) => ({ universe, question })));
+}
+
+export function universeProgress(state: GameState, universe: Universe): { revealed: number; total: number } {
+  return { revealed: state.revealed[universe.id]?.length ?? 0, total: universe.nodes.length };
+}
+
+/** Versions du même nœud dans les autres univers, reliées par leur homologueKey. */
+export function homologuesOf(ordered: Universe[], universeId: string, node: StoryNode): { universe: Universe; node: StoryNode }[] {
+  if (node.homologueKey === '') return [];
+  return ordered.flatMap((universe) => {
+    if (universe.id === universeId) return [];
+    const match = universe.nodes.find((candidate) => candidate.homologueKey === node.homologueKey);
+    return match ? [{ universe, node: match }] : [];
+  });
 }

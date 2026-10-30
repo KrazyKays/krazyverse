@@ -3,7 +3,8 @@ import { START_UNIVERSE_ID } from '../domain/progression';
 import type { GameState, JournalEntry } from '../domain/types';
 
 export const SAVE_KEY = 'multiverse-game-save-v1';
-const SAVE_VERSION = 1;
+// Version 2 : histoire réécrite, les sauvegardes de la version 1 ne correspondent plus au contenu.
+const SAVE_VERSION = 2;
 
 export interface KeyValueStore {
   getItem(key: string): string | null;

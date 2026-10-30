@@ -36,6 +36,7 @@ export interface Question {
   context: string;
   prompt: string;
   answers: string[];
+  hint?: string;
   wrongFeedback: string;
 }
 
@@ -54,6 +55,11 @@ export interface UniverseData {
 
 export interface Universe extends UniverseData {
   nodeById: Map<string, StoryNode>;
+}
+
+export interface NodeRef {
+  universeId: string;
+  nodeId: string;
 }
 
 export type JournalEntry =

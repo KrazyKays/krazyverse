@@ -4,7 +4,9 @@ import {
   centralRemaining,
   createInitialState,
   isEnded,
+  homologuesOf,
   isRevealed,
+  missingRequirements,
   visitUniverse,
 } from '../domain/progression';
 import type { UniverseMap } from '../domain/progression';
@@ -237,5 +239,37 @@ describe('sauvegarde', () => {
     expect(state?.answeredQuestions).toEqual([]);
     expect(state?.unseen).toEqual([FORGES]);
     expect(state?.journal).toEqual([]);
+  });
+});
+
+describe("retours de progression pour l'interface", () => {
+  it('liste les nœuds révélés par une réponse, la cible en premier', () => {
+    const result = answerQuestion(freshState(), fixtures, BOIS, 'qa-sentier', 'le chemin change de longueur');
+    expect(result.discoveries).toEqual([
+      { universeId: BOIS, nodeId: 'a-sentier' },
+      { universeId: FORGES, nodeId: 'b-foret' },
+    ]);
+  });
+
+  it('ne renvoie aucune découverte pour une mauvaise réponse', () => {
+    expect(answerQuestion(freshState(), fixtures, BOIS, 'qa-sentier', 'non').discoveries).toEqual([]);
+  });
+
+  it("indique les prérequis encore manquants d'une question", () => {
+    const blocked = question('q-x', 'a-gorm', { requiresRevealed: ['a-sentier', 'a-centre'] });
+    expect(missingRequirements(freshState(), fixtures, blocked)).toEqual([{ universeId: BOIS, nodeId: 'a-sentier' }]);
+  });
+
+  it("retrouve les homologues d'un nœud dans les autres univers", () => {
+    const twinA = buildUniverse({
+      id: 'ta', name: 'ta', kind: 'tale', tagline: '', relations: [], questions: [],
+      nodes: [node('ta-loup', { homologueKey: 'loup' })],
+    });
+    const twinB = buildUniverse({
+      id: 'tb', name: 'tb', kind: 'tale', tagline: '', relations: [], questions: [],
+      nodes: [node('tb-loup', { homologueKey: 'loup' }), node('tb-autre')],
+    });
+    const twins = homologuesOf([twinA, twinB], 'ta', twinA.nodes[0]!);
+    expect(twins.map((twin) => twin.node.id)).toEqual(['tb-loup']);
   });
 });
