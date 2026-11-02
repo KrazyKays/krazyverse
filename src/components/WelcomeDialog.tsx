@@ -13,7 +13,7 @@ const STEPS = [
   },
   {
     title: 'Levez les voiles',
-    body: 'Les éléments marqués « ? » cachent une question. La réponse se trouve dans les récits déjà lus : un mot-clé suffit.',
+    body: 'Les éléments marqués « ? » cachent une question. La réponse se trouve dans les récits déjà lus, ou se déduit en appliquant à un fait lu ailleurs la Loi de l\'univers où vous êtes. Un mot-clé suffit.',
   },
   {
     title: 'Voyagez entre les univers',
@@ -29,7 +29,7 @@ export function WelcomeDialog({ firstTime, onClose }: WelcomeDialogProps) {
   return (
     <Dialog title={firstTime ? 'Bienvenue au Bureau des Concordances' : 'Comment jouer'} eyebrow="Krazyverse" wide onClose={onClose}>
       <p className="lead">
-        Trois univers racontent la même histoire, celle du Petit Chaperon rouge, mais chacun obéit à sa propre Loi. Le
+        Trois univers racontent les mêmes contes, à commencer par le Petit Chaperon rouge, mais chacun obéit à sa propre Loi. Le
         Bureau vous charge de les arpenter pour répondre à une seule question :{' '}
         <em>à partir de quel moment un univers doit-il être déclaré défaillant ?</em>
       </p>

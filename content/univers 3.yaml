@@ -54,13 +54,13 @@ nodes:
     title: "La grand-mère"
     position: { x: 700, y: 160 }
     homologueKey: grand-mere
-    intro: "Oldrine a fait fortune et n'a plus besoin de rien. Elle ne reçoit sa petite-fille que si celle-ci apporte un cadeau d'une valeur suffisante. Pour se protéger des loups et des promoteurs, elle a engagé un chasseur à gages : cent écus le déplacement."
+    intro: "Oldrine a fait fortune et n'a plus besoin de rien. Elle ne reçoit sa petite-fille que si celle-ci apporte un cadeau d'une valeur suffisante. Pour se protéger des loups et des promoteurs, elle a engagé un chasseur à gages. Son tarif est écrit au contrat : dix écus par coup que sonne l'horloge à l'instant où il frappe à la porte. Ponctuel, il arrive à la même heure que dans l'Univers 42."
   - id: u3-chasseur
     kind: character
     title: "Le chasseur"
     position: { x: 880, y: 250 }
     homologueKey: chasseur
-    intro: "Brenn est un chasseur à gages, payé à la tête du loup. Il ne se déplace qu'après avoir fait signer un contrat en bonne et due forme chez le notaire du village, Maître Plumet."
+    intro: "Brenn est un chasseur à gages, payé à la tête du loup : 120 écus le déplacement, plus la prime. Il ne se déplace qu'après avoir fait signer un contrat en bonne et due forme chez le notaire du village, Maître Plumet."
   - id: u3-denouement
     kind: event
     title: "Le dénouement"
@@ -149,13 +149,14 @@ questions:
     access: adjacent
     requiresRevealed:
       - u3-grand-mere
-    context: "Oldrine a engagé un chasseur à gages pour se protéger."
+      - u1-chasseur
+    context: "Le contrat d'Oldrine fixe le tarif au nombre de coups que sonne l'horloge quand le chasseur frappe. L'heure, elle, se lit dans un autre univers."
     prompt: "Combien d'écus coûte un déplacement du chasseur ?"
     answers:
-      - cent
-      - "100"
-    hint: "Oldrine connaît le tarif."
-    wrongFeedback: "Ce n'est pas son tarif."
+      - "120"
+      - cent vingt
+    hint: "À quelle heure Brenn frappe-t-il dans l'Univers 42 ? Combien de coups l'horloge sonne-t-elle alors ?"
+    wrongFeedback: "Ce n'est pas son tarif. Refaites le compte des coups."
 
   - id: q-u3-denouement
     targetNodeId: u3-denouement

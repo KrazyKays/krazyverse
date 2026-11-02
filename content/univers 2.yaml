@@ -30,7 +30,7 @@ nodes:
     title: "Le sentier des Aubépines"
     position: { x: 380, y: 450 }
     homologueKey: sentier
-    intro: "Le sentier change de tracé chaque matin. Il ne mène pas toujours où l'on croit, et parfois il ne mène nulle part. On y croise tantôt un loup, tantôt un ours, tantôt personne. Aujourd'hui, le hasard l'a fait aboutir à une maison aux volets verts."
+    intro: "Le sentier change de tracé chaque matin. Il ne mène pas toujours où l'on croit, et parfois il ne mène nulle part. On y croise tantôt un loup, tantôt un ours, tantôt personne. Aujourd'hui, il aboutit à la maison de la grand-mère, dont les volets sont repeints chaque nuit : le dé choisit entre trois pots, bleu, vert ou doré. Une seule règle a toujours tenu : ici, rien ne se produit comme ailleurs. Jamais ces volets ne portent la couleur qu'ils ont dans un autre univers."
   - id: u2-loup
     kind: character
     title: "Le loup"
@@ -48,7 +48,7 @@ nodes:
     title: "La maison aux volets verts"
     position: { x: 680, y: 380 }
     homologueKey: maison
-    intro: "La maison est apparue au bout du sentier cette nuit. Hier, elle se trouvait au fond d'un lac ; demain, qui sait ? À l'intérieur, la vieille horloge sonne des heures au hasard, et tout le monde a appris à ne plus s'y fier."
+    intro: "La maison aux volets verts est apparue au bout du sentier cette nuit. Hier, elle se trouvait au fond d'un lac ; demain, qui sait ? À l'intérieur, la vieille horloge sonne des heures au hasard, et tout le monde a appris à ne plus s'y fier."
   - id: u2-grand-mere
     kind: character
     title: "La grand-mère"
@@ -134,13 +134,15 @@ questions:
   - id: q-u2-maison
     targetNodeId: u2-maison
     access: adjacent
-    requiresRevealed: []
-    context: "La maison de la grand-mère n'est jamais au même endroit, ni de la même couleur."
+    requiresRevealed:
+      - u1-maison
+      - u3-maison
+    context: "Le dé a choisi entre trois pots de peinture, et ici rien ne se produit comme ailleurs. Vous avez déjà vu cette maison dans les deux autres univers."
     prompt: "De quelle couleur sont ses volets aujourd'hui ?"
     answers:
       - verts
-    hint: "Le sentier vous y a mené aujourd'hui."
-    wrongFeedback: "Pas aujourd'hui."
+    hint: "Retirez des trois pots les couleurs déjà portées dans les Univers 42 et 440."
+    wrongFeedback: "Cette couleur est déjà portée ailleurs, ou n'est pas dans les pots."
 
   - id: q-u2-chasseur
     targetNodeId: u2-chasseur

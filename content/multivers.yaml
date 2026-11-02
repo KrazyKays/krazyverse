@@ -12,7 +12,7 @@ nodes:
     title: "Le Bureau des Concordances"
     position: { x: 500, y: 610 }
     homologueKey: ""
-    intro: "Le Bureau veille sur les univers de conte : des mondes qui racontent tous la même histoire, celle du Petit Chaperon rouge, chacun à sa façon. Chaque univers naît avec une Loi qui le distingue des autres. Le Bureau attribue ces Lois à une force cosmique qu'il nomme la Divergence : elle veille à ce qu'aucune histoire ne se répète d'un univers à l'autre. Votre mission : arpenter ces univers et déterminer à partir de quel moment l'un d'eux doit être déclaré défaillant. Conseil d'Arpenteur : les noms traversent les univers. Ce que vous apprenez dans l'un vous servira dans les autres."
+    intro: "Le Bureau veille sur les univers de conte : des mondes qui racontent tous les mêmes histoires, à commencer par celle du Petit Chaperon rouge, chacun à sa façon. Chaque univers naît avec une Loi qui le distingue des autres. Le Bureau attribue ces Lois à une force cosmique qu'il nomme la Divergence : elle veille à ce qu'aucune histoire ne se répète d'un univers à l'autre. Votre mission : arpenter ces univers et déterminer à partir de quel moment l'un d'eux doit être déclaré défaillant. Conseil d'Arpenteur : les noms traversent les univers. Certaines réponses ne sont écrites nulle part : prenez un fait établi dans un univers, appliquez-lui la Loi de celui où vous vous trouvez, et déduisez le reste."
     revealedAtStart: true
 
   - id: meta-lois
@@ -29,7 +29,7 @@ nodes:
     title: "La parasyndèse"
     position: { x: 280, y: 290 }
     homologueKey: ""
-    intro: "On nomme parasyndèse un événement qui se déroule de façon strictement identique dans deux univers différents. Le Bureau n'en avait jamais observé : la Divergence est censée les rendre impossibles. Celle de l'Univers 2345 a eu une conséquence immédiate : la Loi de l'Univers 42 y a débordé, et plus personne n'y parvient à mentir. Quelque chose qui séparait les deux univers a cédé. L'Univers 440, où l'on archive tout, en garde peut-être une trace écrite."
+    intro: "On nomme parasyndèse un événement qui se déroule de façon strictement identique dans deux univers différents. Le Bureau n'en avait jamais observé : la Divergence est censée les rendre impossibles. Celle de l'Univers 2345 a eu une conséquence immédiate : la Loi de l'Univers 42 y a débordé, et plus personne n'y parvient à mentir. Quelque chose qui séparait les deux univers a cédé. L'Univers 440, où l'on archive tout, en garde peut-être une trace écrite. Pour savoir si l'accident peut se reproduire, le Bureau ouvre un second dossier, dans les trois mêmes univers : celui du Petit Poucet."
     central:
       required: true
 
@@ -42,12 +42,21 @@ nodes:
     central:
       required: true
 
+  - id: meta-seconde-parasyndese
+    kind: event
+    title: "La seconde parasyndèse"
+    position: { x: 220, y: 120 }
+    homologueKey: ""
+    intro: "Le dossier Poucet confirme ce que le Bureau redoutait : un même dénouement, mot pour mot, entre l'Univers 440 et l'Univers 2345. Cette fois, c'est la Loi de l'argent qui déborde, et le boulanger du hasard réclame son écu. Le Bureau range les deux rapports côte à côte et regarde ce qu'ils ont en commun."
+    central:
+      required: true
+
   - id: meta-defaillance
     kind: event
     title: "L'univers défaillant"
     position: { x: 500, y: 120 }
     homologueKey: ""
-    intro: "Un univers est défaillant dès que sa Loi ne peut plus garantir qu'il diverge. L'Univers 42 ne peut pas mentir, l'Univers 440 ne peut rien donner : ces Lois contraignent leurs histoires et les éloignent des autres. Mais le hasard de l'Univers 2345 peut tout produire, y compris, un jour, la même histoire qu'ailleurs. Sa Loi ne contraint rien : ce n'est pas une promesse, c'est un pari. L'Univers 2345 est défaillant."
+    intro: "Un univers est défaillant dès que sa Loi ne peut plus garantir qu'il diverge. L'Univers 42 ne peut pas mentir, l'Univers 440 ne peut rien donner : ces Lois contraignent leurs histoires et les éloignent des autres. Mais le hasard de l'Univers 2345 peut tout produire, y compris la même histoire qu'ailleurs, et il l'a fait deux fois, avec deux univers différents. Sa Loi ne contraint rien : ce n'est pas une promesse, c'est un pari. L'Univers 2345 est défaillant."
     central:
       required: true
     finale: true
@@ -59,6 +68,8 @@ relations:
   - { id: rm-parasyndese-voile, from: meta-parasyndese, to: meta-voile }
   - { id: rm-parasyndese-defaillance, from: meta-parasyndese, to: meta-defaillance }
   - { id: rm-voile-defaillance, from: meta-voile, to: meta-defaillance }
+  - { id: rm-parasyndese-seconde, from: meta-parasyndese, to: meta-seconde-parasyndese }
+  - { id: rm-seconde-defaillance, from: meta-seconde-parasyndese, to: meta-defaillance }
 
 questions:
   - id: q-meta-lois
@@ -86,6 +97,10 @@ questions:
       - "parasyndèse"
     hint: "Le terme figure dans le dénouement de l'Univers 2345."
     wrongFeedback: "Il existe un terme spécifique, utilisé par le Bureau."
+    alsoRevealed:
+      - u4-chaumiere
+      - u5-chaumiere
+      - u6-chaumiere
 
   - id: q-meta-voile
     targetNodeId: meta-voile
@@ -100,13 +115,27 @@ questions:
     hint: "Lisez l'acte signé chez le notaire de l'Univers 440."
     wrongFeedback: "Ce n'est pas le mot de la formule."
 
+  - id: q-meta-seconde-parasyndese
+    targetNodeId: meta-seconde-parasyndese
+    access: enquete
+    requiresRevealed:
+      - u5-denouement
+    context: "Après la seconde parasyndèse, le boulanger de l'Univers 2345 réclame un écu pour chaque fournée. Le Bureau a déjà vu une Loi franchir le Voile, celle de l'Univers 42 ; cette fois, c'en est une autre."
+    prompt: "Qu'est-ce qui gouverne désormais aussi l'Univers 2345 ?"
+    answers:
+      - argent
+      - écus
+    hint: "De quel univers vient la scène rejouée, et quelle y est la Loi ?"
+    wrongFeedback: "Ce n'est pas la Loi de l'univers d'où vient la scène."
+
   - id: q-meta-defaillance
     targetNodeId: meta-defaillance
     access: enquete
     requiresRevealed:
       - meta-lois
       - meta-voile
-    context: "Une Loi est une promesse : l'histoire de son univers ne se répétera nulle part. Deux Lois contraignent leur histoire et l'éloignent des autres. La troisième peut tout produire… y compris la même histoire qu'ailleurs."
+      - meta-seconde-parasyndese
+    context: "Une Loi est une promesse : l'histoire de son univers ne se répétera nulle part. Deux Lois contraignent leur histoire et l'éloignent des autres. La troisième peut tout produire. Relisez les deux parasyndèses : quel univers figure dans les deux ?"
     prompt: "Quel univers le Bureau doit-il déclarer défaillant ?"
     answers:
       - "2345"
@@ -117,4 +146,4 @@ questions:
 
 ending:
   title: "Rapport d'arpentage : Univers 2345 défaillant"
-  body: "Le Bureau des Concordances a reçu votre rapport. Un univers ne devient pas défaillant parce qu'il est cruel, absurde ou injuste, mais lorsque sa Loi cesse de le rendre unique. L'Univers 2345 est placé sous surveillance, et le Voile qui le borde sera recousu fil à fil. En refermant votre carnet, vous remarquez pourtant une ligne que vous ne vous souvenez pas avoir écrite, de votre propre main : « Dans l'Univers 42, quelqu'un vient de mentir. »"
+  body: "Le Bureau des Concordances a reçu votre rapport. Un univers ne devient pas défaillant parce qu'il est cruel, absurde ou injuste, mais lorsque sa Loi cesse de le rendre unique. L'Univers 2345 est placé sous surveillance, et le Voile qui le borde sera recousu fil à fil. Mais une déchirure laisse passer dans les deux sens : si la vérité et l'argent ont pu entrer dans le hasard, le hasard a pu en sortir. En refermant votre carnet, vous remarquez pourtant une ligne que vous ne vous souvenez pas avoir écrite, de votre propre main : « Dans l'Univers 42, quelqu'un vient de mentir. »"
