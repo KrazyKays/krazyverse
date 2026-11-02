@@ -8,6 +8,8 @@ import { nodeIdError } from './nodeRename';
 import { NodeEditor } from './NodeEditor';
 import { Section, SelectField, TextField } from './SetupFields';
 
+const CANVAS_MARGIN = 80;
+
 interface SetupScreenProps {
   universes: Universe[];
   initialUniverseId: string;
@@ -272,11 +274,16 @@ function SetupGraph({ universes, universe, selectedId, onSelect, onDeselect }: S
     onDeselect();
   };
 
+  // La toile s'étend au-delà du cadre par défaut lorsqu'un univers contient plusieurs contes.
+  const canvasWidth = Math.max(VIEW_WIDTH, ...universe.nodes.map((node) => node.position.x + CANVAS_MARGIN));
+  const canvasHeight = Math.max(VIEW_HEIGHT, ...universe.nodes.map((node) => node.position.y + CANVAS_MARGIN));
+
   return (
     <div className="graph-wrapper">
       <svg
         className="graph"
-        viewBox={`0 0 ${VIEW_WIDTH} ${VIEW_HEIGHT}`}
+        viewBox={`0 0 ${canvasWidth} ${canvasHeight}`}
+        style={{ aspectRatio: `${canvasWidth} / ${canvasHeight}` }}
         role="group"
         aria-label={`Graphe de ${universe.name}`}
         onClick={onBackgroundClick}

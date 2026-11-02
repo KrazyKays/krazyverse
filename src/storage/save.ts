@@ -3,8 +3,8 @@ import { START_UNIVERSE_ID } from '../domain/progression';
 import type { GameState, JournalEntry } from '../domain/types';
 
 export const SAVE_KEY = 'multiverse-game-save-v1';
-// Version 3 : second conte et questions de déduction, les sauvegardes précédentes ne correspondent plus au contenu.
-const SAVE_VERSION = 3;
+// Version 4 : le second conte rejoint les univers existants, ses nœuds et univers d'origine n'existent plus.
+const SAVE_VERSION = 4;
 
 export interface KeyValueStore {
   getItem(key: string): string | null;

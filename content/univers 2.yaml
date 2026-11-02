@@ -11,6 +11,7 @@ nodes:
     title: "Le village"
     position: { x: 140, y: 380 }
     homologueKey: centre
+    tale: chaperon
     intro: "Dans l'Univers 2345, le hasard décide de tout. Le soleil se lève parfois à l'ouest, les rivières changent de lit sans prévenir, et l'on ne sait jamais si le pain sortira du four en galette ou en brioche. Les habitants s'en accommodent : ici, rien ne se produit deux fois de la même manière. C'est du moins ce que tout le monde croit."
     revealedAtStart: true
   - id: u2-mere
@@ -18,55 +19,134 @@ nodes:
     title: "La mère"
     position: { x: 150, y: 170 }
     homologueKey: mere
+    tale: chaperon
     intro: "Maëlle a tiré à pile ou face le contenu du panier : ce sera une galette, un pot de beurre… et une boussole qui indique une direction différente à chaque coup d'œil. « Va voir ta grand-mère, dit-elle. Ou n'y va pas. On verra bien. »"
   - id: u2-rouge
     kind: character
     title: "Le Petit Chaperon rouge"
     position: { x: 330, y: 250 }
     homologueKey: rouge
+    tale: chaperon
     intro: "Le Petit Chaperon rouge sait que le plus court chemin entre deux points n'existe pas ici. Plutôt que de chercher le sentier, elle préfère vadrouiller au hasard entre les arbres, jusqu'à tomber sur sa destination… ou sur une autre."
   - id: u2-sentier
     kind: place
     title: "Le sentier des Aubépines"
     position: { x: 380, y: 450 }
     homologueKey: sentier
+    tale: chaperon
     intro: "Le sentier change de tracé chaque matin. Il ne mène pas toujours où l'on croit, et parfois il ne mène nulle part. On y croise tantôt un loup, tantôt un ours, tantôt personne. Aujourd'hui, il aboutit à la maison de la grand-mère, dont les volets sont repeints chaque nuit : le dé choisit entre trois pots, bleu, vert ou doré. Une seule règle a toujours tenu : ici, rien ne se produit comme ailleurs. Jamais ces volets ne portent la couleur qu'ils ont dans un autre univers."
   - id: u2-loup
     kind: character
     title: "Le loup"
     position: { x: 520, y: 610 }
     homologueKey: loup
+    tale: commun
     intro: "Vorgas est tantôt amical, tantôt affamé : il laisse un dé décider. Ce matin, le dé a donné six. Six, c'est le raccourci. Il file à travers les arbres en abandonnant l'enfant au milieu du chemin."
   - id: u2-raccourci
     kind: place
     title: "Le raccourci des Ronces"
     position: { x: 730, y: 610 }
     homologueKey: raccourci
-    intro: "Aujourd'hui, le raccourci est plus long que le sentier. Vorgas s'y perd, en ressort de l'autre côté de la forêt et oublie pourquoi il était venu. Le hasard a retiré le loup de l'histoire."
+    tale: chaperon
+    intro: "Aujourd'hui, le raccourci est plus long que le sentier. Vorgas s'y perd, en ressort de l'autre côté de la forêt, s'arrête dans la première demeure venue et oublie pourquoi il était venu. Le hasard a retiré le loup de l'histoire."
   - id: u2-maison
     kind: place
     title: "La maison aux volets verts"
     position: { x: 680, y: 380 }
     homologueKey: maison
+    tale: chaperon
     intro: "La maison aux volets verts est apparue au bout du sentier cette nuit. Hier, elle se trouvait au fond d'un lac ; demain, qui sait ? À l'intérieur, la vieille horloge sonne des heures au hasard, et tout le monde a appris à ne plus s'y fier."
   - id: u2-grand-mere
     kind: character
     title: "La grand-mère"
     position: { x: 700, y: 160 }
     homologueKey: grand-mere
+    tale: chaperon
     intro: "Oldrine change d'humeur sans prévenir. Elle peut accueillir sa petite-fille à bras ouverts, ou jurer n'avoir jamais eu d'enfant. Aujourd'hui, elle est d'excellente humeur et met de l'eau à chauffer pour le thé."
   - id: u2-chasseur
     kind: character
     title: "Le chasseur"
     position: { x: 880, y: 250 }
     homologueKey: chasseur
+    tale: chaperon
     intro: "Brenn arrive ou n'arrive pas, selon le hasard. D'ordinaire, il passe à n'importe quelle heure, frappe un nombre de coups tiré au sort et entre par la fenêtre une fois sur deux. Mais aujourd'hui, l'horloge affolée sonne midi au bon moment, et Brenn frappe à la porte."
   - id: u2-denouement
     kind: event
     title: "Le dénouement"
     position: { x: 880, y: 480 }
     homologueKey: denouement
+    tale: chaperon
     intro: "À midi sonnant, Brenn frappe trois coups à la porte, entre, pose son fusil contre l'horloge et dit : « Tout le monde est sain et sauf. » Mot pour mot, geste pour geste, c'est la scène de l'Univers 42. Le Bureau connaît ce phénomène, qu'il croyait impossible, et le nomme parasyndèse : un même événement, survenu à l'identique dans deux univers. Depuis, une chose étrange se produit dans l'Univers 2345 : plus personne n'arrive à mentir."
+  - id: u2-chaumiere
+    kind: place
+    title: "La chaumière"
+    position: { x: 140, y: 1000 }
+    homologueKey: chaumiere
+    tale: poucet
+    intro: "Dans l'Univers 2345, la chaumière n'est jamais du même côté de la forêt. Ce matin, tout l'univers obéit à un seul dé, celui-là même qui a décidé pour Vorgas. Le bûcheron compte ses fils au réveil : il en a autant que le dé a de points. Personne ne s'en étonne."
+  - id: u2-bucheron
+    kind: character
+    title: "Le bûcheron"
+    position: { x: 150, y: 1210 }
+    homologueKey: bucheron
+    tale: poucet
+    intro: "Anselme a tiré à pile ou face le sort de ses enfants. La pièce a dit : la forêt. Hier, elle disait : le carnaval. Depuis la parasyndèse, il ne peut plus mentir, ce qui l'embarrasse beaucoup : il doit désormais avouer qu'il n'a aucune idée de ce qu'il fait."
+  - id: u2-poucet
+    kind: character
+    title: "Le Petit Poucet"
+    position: { x: 330, y: 1130 }
+    homologueKey: poucet
+    tale: poucet
+    intro: "Ce matin, Anselme a 6 fils. Le dernier change de taille d'une heure à l'autre, mais une habitude ne l'a jamais quitté : au moment de partir, il remplit ses poches de cailloux, toujours le même nombre par fils."
+  - id: u2-cailloux
+    kind: event
+    title: "Les cailloux"
+    position: { x: 380, y: 930 }
+    homologueKey: cailloux
+    tale: poucet
+    intro: "Poucet sème ses 24 cailloux, mais ici le chemin n'attend pas : le lendemain, ils se trouvent tous dans une autre forêt. Les frères ne rentrent que parce que la chaumière est venue s'installer à côté d'eux. Le dé décide alors de la suite : la seconde fois, Poucet n'emportera ni pierres, ni pain, mais des plumes."
+  - id: u2-miettes
+    kind: event
+    title: "Les plumes"
+    position: { x: 520, y: 770 }
+    homologueKey: miettes
+    tale: poucet
+    intro: "Le vent emporte les plumes dès la première clairière. Perdus, les frères tombent sur la demeure de l'ogre. Chaque nuit, ici, les maisons échangent leurs places : ce soir, la demeure occupe l'endroit exact où se trouvait, hier, la maison d'Oldrine."
+  - id: u2-manoir
+    kind: place
+    title: "La demeure de l'ogre"
+    position: { x: 730, y: 770 }
+    homologueKey: manoir
+    tale: poucet
+    intro: "La demeure repose au fond du lac, et l'on y respire très bien. Sur la table, le dé que Vorgas y a oublié en passant attend le maître des lieux, car Maître Gripon ne décide plus rien lui-même. Sa règle est gravée sur le plateau : « Pair, je dors. Impair, je mange. » Ce soir-là, il a relancé le dé du matin, et le dé, fidèle pour une fois, est retombé sur le même chiffre."
+  - id: u2-ogre
+    kind: character
+    title: "L'ogre"
+    position: { x: 680, y: 1000 }
+    homologueKey: ogre
+    tale: poucet
+    intro: "Gripon dort, le nez dans son assiette vide. Ses filles, elles, ne dorment pas : elles portent ce soir des couronnes tirées au sort et posent mille questions. Depuis la parasyndèse, Poucet ne peut plus répondre que la vérité, et elles finiront par réveiller leur père."
+  - id: u2-couronnes
+    kind: event
+    title: "L'échange des couronnes"
+    position: { x: 700, y: 1220 }
+    homologueKey: couronnes
+    tale: poucet
+    intro: "Poucet procède à l'échange des couronnes contre des bonnets, comme dans un conte qu'il n'a jamais lu. Reste à trouver les bottes de l'ogre. Le Bureau a horodaté trois témoignages recueillis le jour de la parasyndèse. Le corbeau, à dix heures : « Elles sont dans le puits. » La cuisinière, à onze heures : « Elles sont sur le toit. » L'ogresse, à quinze heures : « Elles sont sous le lit. »"
+  - id: u2-bottes
+    kind: event
+    title: "Les bottes"
+    position: { x: 880, y: 1130 }
+    homologueKey: bottes
+    tale: poucet
+    intro: "Les bottes étaient bien sous le lit : l'ogresse ne pouvait plus mentir. Le puits et le toit dataient d'avant la parasyndèse, quand chacun disait encore ce qui lui passait par la tête. Selon le pied qui les chausse, elles font sept lieues, ou trois pas, ou demi-tour."
+  - id: u2-denouement-poucet
+    kind: event
+    title: "Le dénouement"
+    position: { x: 880, y: 900 }
+    homologueKey: denouement-poucet
+    tale: poucet
+    intro: "Chez Maître Plumet, le Petit Poucet pose les bottes sur le bureau, compte sept cents écus et signe de son pouce. Mot pour mot, geste pour geste, c'est la scène de l'Univers 440. Personne ici n'a jamais entendu parler de Plumet : le hasard l'a simplement assis là. Seconde parasyndèse. Depuis, le boulanger de l'Univers 2345 réclame un écu pour chaque fournée, que le four ait donné une galette ou une brioche."
 
 relations:
   - { id: link-u2-centre-mere, from: u2-centre, to: u2-mere }
@@ -82,6 +162,21 @@ relations:
   - { id: link-u2-grand-mere-chasseur, from: u2-grand-mere, to: u2-chasseur }
   - { id: link-u2-maison-denouement, from: u2-maison, to: u2-denouement }
   - { id: link-u2-chasseur-denouement, from: u2-chasseur, to: u2-denouement }
+  - { id: link-u2-chaumiere-bucheron, from: u2-chaumiere, to: u2-bucheron }
+  - { id: link-u2-chaumiere-poucet, from: u2-chaumiere, to: u2-poucet }
+  - { id: link-u2-bucheron-poucet, from: u2-bucheron, to: u2-poucet }
+  - { id: link-u2-chaumiere-cailloux, from: u2-chaumiere, to: u2-cailloux }
+  - { id: link-u2-poucet-cailloux, from: u2-poucet, to: u2-cailloux }
+  - { id: link-u2-cailloux-miettes, from: u2-cailloux, to: u2-miettes }
+  - { id: link-u2-miettes-manoir, from: u2-miettes, to: u2-manoir }
+  - { id: link-u2-miettes-ogre, from: u2-miettes, to: u2-ogre }
+  - { id: link-u2-manoir-ogre, from: u2-manoir, to: u2-ogre }
+  - { id: link-u2-ogre-couronnes, from: u2-ogre, to: u2-couronnes }
+  - { id: link-u2-couronnes-bottes, from: u2-couronnes, to: u2-bottes }
+  - { id: link-u2-ogre-bottes, from: u2-ogre, to: u2-bottes }
+  - { id: link-u2-bottes-denouement, from: u2-bottes, to: u2-denouement-poucet }
+  - { id: link-u2-couronnes-denouement, from: u2-couronnes, to: u2-denouement-poucet }
+  - { id: link-u2-loup-manoir, from: u2-loup, to: u2-manoir }
 
 questions:
   - id: q-u2-rouge
@@ -168,4 +263,111 @@ questions:
       - "42"
       - "quarante-deux"
     hint: "Comparez avec les dénouements que vous avez déjà découverts."
+    wrongFeedback: "Ce n'est pas dans cet univers-là que la scène s'est jouée."
+
+  - id: q-u2-poucet
+    targetNodeId: u2-poucet
+    access: adjacent
+    requiresRevealed:
+      - u2-loup
+    context: "Anselme a ce matin autant de fils que le dé a de points. C'est le même dé, le même matin, que dans l'histoire du Petit Chaperon rouge de cet univers."
+    prompt: "Combien de fils Anselme a-t-il ce matin ?"
+    answers:
+      - six
+      - "6"
+    hint: "Qu'a donné le dé de Vorgas ?"
+    wrongFeedback: "Ce n'est pas ce que le dé a donné ce matin."
+
+  - id: q-u2-cailloux
+    targetNodeId: u2-cailloux
+    access: adjacent
+    requiresRevealed:
+      - u1-poucet
+      - u2-poucet
+    context: "Le nombre de fils change d'un univers à l'autre, mais l'habitude de Poucet ne change pas : il prend le même nombre de cailloux par fils que dans l'Univers 42."
+    prompt: "Combien de cailloux Poucet sème-t-il ici ?"
+    answers:
+      - "24"
+      - vingt-quatre
+    hint: "Prenez la méthode de l'Univers 42 et le nombre de fils de ce matin."
+    wrongFeedback: "Le compte n'y est pas : la méthode vient d'ailleurs, le nombre de fils vient d'ici."
+
+  - id: q-u2-miettes
+    targetNodeId: u2-miettes
+    access: adjacent
+    requiresRevealed: []
+    context: "Le hasard n'a pas laissé à Poucet son pain : il lui impose autre chose à semer."
+    prompt: "Que sème Poucet la seconde fois ?"
+    answers:
+      - plumes
+    hint: "Le dé l'a décidé à la fin du récit des cailloux."
+    wrongFeedback: "Ce n'est pas ce que le dé a décidé."
+
+  - id: q-u2-manoir
+    targetNodeId: u2-manoir
+    access: adjacent
+    requiresRevealed:
+      - u2-maison
+      - u2-miettes
+    context: "Ce soir, la demeure de l'ogre occupe l'endroit exact où se trouvait, hier, la maison d'Oldrine."
+    prompt: "Où se trouve la demeure de l'ogre ?"
+    answers:
+      - lac
+    hint: "La maison d'Oldrine se souvient de son emplacement de la veille."
+    wrongFeedback: "Ce n'est pas là que se trouvait la maison hier."
+
+  - id: q-u2-ogre
+    targetNodeId: u2-ogre
+    access: adjacent
+    requiresRevealed:
+      - u2-manoir
+      - u2-loup
+    context: "Maître Gripon a relancé le dé du matin. Sa règle est gravée dans la demeure ; le résultat du dé, vous le connaissez déjà."
+    prompt: "Que fait l'ogre ce soir-là ?"
+    answers:
+      - dort
+      - dormir
+    hint: "Le dé de Vorgas est-il tombé sur un chiffre pair ou impair ?"
+    wrongFeedback: "Relisez la règle gravée : le dé en a décidé autrement."
+
+  - id: q-u2-couronnes
+    targetNodeId: u2-couronnes
+    access: adjacent
+    requiresRevealed:
+      - u1-couronnes
+      - u2-denouement
+    context: "Depuis la parasyndèse, personne ne peut plus mentir dans l'Univers 2345. Poucet se retrouve devant les filles de l'ogre dans la même impasse que dans l'Univers 42 : il devra s'en sortir de la même façon, sans un mot."
+    prompt: "Quel geste Poucet doit-il faire ?"
+    answers:
+      - échange
+      - échanger
+      - couronnes
+    hint: "Comment s'en est-il sorti dans l'Univers 42, là où il est impossible de mentir ?"
+    wrongFeedback: "Cela demanderait de mentir, ce qui n'est plus possible ici."
+
+  - id: q-u2-bottes
+    targetNodeId: u2-bottes
+    access: adjacent
+    requiresRevealed:
+      - u2-couronnes
+      - u2-denouement
+    context: "Le Bureau a horodaté trois témoignages sur l'emplacement des bottes. Ils se contredisent, mais tous n'ont pas la même valeur. Rappelez-vous l'heure à laquelle la première parasyndèse a frappé cet univers, et ce qu'elle a changé."
+    prompt: "Où se trouvent vraiment les bottes ?"
+    answers:
+      - lit
+    hint: "À quelle heure la scène s'est-elle jouée, et que devient le mensonge après elle ?"
+    wrongFeedback: "Ce témoignage date d'une heure où l'on pouvait encore mentir."
+
+  - id: q-u2-denouement-poucet
+    targetNodeId: u2-denouement-poucet
+    access: adjacent
+    requiresRevealed:
+      - u2-bottes
+      - u3-denouement-poucet
+    context: "Poucet entre chez un notaire, pose les bottes sur le bureau, compte sept cents écus et signe de son pouce. Cette scène, vous l'avez déjà lue quelque part."
+    prompt: "Dans quel univers ce dénouement s'est-il déjà produit ?"
+    answers:
+      - "440"
+      - quatre cent quarante
+    hint: "Dans quel univers signe-t-on tout chez un notaire ?"
     wrongFeedback: "Ce n'est pas dans cet univers-là que la scène s'est jouée."

@@ -98,9 +98,9 @@ questions:
     hint: "Le terme figure dans le dénouement de l'Univers 2345."
     wrongFeedback: "Il existe un terme spécifique, utilisé par le Bureau."
     alsoRevealed:
-      - u4-chaumiere
-      - u5-chaumiere
-      - u6-chaumiere
+      - u1-chaumiere
+      - u2-chaumiere
+      - u3-chaumiere
 
   - id: q-meta-voile
     targetNodeId: meta-voile
@@ -119,7 +119,7 @@ questions:
     targetNodeId: meta-seconde-parasyndese
     access: enquete
     requiresRevealed:
-      - u5-denouement
+      - u2-denouement-poucet
     context: "Après la seconde parasyndèse, le boulanger de l'Univers 2345 réclame un écu pour chaque fournée. Le Bureau a déjà vu une Loi franchir le Voile, celle de l'Univers 42 ; cette fois, c'en est une autre."
     prompt: "Qu'est-ce qui gouverne désormais aussi l'Univers 2345 ?"
     answers:

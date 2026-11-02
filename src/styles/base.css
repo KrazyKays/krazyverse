@@ -19,6 +19,9 @@
   --success: #86d9ae;
   --field-border: #4c5182;
   --veil: rgba(143, 211, 255, 0.12);
+  --tale-chaperon: #f2837e;
+  --tale-poucet: #5fd4b8;
+  --tale-commun: #e6bd6a;
   --radius: 14px;
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
   --font-display: 'Georgia', 'Iowan Old Style', 'Palatino Linotype', serif;
@@ -531,9 +534,29 @@ button.link:not(:disabled):hover {
   transform-box: fill-box;
 }
 
+.node--tale-chaperon {
+  --tale: var(--tale-chaperon);
+}
+
+.node--tale-poucet {
+  --tale: var(--tale-poucet);
+}
+
+.node--tale-commun {
+  --tale: var(--tale-commun);
+}
+
+.tale-swatch {
+  width: 0.8rem;
+  height: 0.8rem;
+  flex: none;
+  border-radius: 50%;
+  background: var(--tale);
+}
+
 .node .shape {
   fill: var(--surface);
-  stroke: var(--accent);
+  stroke: var(--tale, var(--accent));
   stroke-width: 1.8;
   transition: fill 0.2s ease, stroke 0.2s ease;
 }
@@ -575,7 +598,7 @@ button.link:not(:disabled):hover {
 
 .node--censored .veil {
   fill: var(--veil);
-  stroke: rgba(167, 166, 194, 0.5);
+  stroke: var(--tale, rgba(167, 166, 194, 0.5));
   stroke-dasharray: 3 3;
   transition: stroke 0.2s ease, fill 0.2s ease;
 }
@@ -587,7 +610,7 @@ button.link:not(:disabled):hover {
 }
 
 .node--investigable .veil {
-  stroke: var(--focus);
+  stroke: var(--tale, var(--focus));
   stroke-dasharray: none;
   fill: rgba(143, 211, 255, 0.18);
 }

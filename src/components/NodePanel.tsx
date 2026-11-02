@@ -8,7 +8,7 @@ import {
 } from '../domain/progression';
 import { visibilityFor } from '../domain/visibility';
 import type { GameState, NodeRef, Universe } from '../domain/types';
-import { KIND_INDEFINITE, KIND_LABELS } from './labels';
+import { KIND_INDEFINITE, KIND_LABELS, TALE_LABELS } from './labels';
 
 interface NodePanelProps {
   universe: Universe;
@@ -53,7 +53,7 @@ export function NodePanel({
 
     return (
       <article className="reading reading--veiled">
-        <p className="kind">Élément voilé</p>
+        <p className="kind">Élément voilé{node.tale && ` · ${TALE_LABELS[node.tale]}`}</p>
         <h2>? ? ?</h2>
         {open ? (
           <>
@@ -87,6 +87,7 @@ export function NodePanel({
     <article className="reading" key={node.id}>
       <p className="kind">
         {KIND_LABELS[node.kind]} · {universe.name}
+        {node.tale && ` · ${TALE_LABELS[node.tale]}`}
       </p>
       <h2>{node.title}</h2>
       <p className="intro">{node.intro || 'Le récit de cet élément reste à écrire.'}</p>

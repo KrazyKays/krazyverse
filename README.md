@@ -36,10 +36,10 @@ Puis ouvrir l'adresse affichée dans le terminal (par défaut `http://localhost:
 
 ## Structure
 
-- `content/*.yaml` : contenu narratif, un fichier par univers et par conte (nœuds, relations, questions, indices). Tout fichier ajouté ici est chargé automatiquement ; l'univers `kind: meta` est l'univers central.
+- `content/*.yaml` : contenu narratif, un fichier par univers (nœuds, relations, questions, indices), chaque nœud indiquant son conte (`tale`). Tout fichier ajouté ici est chargé automatiquement ; l'univers `kind: meta` est l'univers central.
 - `src/data/` : chargement et ordre des univers.
 - `src/domain/` : types, règles de visibilité, révélations et progression. Indépendant de React.
-- `src/storage/` : sauvegarde versionnée dans `localStorage` (clé `multiverse-game-save-v1`, format version 3), avec validation et repli en mémoire.
+- `src/storage/` : sauvegarde versionnée dans `localStorage` (clé `multiverse-game-save-v1`, format version 4), avec validation et repli en mémoire.
 - `src/hooks/` : hook de jeu qui relie l'état métier et la sauvegarde.
 - `src/components/` : interface React (en-tête de mission, navigation entre univers, toile SVG, panneaux Récit et Pistes, dialogues).
 - `src/setup/` : éditeur de contenu (bouton **Setup**, en développement uniquement) qui écrit directement dans `content/*.yaml`.

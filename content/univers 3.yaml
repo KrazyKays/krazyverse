@@ -11,6 +11,7 @@ nodes:
     title: "Le village"
     position: { x: 140, y: 380 }
     homologueKey: centre
+    tale: chaperon
     intro: "Dans l'Univers 440, tout se mesure en écus. Les services se vendent, les amitiés se facturent et les sentiments n'apparaissent dans aucun budget. Au premier abord, tout semble prospère ; mais chacun ne regarde son voisin que pour savoir ce qu'il peut en tirer."
     revealedAtStart: true
   - id: u3-mere
@@ -18,55 +19,141 @@ nodes:
     title: "La mère"
     position: { x: 150, y: 170 }
     homologueKey: mere
+    tale: chaperon
     intro: "Maëlle a calculé que la visite à la grand-mère était un bon investissement : Oldrine est riche, et n'a désigné aucun héritier. Elle remplit le panier de victuailles soigneusement étiquetées, avec leur prix, et y glisse une facture adressée à la vieille dame."
   - id: u3-rouge
     kind: character
     title: "Le Petit Chaperon rouge"
     position: { x: 330, y: 250 }
     homologueKey: rouge
+    tale: chaperon
     intro: "Le Petit Chaperon rouge sait que chaque chose a un prix, et compte bien en tirer profit : elle a négocié une commission sur le panier. Avant de partir, elle compte sa monnaie. Il lui faudra cinq écus pour le péage du sentier."
   - id: u3-sentier
     kind: place
     title: "Le sentier à péage"
     position: { x: 380, y: 450 }
     homologueKey: sentier
+    tale: chaperon
     intro: "Le sentier des Aubépines a été racheté par une société. Chaque promeneur paie cinq écus pour l'emprunter, et le tarif augmente à chaque saison. Au poste de péage, un loup en gilet se fait appeler « Monsieur V. ». Plus loin, un panneau annonce : « Futur lotissement. Promoteur : Maître Gripon »."
   - id: u3-loup
     kind: character
     title: "Le loup"
     position: { x: 520, y: 610 }
     homologueKey: loup
+    tale: chaperon
     intro: "Vorgas, alias Monsieur V., ne fait rien sans contrepartie. Il propose d'acheter les victuailles de l'enfant à un prix dérisoire, puis lui vend un ticket pour son raccourci privé, racheté l'hiver dernier au conseil de la forêt."
   - id: u3-raccourci
     kind: place
     title: "Le raccourci des Ronces"
     position: { x: 730, y: 610 }
     homologueKey: raccourci
+    tale: chaperon
     intro: "Le raccourci est devenu une voie express bordée de panneaux publicitaires. Vorgas l'emprunte gratuitement, arrive le premier chez Oldrine et lui fait une offre pour sa maison. Il travaille pour Maître Gripon, à la commission."
   - id: u3-maison
     kind: place
     title: "La maison aux volets dorés"
     position: { x: 680, y: 380 }
     homologueKey: maison
+    tale: chaperon
     intro: "La maison se dresse sur un terrain très convoité. Maître Gripon attend que la vieille dame la quitte pour y construire un lotissement. Elle a fait poser trois serrures et une sonnette payante."
   - id: u3-grand-mere
     kind: character
     title: "La grand-mère"
     position: { x: 700, y: 160 }
     homologueKey: grand-mere
+    tale: chaperon
     intro: "Oldrine a fait fortune et n'a plus besoin de rien. Elle ne reçoit sa petite-fille que si celle-ci apporte un cadeau d'une valeur suffisante. Pour se protéger des loups et des promoteurs, elle a engagé un chasseur à gages. Son tarif est écrit au contrat : dix écus par coup que sonne l'horloge à l'instant où il frappe à la porte. Ponctuel, il arrive à la même heure que dans l'Univers 42."
   - id: u3-chasseur
     kind: character
     title: "Le chasseur"
     position: { x: 880, y: 250 }
     homologueKey: chasseur
+    tale: chaperon
     intro: "Brenn est un chasseur à gages, payé à la tête du loup : 120 écus le déplacement, plus la prime. Il ne se déplace qu'après avoir fait signer un contrat en bonne et due forme chez le notaire du village, Maître Plumet."
   - id: u3-denouement
     kind: event
     title: "Le dénouement"
     position: { x: 880, y: 480 }
     homologueKey: denouement
+    tale: chaperon
     intro: "Chez Maître Plumet, tout le monde finit par signer : Oldrine vend sa maison à Gripon, Vorgas touche sa commission, Brenn sa prime et le Petit Chaperon rouge un pourcentage. Une fin rentable pour tous, sans un sou pour les sentiments. Dans la marge de l'acte, le notaire a pourtant recopié une vieille formule, héritée des fondateurs du village : « Tant que le Voile tient, chaque histoire reste la sienne. » Plus personne ici ne sait ce qu'est le Voile. On recopie la formule par habitude : elle ne coûte rien."
+  - id: u3-chaumiere
+    kind: place
+    title: "La chaumière"
+    position: { x: 140, y: 1000 }
+    homologueKey: chaumiere
+    tale: poucet
+    intro: "Dans l'Univers 440, la forêt a été vendue par lots à la Société des Forêts réunies. Le bûcheron y travaille à crédit et tient ses comptes : nourrir un fils coûte trois écus par semaine. Il en a autant que dans l'Univers 42, et il a décidé de se séparer de tous. La décision figure dans son budget, à la ligne « Économies »."
+  - id: u3-bucheron
+    kind: character
+    title: "Le bûcheron"
+    position: { x: 150, y: 1210 }
+    homologueKey: bucheron
+    tale: poucet
+    intro: "Anselme ne pleure pas, ce serait du temps non facturé. Il a fait établir un devis pour l'abandon de ses enfants, et a choisi le prestataire le moins cher : lui-même."
+  - id: u3-poucet
+    kind: character
+    title: "Le Petit Poucet"
+    position: { x: 330, y: 1130 }
+    homologueKey: poucet
+    tale: poucet
+    intro: "Le dernier-né a lu le budget par-dessus l'épaule de son père : l'opération rapporte 21 écus par semaine. Il a surtout vu que le ruisseau appartient à une carrière, et que les cailloux blancs s'y vendent deux écus pièce. Il casse sa tirelire."
+  - id: u3-cailloux
+    kind: event
+    title: "Les cailloux facturés"
+    position: { x: 380, y: 930 }
+    homologueKey: cailloux
+    tale: poucet
+    intro: "Poucet débourse 56 écus pour marquer le chemin, et garde le reçu. Les frères rentrent chez eux ; Anselme leur facture la nuit. La fois suivante, il fait changer la serrure, et la carrière refuse tout crédit à un mineur."
+  - id: u3-miettes
+    kind: event
+    title: "Les miettes"
+    position: { x: 490, y: 820 }
+    homologueKey: miettes
+    tale: poucet
+    intro: "Poucet sème son pain, comme ailleurs. Mais ici les oiseaux sont mandatés par une société de recouvrement : ils saisissent les miettes une à une et laissent un avis de passage. Perdus, les frères aperçoivent au loin une enseigne lumineuse : le siège de la Société des Forêts réunies. Son fondateur a déjà son nom sur un panneau de lotissement, le long d'un sentier de cet univers."
+  - id: u3-manoir
+    kind: place
+    title: "Le siège de la Société"
+    position: { x: 760, y: 820 }
+    homologueKey: manoir
+    tale: poucet
+    intro: "Le portier fait payer 35 écus pour la fratrie : il applique, par fils, le tarif du sentier à péage, que la Société a racheté. Sept lits de direction attendent dans la salle du conseil. Sept filles y dorment déjà, chacune sous une couronne d'or inscrite à l'actif du bilan."
+  - id: u3-ogre
+    kind: character
+    title: "L'ogre"
+    position: { x: 620, y: 700 }
+    homologueKey: ogre
+    tale: commun
+    intro: "Maître Gripon n'a jamais mangé d'enfant : ce n'est pas rentable. Il dévore des forêts, des villages et la maison d'Oldrine, lot par lot. Il propose aux frères un contrat d'apprentissage à vie, assorti d'une clause qu'il vaut mieux ne pas lire avant de dormir."
+  - id: u3-couronnes
+    kind: event
+    title: "La vente des couronnes"
+    position: { x: 700, y: 1220 }
+    homologueKey: couronnes
+    tale: poucet
+    intro: "Dans l'Univers 42, Poucet a échangé les couronnes en silence. Ici, il les vend à un prêteur de passage pendant que l'ogre dort, et rachète avec l'argent le contrat de ses frères. Ainsi renfloué, il se fait embaucher comme messager, au tarif de dix écus la lieue parcourue."
+  - id: u3-bottes
+    kind: event
+    title: "Les bottes"
+    position: { x: 880, y: 1130 }
+    homologueKey: bottes
+    tale: poucet
+    intro: "Une enjambée, et Poucet facture 70 écus : les bottes font ici le même trajet que dans l'Univers 42. À ce tarif, elles sont le meilleur placement de la forêt. Un client de la Cour lui en offre un prix que même l'ogre n'aurait pas osé demander."
+  - id: u3-denouement-poucet
+    kind: event
+    title: "Le dénouement"
+    position: { x: 880, y: 900 }
+    homologueKey: denouement-poucet
+    tale: poucet
+    intro: "Chez Maître Plumet, le Petit Poucet pose les bottes sur le bureau, compte sept cents écus et signe de son pouce. Une fin rentable pour tous, sauf pour Anselme, à qui il envoie une facture. Le Bureau a classé cette scène sans y prêter attention : elle n'avait, jusque-là, rien d'extraordinaire."
+  - id: u3-plumet
+    kind: character
+    title: "Maître Plumet"
+    position: { x: 1000, y: 700 }
+    homologueKey: ""
+    tale: commun
+    intro: "Maître Plumet est le notaire du village. Tout ce qui s'achète dans cet univers finit un jour sur son bureau, une maison comme une paire de bottes. Il facture chaque signature, et ne demande jamais à quoi elle sert."
 
 relations:
   - { id: link-u3-centre-mere, from: u3-centre, to: u3-mere }
@@ -82,6 +169,24 @@ relations:
   - { id: link-u3-grand-mere-chasseur, from: u3-grand-mere, to: u3-chasseur }
   - { id: link-u3-maison-denouement, from: u3-maison, to: u3-denouement }
   - { id: link-u3-chasseur-denouement, from: u3-chasseur, to: u3-denouement }
+  - { id: link-u3-chaumiere-bucheron, from: u3-chaumiere, to: u3-bucheron }
+  - { id: link-u3-chaumiere-poucet, from: u3-chaumiere, to: u3-poucet }
+  - { id: link-u3-bucheron-poucet, from: u3-bucheron, to: u3-poucet }
+  - { id: link-u3-chaumiere-cailloux, from: u3-chaumiere, to: u3-cailloux }
+  - { id: link-u3-poucet-cailloux, from: u3-poucet, to: u3-cailloux }
+  - { id: link-u3-cailloux-miettes, from: u3-cailloux, to: u3-miettes }
+  - { id: link-u3-miettes-manoir, from: u3-miettes, to: u3-manoir }
+  - { id: link-u3-miettes-ogre, from: u3-miettes, to: u3-ogre }
+  - { id: link-u3-manoir-ogre, from: u3-manoir, to: u3-ogre }
+  - { id: link-u3-ogre-couronnes, from: u3-ogre, to: u3-couronnes }
+  - { id: link-u3-couronnes-bottes, from: u3-couronnes, to: u3-bottes }
+  - { id: link-u3-ogre-bottes, from: u3-ogre, to: u3-bottes }
+  - { id: link-u3-bottes-denouement, from: u3-bottes, to: u3-denouement-poucet }
+  - { id: link-u3-couronnes-denouement, from: u3-couronnes, to: u3-denouement-poucet }
+  - { id: link-u3-ogre-maison, from: u3-ogre, to: u3-maison }
+  - { id: link-u3-ogre-raccourci, from: u3-ogre, to: u3-raccourci }
+  - { id: link-u3-plumet-denouement, from: u3-plumet, to: u3-denouement }
+  - { id: link-u3-plumet-denouement-poucet, from: u3-plumet, to: u3-denouement-poucet }
 
 questions:
   - id: q-u3-rouge
@@ -168,4 +273,118 @@ questions:
     answers:
       - Plumet
     hint: "Le chasseur ne se déplace jamais sans passer chez lui."
+    wrongFeedback: "Ce n'est pas le nom du notaire."
+    alsoRevealed:
+      - u3-plumet
+
+  - id: q-u3-poucet
+    targetNodeId: u3-poucet
+    access: adjacent
+    requiresRevealed:
+      - u1-poucet
+    context: "Le budget d'Anselme ne donne que le coût par fils. Le nombre de fils, lui, est le même que dans l'Univers 42."
+    prompt: "Combien d'écus Anselme économise-t-il par semaine en abandonnant ses fils ?"
+    answers:
+      - "21"
+      - vingt et un
+    hint: "Multipliez le coût par fils par le nombre de fils de l'Univers 42."
+    wrongFeedback: "Le compte n'est pas bon. Ici, on ne vous fera pas de cadeau."
+
+  - id: q-u3-cailloux
+    targetNodeId: u3-cailloux
+    access: adjacent
+    requiresRevealed:
+      - u1-cailloux
+      - u3-poucet
+    context: "Ici, les cailloux blancs se vendent à la pièce. Le chemin à marquer, lui, n'a pas changé depuis l'Univers 42 : il faut le même nombre de cailloux."
+    prompt: "Combien d'écus Poucet doit-il débourser pour ses cailloux ?"
+    answers:
+      - "56"
+      - cinquante-six
+    hint: "Le nombre de cailloux vient de l'Univers 42, le prix de la carrière de celui-ci."
+    wrongFeedback: "La caisse de la carrière ne tombe pas juste."
+
+  - id: q-u3-miettes
+    targetNodeId: u3-miettes
+    access: adjacent
+    requiresRevealed:
+      - u1-miettes
+    context: "La carrière refuse tout crédit. Poucet se rabat sur ce qu'il a semé dans l'Univers 42 quand il a été à court de cailloux."
+    prompt: "Que sème-t-il la seconde fois ?"
+    answers:
+      - pain
+      - miettes
+    hint: "Voyez comment s'est passée la seconde fois dans l'Univers 42."
+    wrongFeedback: "Ce n'est pas ce qu'il a semé dans l'Univers 42."
+
+  - id: q-u3-manoir
+    targetNodeId: u3-manoir
+    access: adjacent
+    requiresRevealed:
+      - u3-sentier
+      - u3-poucet
+    context: "La Société a racheté le sentier à péage du Petit Chaperon rouge, et son portier applique le même tarif, par fils, à l'entrée du siège."
+    prompt: "Combien d'écus la fratrie de Poucet paie-t-elle pour entrer ?"
+    answers:
+      - "35"
+      - trente-cinq
+    hint: "Le tarif du sentier, multiplié par le nombre de fils."
+    wrongFeedback: "Le portier recompte et secoue la tête."
+
+  - id: q-u3-ogre
+    targetNodeId: u3-ogre
+    access: adjacent
+    requiresRevealed:
+      - u3-maison
+      - u3-miettes
+    context: "Ici, l'ogre n'est pas un mangeur d'enfants. Il dévore les terres par lots, et son nom figure sur un panneau de lotissement de cet univers."
+    prompt: "Qui est l'ogre de l'Univers 440 ?"
+    answers:
+      - Gripon
+    hint: "Qui convoite la maison d'Oldrine ?"
+    wrongFeedback: "Ce n'est pas le nom inscrit sur le panneau."
+
+  - id: q-u3-couronnes
+    targetNodeId: u3-couronnes
+    access: adjacent
+    requiresRevealed:
+      - u1-couronnes
+    context: "Dans l'Univers 42, on ne pouvait pas mentir : Poucet a échangé les couronnes sans un mot. Mais ici, une couronne d'or inscrite au bilan a d'abord une valeur."
+    prompt: "Que fait donc Poucet des couronnes, dans cet univers ?"
+    answers:
+      - vend
+      - vendre
+      - vendues
+      - revend
+      - revendre
+      - vente
+    hint: "Que fait-on de tout dans l'Univers 440 ?"
+    wrongFeedback: "Ce serait un geste gratuit. Rien n'est gratuit ici."
+
+  - id: q-u3-bottes
+    targetNodeId: u3-bottes
+    access: adjacent
+    requiresRevealed:
+      - u1-bottes
+      - u3-couronnes
+    context: "Les bottes de l'ogre font ici le même trajet que dans l'Univers 42. Or Poucet se fait payer à la lieue."
+    prompt: "Combien d'écus Poucet facture-t-il pour une seule enjambée ?"
+    answers:
+      - "70"
+      - soixante-dix
+      - septante
+    hint: "Le nombre de lieues vient de l'Univers 42, le tarif de celui-ci."
+    wrongFeedback: "Votre facture ne passerait pas au contrôle."
+
+  - id: q-u3-denouement-poucet
+    targetNodeId: u3-denouement-poucet
+    access: adjacent
+    requiresRevealed:
+      - u3-bottes
+      - u3-plumet
+    context: "Ici, aucune histoire ne se dénoue sans contrat signé, et les bottes se vendent comme le reste. Vous connaissez déjà le notaire du village."
+    prompt: "Chez quel notaire Poucet vend-il ses bottes ?"
+    answers:
+      - Plumet
+    hint: "Il figure déjà sur la toile, entre les deux contes."
     wrongFeedback: "Ce n'est pas le nom du notaire."

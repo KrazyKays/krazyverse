@@ -1,6 +1,6 @@
 import type { KeyboardEvent as ReactKeyboardEvent, ReactNode } from 'react';
-import type { NodeKind, Relation, StoryNode, Universe } from '../domain/types';
-import { KIND_LABELS } from './labels';
+import type { NodeKind, Relation, StoryNode, TaleId, Universe } from '../domain/types';
+import { KIND_LABELS, TALE_LABELS } from './labels';
 
 export const VIEW_WIDTH = 1000;
 export const VIEW_HEIGHT = 720;
@@ -10,6 +10,10 @@ export function onActivateKey(event: ReactKeyboardEvent<SVGGElement>, action: ()
     event.preventDefault();
     action();
   }
+}
+
+export function taleClass(tale: TaleId | undefined): string {
+  return tale ? `node--tale-${tale}` : '';
 }
 
 export function NodeShape({ kind }: { kind: NodeKind }) {
@@ -56,6 +60,8 @@ interface RevealedNodeProps {
   selected: boolean;
   unreachable?: boolean;
   badge?: string;
+  /** Agrandit le nœud lorsque la toile est très dézoomée, pour garder son libellé lisible. */
+  markScale?: number;
   onSelect: () => void;
   onClick?: () => void;
 }
@@ -65,12 +71,14 @@ export function RevealedNode({
   selected,
   unreachable = false,
   badge,
+  markScale = 1,
   onSelect,
   onClick = onSelect,
 }: RevealedNodeProps) {
   const classes = ['node', 'node--revealed'];
   if (selected) classes.push('node--selected');
   if (unreachable) classes.push('node--unreachable');
+  if (node.tale) classes.push(taleClass(node.tale));
   return (
     <g
       className={classes.join(' ')}
@@ -82,15 +90,18 @@ export function RevealedNode({
       onClick={onClick}
       onKeyDown={(event) => onActivateKey(event, onSelect)}
     >
-      <NodeShape kind={node.kind} />
-      <text className="node-label" textAnchor="middle" y={30}>
-        {node.title}
-      </text>
-      {badge && (
-        <text className="node-badge" x={20} y={-14} aria-hidden="true">
-          {badge}
+      {/* Groupe distinct : .node impose transform-box: fill-box, qui décalerait l'origine de cette mise à l'échelle. */}
+      <g transform={`scale(${markScale})`}>
+        <NodeShape kind={node.kind} />
+        <text className="node-label" textAnchor="middle" y={30}>
+          {node.title}
         </text>
-      )}
+        {badge && (
+          <text className="node-badge" x={20} y={-14} aria-hidden="true">
+            {badge}
+          </text>
+        )}
+      </g>
     </g>
   );
 }
@@ -119,10 +130,12 @@ interface GraphLegendProps {
   censored?: boolean;
   /** Légende intégrée au texte (aide) plutôt que superposée à la toile. */
   inline?: boolean;
+  /** Contes présents sur la toile, signalés par leur couleur. */
+  tales?: TaleId[];
   extra?: ReactNode;
 }
 
-export function GraphLegend({ censored = true, inline = false, extra }: GraphLegendProps) {
+export function GraphLegend({ censored = true, inline = false, tales = [], extra }: GraphLegendProps) {
   return (
     <ul className={inline ? 'graph-legend graph-legend--inline' : 'graph-legend'} aria-label="Légende de la toile">
       {NODE_KINDS.map((kind) => (
@@ -155,6 +168,12 @@ export function GraphLegend({ censored = true, inline = false, extra }: GraphLeg
           </li>
         </>
       )}
+      {tales.map((tale) => (
+        <li key={tale}>
+          <span className={`tale-swatch ${taleClass(tale)}`} aria-hidden="true" />
+          {TALE_LABELS[tale]}
+        </li>
+      ))}
       {extra}
     </ul>
   );

@@ -2,6 +2,9 @@ export type NodeKind = 'character' | 'place' | 'event';
 
 export type Visibility = 'hidden' | 'censored' | 'revealed';
 
+/** Conte auquel appartient un nœud ; « commun » désigne un élément partagé par plusieurs contes. */
+export type TaleId = 'chaperon' | 'poucet' | 'commun';
+
 export interface Position {
   x: number;
   y: number;
@@ -13,6 +16,7 @@ export interface StoryNode {
   title: string;
   position: Position;
   homologueKey: string;
+  tale?: TaleId;
   intro: string;
   revealedAtStart?: boolean;
   central?: { required: boolean };

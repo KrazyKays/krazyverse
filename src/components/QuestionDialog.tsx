@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import type { AnswerResult, UniverseMap } from '../domain/progression';
 import type { NodeRef, Question, Universe } from '../domain/types';
 import { Dialog } from './Dialog';
+import { TALE_LABELS } from './labels';
 
 interface QuestionDialogProps {
   universe: Universe;
@@ -19,6 +20,8 @@ export function QuestionDialog({ universe, universes, question, onAnswer, onRead
   const [hintShown, setHintShown] = useState(false);
   const [discoveries, setDiscoveries] = useState<NodeRef[] | null>(null);
   const inputId = `answer-${question.id}`;
+  const tale = universe.nodeById.get(question.targetNodeId)?.tale;
+  const eyebrow = tale ? `${universe.name} · ${TALE_LABELS[tale]}` : universe.name;
 
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -37,7 +40,7 @@ export function QuestionDialog({ universe, universes, question, onAnswer, onRead
     const [target, ...elsewhere] = discoveries;
     const title = (ref: NodeRef) => universes[ref.universeId]?.nodeById.get(ref.nodeId)?.title ?? ref.nodeId;
     return (
-      <Dialog title="Bonne réponse !" eyebrow={universe.name} onClose={onClose}>
+      <Dialog title="Bonne réponse !" eyebrow={eyebrow} onClose={onClose}>
         <div className="question question--solved" role="status">
           {target && (
             <p className="reveal-main">
@@ -76,7 +79,7 @@ export function QuestionDialog({ universe, universes, question, onAnswer, onRead
   }
 
   return (
-    <Dialog title="Question" eyebrow={universe.name} onClose={onClose}>
+    <Dialog title="Question" eyebrow={eyebrow} onClose={onClose}>
       <div className="question">
         {question.context && <p className="question-context">{question.context}</p>}
         <p className="question-prompt">{question.prompt}</p>

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { META_ID, orderedUniverses, universes } from '../data';
 import { normalizeAnswer } from '../domain/answers';
+import { neighbourIds } from '../domain/universe';
 import { answerQuestion, availableQuestions, createInitialState, isEnded, isRevealed } from '../domain/progression';
 import { unreachableNodeIds } from '../domain/visibility';
 
@@ -32,6 +33,21 @@ describe('contenu de content/*.yaml', () => {
   it('rend chaque nœud révélable', () => {
     for (const universe of orderedUniverses) {
       expect([...unreachableNodeIds(orderedUniverses, universe)], universe.id).toEqual([]);
+    }
+  });
+
+  it('attribue un conte à chaque nœud des univers de conte', () => {
+    for (const universe of orderedUniverses.filter((candidate) => candidate.kind === 'tale')) {
+      expect(universe.nodes.filter((node) => !node.tale).map((node) => node.id), universe.id).toEqual([]);
+    }
+  });
+
+  it('relie chaque élément commun aux deux contes', () => {
+    for (const universe of orderedUniverses) {
+      for (const node of universe.nodes.filter((candidate) => candidate.tale === 'commun')) {
+        const tales = new Set(neighbourIds(universe, node.id).map((id) => universe.nodeById.get(id)?.tale));
+        expect(tales.has('chaperon') && tales.has('poucet'), node.id).toBe(true);
+      }
     }
   });
 

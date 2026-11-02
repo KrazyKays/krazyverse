@@ -11,6 +11,7 @@ nodes:
     title: "Le village"
     position: { x: 140, y: 380 }
     homologueKey: centre
+    tale: chaperon
     intro: "Dans l'Univers 42, personne n'a jamais menti : le mensonge n'existe pas, pas même le mot pour le dire. On s'y salue d'un « bonjour » sincère et l'on répond toujours à la question posée. Devant la dernière maison du village, Maëlle remplit un panier pour la grand-mère. Sa fille, coiffée d'un chaperon rouge, trépigne déjà sur le seuil."
     revealedAtStart: true
   - id: u1-mere
@@ -18,55 +19,134 @@ nodes:
     title: "La mère"
     position: { x: 150, y: 170 }
     homologueKey: mere
+    tale: chaperon
     intro: "Maëlle n'a jamais eu besoin de faire promettre quoi que ce soit à sa fille : ici, une parole donnée est une parole tenue. Elle se contente de dire : « Prends le sentier des Aubépines, et salue tout le monde de ma part. » Puis elle glisse dans le panier une galette, un petit pot de beurre et un bouquet de lavande."
   - id: u1-rouge
     kind: character
     title: "Le Petit Chaperon rouge"
     position: { x: 330, y: 250 }
     homologueKey: rouge
+    tale: chaperon
     intro: "Le Petit Chaperon rouge est une enfant curieuse et franche. Elle ne sait pas mentir, et ne voit d'ailleurs pas pourquoi on le ferait. Elle répond à chaque question qu'on lui pose, y compris à celles qu'un adulte prudent aurait préféré esquiver."
   - id: u1-sentier
     kind: place
     title: "Le sentier des Aubépines"
     position: { x: 380, y: 450 }
     homologueKey: sentier
+    tale: chaperon
     intro: "Le sentier serpente entre les aubépines en fleurs. Un loup nommé Vorgas rôde dans les fourrés, à quelques pas du chemin. Tout au bout, on aperçoit déjà la petite maison aux volets bleus."
   - id: u1-loup
     kind: character
     title: "Le loup"
     position: { x: 520, y: 610 }
     homologueKey: loup
+    tale: chaperon
     intro: "Vorgas s'approche et demande à l'enfant où elle va. Elle le lui dit, sans détour. Lui non plus ne sait pas mentir : « J'ai faim, avoue-t-il, mais pas de petites filles. Je vais prendre le raccourci des Ronces pour arriver avant toi et cueillir des mûres pour ta grand-mère. »"
   - id: u1-raccourci
     kind: place
     title: "Le raccourci des Ronces"
     position: { x: 730, y: 610 }
     homologueKey: raccourci
+    tale: chaperon
     intro: "Le raccourci coupe à travers les buissons épineux. Vorgas en ressort griffé, la gueule violette de mûres, mais fier d'arriver le premier. Il frappe, annonce son nom et la raison de sa visite : personne n'a peur d'un loup qui dit la vérité."
   - id: u1-maison
     kind: place
     title: "La maison aux volets bleus"
     position: { x: 680, y: 380 }
     homologueKey: maison
+    tale: chaperon
     intro: "La maison sent le thé noir et la cire. Sur la porte, une plaque gravée : « Ici vit Oldrine. Entrez, c'est ouvert. » Une vieille horloge marque les heures dans l'entrée."
   - id: u1-grand-mere
     kind: character
     title: "La grand-mère"
     position: { x: 700, y: 160 }
     homologueKey: grand-mere
+    tale: chaperon
     intro: "Oldrine est joyeuse et en pleine forme, n'en déplaise aux contes des autres univers. Elle accueille le loup et sa petite-fille avec la même chaleur. Son plus vieil ami, Brenn, le chasseur du village, lui rend visite chaque jour."
   - id: u1-chasseur
     kind: character
     title: "Le chasseur"
     position: { x: 880, y: 250 }
     homologueKey: chasseur
+    tale: commun
     intro: "Brenn ne chasse plus guère, mais il veille sur les promeneurs de la forêt. C'est l'homme le plus ponctuel de l'univers : chaque jour, il passe chez Oldrine à midi sonnant, pas une minute de plus, pas une minute de moins."
   - id: u1-denouement
     kind: event
     title: "Le dénouement"
     position: { x: 880, y: 480 }
     homologueKey: denouement
+    tale: chaperon
     intro: "À midi sonnant, Brenn frappe trois coups à la porte, entre, pose son fusil contre l'horloge et dit : « Tout le monde est sain et sauf. » Le loup, l'enfant, la grand-mère et le chasseur partagent la galette. C'est la fin de l'histoire dans l'Univers 42 : une fin sans ruse, sans peur et sans mensonge. Le Bureau l'a consignée mot pour mot dans ses archives."
+  - id: u1-chaumiere
+    kind: place
+    title: "La chaumière"
+    position: { x: 140, y: 1000 }
+    homologueKey: chaumiere
+    tale: poucet
+    intro: "À l'orée de la forêt de l'Univers 42, le bûcheron Anselme n'a plus de quoi nourrir sa famille. Comme on ne ment pas ici, pas même aux enfants, il l'annonce à table : « Demain, nous vous laisserons dans la forêt. » Ses sept fils baissent la tête. Le plus petit ne dit rien : ici, on n'a pas le droit de mentir, mais on a celui de se taire."
+  - id: u1-bucheron
+    kind: character
+    title: "Le bûcheron"
+    position: { x: 150, y: 1210 }
+    homologueKey: bucheron
+    tale: poucet
+    intro: "Anselme pleure en le disant, et chacun sait que ses larmes sont vraies. Il tiendra parole, parce qu'une parole donnée est une parole tenue. Il n'a jamais envisagé de faire semblant : il ne saurait même pas ce que ce mot veut dire."
+  - id: u1-poucet
+    kind: character
+    title: "Le Petit Poucet"
+    position: { x: 330, y: 1130 }
+    homologueKey: poucet
+    tale: poucet
+    intro: "Le dernier-né n'est pas plus haut qu'un pouce. Il écoute tout et parle peu. Cette nuit-là, il sort ramasser des cailloux blancs au bord du ruisseau, avec méthode : quatre par fils, lui compris."
+  - id: u1-cailloux
+    kind: event
+    title: "Les cailloux blancs"
+    position: { x: 380, y: 930 }
+    homologueKey: cailloux
+    tale: poucet
+    intro: "Poucet sème ses 28 cailloux jusqu'au cœur de la forêt : c'est exactement ce qu'il faut pour marquer le chemin. Les sept frères rentrent au clair de lune. Anselme, qui les aime, annonce à voix haute qu'il fermera la porte à clé la nuit suivante. Il ne restera à Poucet que ce qu'on lui a servi au dîner : un quignon."
+  - id: u1-miettes
+    kind: event
+    title: "Les miettes"
+    position: { x: 520, y: 770 }
+    homologueKey: miettes
+    tale: poucet
+    intro: "Poucet émiette son pain le long du chemin. Les oiseaux mangent tout, et un corbeau a l'honnêteté de le confirmer : « C'est nous. » Perdus, les frères aperçoivent une lumière entre les arbres. Sur la porte de la grande demeure, une plaque à demi effacée : « Ici vit Maître G…n. Je mange les enfants. Entrez, c'est ouvert. »"
+  - id: u1-manoir
+    kind: place
+    title: "La demeure de l'ogre"
+    position: { x: 730, y: 770 }
+    homologueKey: manoir
+    tale: poucet
+    intro: "La lumière vient d'une chambre immense où dorment sept filles, chacune coiffée d'une couronne d'or. Sept lits vides leur font face, et sept bonnets sont posés dessus. Les frères s'y couchent : la nuit est froide, et personne ne leur a dit de partir."
+  - id: u1-ogre
+    kind: character
+    title: "L'ogre"
+    position: { x: 680, y: 1000 }
+    homologueKey: ogre
+    tale: poucet
+    intro: "Maître Gripon ne cache rien : « Je vous mangerai cette nuit. Je ne touche jamais à ce qui porte une couronne : ce sont mes filles. » Il ne sait pas mentir, et n'a donc jamais imaginé qu'on puisse le tromper. Sa vue est mauvaise : il ne pose jamais de question la nuit, il se contente de palper les têtes dans le noir."
+  - id: u1-couronnes
+    kind: event
+    title: "L'échange des couronnes"
+    position: { x: 700, y: 1220 }
+    homologueKey: couronnes
+    tale: poucet
+    intro: "Poucet échange les couronnes et les bonnets sans prononcer un mot. Dans le noir, Gripon palpe un bonnet et lève la main ; une de ses filles s'éveille et dit : « Père, c'est moi. » Il la croit, bien sûr, et retourne se coucher. Les frères sont déjà loin. Personne n'a rien dit de faux. Pourtant, cette nuit-là, une couronne a laissé croire ce qui n'était pas vrai."
+  - id: u1-bottes
+    kind: event
+    title: "Les bottes"
+    position: { x: 880, y: 1130 }
+    homologueKey: bottes
+    tale: poucet
+    intro: "Au pied du lit de l'ogre, Poucet trouve des bottes qui parcourent sept lieues à chaque enjambée. Il les emporte. Personne ne le lui a interdit, personne ne l'a interrogé, et il n'a donc rien eu à dire."
+  - id: u1-denouement-poucet
+    kind: event
+    title: "Le dénouement"
+    position: { x: 1000, y: 760 }
+    homologueKey: denouement-poucet
+    tale: poucet
+    intro: "Au matin, Gripon rattrape l'enfant et lui demande : « Qui a pris mes bottes ? » Poucet répond : « Moi. » L'ogre, qui n'a jamais entendu personne se vanter de rien, éclate de rire et les lui laisse. Brenn, qui veille sur les promeneurs de la forêt, raccompagne les frères jusqu'à la chaumière. Poucet devient messager du roi et nourrit toute sa famille. Dans la marge du rapport, un archiviste du Bureau a noté : « Une couronne peut-elle mentir ? » La question a été classée sans suite."
 
 relations:
   - { id: link-u1-centre-mere, from: u1-centre, to: u1-mere }
@@ -82,6 +162,21 @@ relations:
   - { id: link-u1-grand-mere-chasseur, from: u1-grand-mere, to: u1-chasseur }
   - { id: link-u1-maison-denouement, from: u1-maison, to: u1-denouement }
   - { id: link-u1-chasseur-denouement, from: u1-chasseur, to: u1-denouement }
+  - { id: link-u1-chaumiere-bucheron, from: u1-chaumiere, to: u1-bucheron }
+  - { id: link-u1-chaumiere-poucet, from: u1-chaumiere, to: u1-poucet }
+  - { id: link-u1-bucheron-poucet, from: u1-bucheron, to: u1-poucet }
+  - { id: link-u1-chaumiere-cailloux, from: u1-chaumiere, to: u1-cailloux }
+  - { id: link-u1-poucet-cailloux, from: u1-poucet, to: u1-cailloux }
+  - { id: link-u1-cailloux-miettes, from: u1-cailloux, to: u1-miettes }
+  - { id: link-u1-miettes-manoir, from: u1-miettes, to: u1-manoir }
+  - { id: link-u1-miettes-ogre, from: u1-miettes, to: u1-ogre }
+  - { id: link-u1-manoir-ogre, from: u1-manoir, to: u1-ogre }
+  - { id: link-u1-ogre-couronnes, from: u1-ogre, to: u1-couronnes }
+  - { id: link-u1-couronnes-bottes, from: u1-couronnes, to: u1-bottes }
+  - { id: link-u1-ogre-bottes, from: u1-ogre, to: u1-bottes }
+  - { id: link-u1-bottes-denouement, from: u1-bottes, to: u1-denouement-poucet }
+  - { id: link-u1-couronnes-denouement, from: u1-couronnes, to: u1-denouement-poucet }
+  - { id: link-u1-chasseur-denouement-poucet, from: u1-chasseur, to: u1-denouement-poucet }
 
 questions:
   - id: q-u1-rouge
@@ -194,3 +289,116 @@ questions:
       - "12 heures"
     hint: "Relisez le portrait de Brenn."
     wrongFeedback: "Brenn n'arrive jamais à cette heure-là."
+
+  - id: q-u1-bucheron
+    targetNodeId: u1-bucheron
+    access: adjacent
+    requiresRevealed: []
+    context: "Un homme annonce à ses enfants une terrible nouvelle. Ce nom traverse les univers."
+    prompt: "Comment s'appelle le bûcheron ?"
+    answers:
+      - Anselme
+    hint: "Relisez le récit de la chaumière."
+    wrongFeedback: "Ce n'est pas son nom."
+    alsoRevealed:
+      - u2-bucheron
+      - u3-bucheron
+
+  - id: q-u1-poucet
+    targetNodeId: u1-poucet
+    access: adjacent
+    requiresRevealed: []
+    context: "Autour de la table, le plus petit ne dit rien."
+    prompt: "Combien de fils le bûcheron a-t-il ?"
+    answers:
+      - sept
+      - "7"
+    hint: "Relisez le récit de la chaumière."
+    wrongFeedback: "Comptez à nouveau autour de la table."
+
+  - id: q-u1-cailloux
+    targetNodeId: u1-cailloux
+    access: adjacent
+    requiresRevealed:
+      - u1-poucet
+    context: "Dans cet univers, on compte juste. Poucet remplit ses poches avec méthode."
+    prompt: "Combien de cailloux Poucet ramasse-t-il en tout ?"
+    answers:
+      - "28"
+      - vingt-huit
+    hint: "Combien par fils, et combien de fils ?"
+    wrongFeedback: "Le compte n'y est pas. Refaites la multiplication."
+
+  - id: q-u1-miettes
+    targetNodeId: u1-miettes
+    access: adjacent
+    requiresRevealed: []
+    context: "La porte est fermée à clé : plus de cailloux. Il ne reste à Poucet que son dîner."
+    prompt: "Que sème-t-il sur le chemin la seconde fois ?"
+    answers:
+      - pain
+      - miettes
+      - quignon
+    hint: "Qu'a-t-on servi à Poucet ce soir-là ?"
+    wrongFeedback: "Ce n'est pas ce qu'il a dans les poches."
+
+  - id: q-u1-manoir
+    targetNodeId: u1-manoir
+    access: adjacent
+    requiresRevealed: []
+    context: "Les frères sont perdus. Quelque chose les guide à travers les arbres."
+    prompt: "Qu'aperçoivent-ils entre les arbres ?"
+    answers:
+      - lumière
+    hint: "Relisez la fin du récit des miettes."
+    wrongFeedback: "Ce n'est pas ce qu'ils voient au loin."
+
+  - id: q-u1-ogre
+    targetNodeId: u1-ogre
+    access: adjacent
+    requiresRevealed:
+      - u3-maison
+    context: "La plaque est à demi effacée : « Maître G…n ». Les noms traversent les univers et les contes. Ailleurs, le même personnage dévore des terrains plutôt que des enfants."
+    prompt: "Quel est le nom complet de l'ogre ?"
+    answers:
+      - Gripon
+    hint: "Cherchez un « Maître » dans l'Univers 440, du côté du Petit Chaperon rouge."
+    wrongFeedback: "Ce nom-là ne complète pas la plaque."
+
+  - id: q-u1-couronnes
+    targetNodeId: u1-couronnes
+    access: adjacent
+    requiresRevealed:
+      - u1-manoir
+    context: "Mentir est impossible ici, mais l'ogre ne pose aucune question : il palpe les têtes dans le noir, et vous savez ce qu'il épargne."
+    prompt: "Quels objets Poucet doit-il échanger, sans un mot, pour sauver ses frères ?"
+    answers:
+      - couronnes
+      - bonnets
+    hint: "Comparez ce que portent les filles et ce qui attend les frères sur les lits."
+    wrongFeedback: "Cela ne tromperait pas les mains de l'ogre."
+
+  - id: q-u1-bottes
+    targetNodeId: u1-bottes
+    access: adjacent
+    requiresRevealed: []
+    context: "Une fille de l'ogre répond à la question qu'on lui pose : « Les bottes de mon père font, d'une seule enjambée, autant de lieues que votre père a de fils. »"
+    prompt: "Combien de lieues les bottes parcourent-elles à chaque enjambée ?"
+    answers:
+      - sept
+      - "7"
+    hint: "Anselme a compté ses fils à table."
+    wrongFeedback: "Dans cet univers, elle n'a pas pu vous tromper : refaites le compte."
+
+  - id: q-u1-denouement-poucet
+    targetNodeId: u1-denouement-poucet
+    access: adjacent
+    requiresRevealed:
+      - u1-bottes
+    context: "Au matin, l'ogre rattrape Poucet et lui demande : « Qui a pris mes bottes ? » Le récit ne dit pas encore la réponse, mais la Loi de cet univers ne laisse aucun choix."
+    prompt: "En un mot, que répond Poucet ?"
+    answers:
+      - moi
+      - Poucet
+    hint: "Ici, on répond toujours à la question posée, et jamais par un mensonge."
+    wrongFeedback: "Un habitant de cet univers peut-il répondre cela ?"

@@ -1,6 +1,6 @@
 import { useId, useState } from 'react';
 import type { Question, StoryNode, Universe } from '../domain/types';
-import { KIND_LABELS, KIND_OPTIONS } from '../components/labels';
+import { KIND_LABELS, KIND_OPTIONS, TALE_OPTIONS } from '../components/labels';
 import type { Commit, CommitBatch, ContentPath } from './api';
 import type { ConfirmRequest } from './ConfirmDialog';
 import { ConfirmDialog } from './ConfirmDialog';
@@ -119,6 +119,14 @@ export function NodeEditor({ universe, universes, node, commit, commitBatch, onS
         value={node.kind}
         options={KIND_OPTIONS}
         onChange={(value) => commit({ op: 'set', path: at('kind'), value })}
+      />
+      <SelectField
+        label="Conte"
+        value={node.tale ?? ''}
+        options={[{ value: '', label: 'Aucun' }, ...TALE_OPTIONS]}
+        onChange={(value) =>
+          commit(value === '' ? { op: 'delete', path: at('tale') } : { op: 'set', path: at('tale'), value })
+        }
       />
       <TextField
         label="Introduction"
